@@ -24,8 +24,8 @@ async function getData() {
 }
 
 const VARIANTS = {
-  "jsbsim": "-fexceptions (default)",
-  "jsbsim-weh": "-fwasm-exceptions",
+  "jsbsim": "-fexceptions",
+  "jsbsim-weh": "-fwasm-exceptions (default)",
 } as const;
 type Variant = keyof typeof VARIANTS;
 
@@ -71,7 +71,7 @@ async function run(variant: Variant) {
   lines.length = 0;
   log(`FDM JSBSim WebAssembly test — build ${BUILD.buildVersion} (built ${BUILD.buildDate})`);
   log(`Variant: ${variant}.wasm, ${VARIANTS[variant]}; JSBSim ${BUILD.jsbsimTag} (${BUILD.jsbsimCommit.slice(0, 10)}); Emscripten ${BUILD.emscripten}`);
-  log(`Run at ${new Date().toISOString()}`);
+  log(`Page built ${BUILD.siteBuilt}; run at ${new Date().toISOString()}`);
   log(`User agent: ${navigator.userAgent}`);
   log(`Screen: ${screen.width}x${screen.height} @${devicePixelRatio}x; cores: ${navigator.hardwareConcurrency ?? "?"}; standalone PWA: ${matchMedia("(display-mode: standalone)").matches}`);
   log(`Timer resolution (performance.now): ${(timerResolution() * 1000).toFixed(1)} us`);
@@ -154,7 +154,7 @@ async function run(variant: Variant) {
   running = false;
 }
 
-document.getElementById("version")!.textContent = `Build ${BUILD.buildVersion} · built ${BUILD.buildDate}`;
+document.getElementById("version")!.textContent = `Build ${BUILD.buildVersion} · built ${BUILD.buildDate} · page ${BUILD.siteBuilt.slice(0, 16)}Z`;
 document.getElementById("copy")!.addEventListener("click", async () => {
   const text = lines.join("\n");
   try { await navigator.clipboard.writeText(text); status("Copied."); }
@@ -167,4 +167,4 @@ document.getElementById("run-js")!.addEventListener("click", () => run("jsbsim")
 document.getElementById("run-weh")!.addEventListener("click", () => run("jsbsim-weh"));
 window.addEventListener("error", (e) => log(`window error: ${e.message}`));
 window.addEventListener("unhandledrejection", (e) => log(`unhandled rejection: ${describe(e.reason)}`));
-run("jsbsim");
+run("jsbsim-weh");

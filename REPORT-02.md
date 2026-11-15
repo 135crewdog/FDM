@@ -4,8 +4,14 @@ Date: 2026-11-15. Raw outputs: `results/02-*.txt`. How to rebuild and rerun: `CL
 
 ## Summary
 
-**Recommendation: yes, our build is ready to be the FDM core,** with two settings decided by the tests below:
-run AB4 only at 480 Hz or faster, and use cached handles or the bulk array for the wing-strip forces.
+**Recommendation: yes, our build is ready to be the FDM core,** with three settings decided by the tests below:
+
+1. Use the `-fwasm-exceptions` build. It is now the default (`wasm/bin/jsbsim-weh.*`).
+2. Run AB4 only at 480 Hz or faster.
+3. Use cached handles or the bulk array for the wing-strip forces.
+
+On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13 µs per step and the f16 at about
+10.5 µs. 20 forces by handle or bulk add about 3 µs. At 1000 Hz that is about 1% of one core.
 
 - **Built here, no patches.** JSBSim v1.3.3 compiles with Emscripten 6.0.13 as it is. Exception support is
   on for all code, including libJSBSim and expat. A full build takes about 45 s.
@@ -32,10 +38,13 @@ run AB4 only at 480 Hz or faster, and use cached handles or the bulk array for t
 - **AB4 has a side effect at low rates.** At 120 and 240 Hz it blows up to NaN when the f16 hits the ground
   inverted. At 120 Hz it makes the f16's body rates jitter 36× more while taxiing. At 480 and 1000 Hz both
   problems go away. Native JSBSim does exactly the same, so this is JSBSim's AB4, not our build.
-- **`-fwasm-exceptions` is faster.** Results are bit-identical to `-fexceptions`, and the file is smaller
-  (1.69 MB against 2.15 MB). It runs 1.2–1.8× faster in Node and in desktop Chromium. `-fexceptions` costs
-  about 50% per step compared with a build without exceptions; `-fwasm-exceptions` costs nothing measurable.
-  The iPhone decides the default (Test 6).
+- **`-fwasm-exceptions` is the default now.** Results are bit-identical to `-fexceptions`, and the file is smaller
+  (1.69 MB against 2.15 MB).
+  - Speed: **about 2× faster on the iPhone** (c172x 7.7 µs per step at 1000 Hz, against 16.3), and 1.2–1.8× in
+    Node and desktop Chromium.
+  - Aircraft load about 3× faster.
+  - No failures on any platform. End states are identical.
+  - `-fexceptions` is kept in `wasm/bin/` for comparison.
 
 ## Build
 
@@ -249,7 +258,27 @@ Reading:
   `-fexceptions`, which costs about 50% per step in Node. The `-fwasm-exceptions` run on the iPhone will show
   how much of the gap comes from the exception mode.
 
-**iPhone `-fwasm-exceptions` run: pending.**
+**iPhone, Safari 27.2, `-fwasm-exceptions` build** (same phone, pasted 2026-11-15):
+
+- Load matrix 59/61, PASS. Errors and recovery are the same as with `-fexceptions`.
+- End states are identical to the `-fexceptions` run.
+- Loading all 59 aircraft took about 3× less time (c172x 4 ms against 12 ms; f16 4 ms against 11 ms).
+
+| µs per step | 1/120 | 1/480 | 1/1000 |
+|---|---|---|---|
+| c172x: `-fwasm-exceptions` / `-fexceptions` | **13.0** / 26.7 | **9.0** / 17.3 | **7.7** / 16.3 |
+| f16: `-fwasm-exceptions` / `-fexceptions` | **10.7** / 20.0 | **10.3** / 20.3 | **10.7** / 20.3 |
+| 20 forces with `-fwasm-exceptions`: none / name / handle / bulk | 11.0 / 70.3 / 15.0 / 13.7 | 9.0 / 68.0 / 12.0 / 11.3 | 8.7 / 65.7 / 11.7 / 11.3 |
+
+**Decision: `-fwasm-exceptions` becomes the default.** It shows a clear gain (about 2×) with no failures, which
+was the agreed condition.
+
+- Changed: `createSim()` in Node, and the page now auto-runs `jsbsim-weh`.
+- At 1000 Hz, the c172x with 20 strip forces by bulk array needs about 11 ms per simulated second on the iPhone,
+  about 1% of one core.
+- Most of the gap to session 01's 5 µs per step is now explained: that model had no autopilot or guidance
+  systems.
+- Requirement: WebAssembly exception handling, which Safari has had since 15.2.
 
 ## Not done / limits
 

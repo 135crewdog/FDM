@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build JSBSim (pinned release) to WebAssembly with Emscripten (pinned version).
-#   scripts/build-wasm.sh            # both variants: -fexceptions (default) and -fwasm-exceptions
-#   scripts/build-wasm.sh js         # only the default variant
+#   scripts/build-wasm.sh            # both variants: -fwasm-exceptions (default, jsbsim-weh) and -fexceptions (jsbsim)
+#   scripts/build-wasm.sh wasm       # only the default variant
 # Needs emsdk activated (source <emsdk>/emsdk_env.sh) at EMSDK_VERSION, plus git and cmake.
 # Outputs wasm/bin/jsbsim.{mjs,wasm}, wasm/bin/jsbsim-weh.{mjs,wasm}, wasm/bin/build-info.json.
 set -euo pipefail

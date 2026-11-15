@@ -18,7 +18,7 @@ const DATA_DIRS = ["aircraft", "engine", "systems", "scripts"];
  * Set JSBSIM_LOG=1 to echo JSBSim's console output.
  */
 export async function createSim(opts: { variant?: Variant; dirs?: string[] } = {}): Promise<JSBSim> {
-  const variant = opts.variant ?? (process.env.JSBSIM_VARIANT as Variant | undefined) ?? "jsbsim";
+  const variant = opts.variant ?? (process.env.JSBSIM_VARIANT as Variant | undefined) ?? "jsbsim-weh"; // -fwasm-exceptions is the default since the iPhone test (REPORT-02)
   const factory = (await import(join(BIN, `${variant}.mjs`))).default as ModuleFactory;
   const sim = await JSBSim.create({
     factory,
