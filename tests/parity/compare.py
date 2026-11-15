@@ -1,6 +1,11 @@
 """Compare two step logs column by column.
 usage: python tests/parity/compare.py a.csv b.csv [--json]"""
-import csv, json, sys
+import csv, json, math, sys
+
+def wrapped(name):
+    """Angles that may wrap (psi is reported in [0, 2pi): 0 and 6.283 are the same heading)."""
+    return name in ("attitude/psi-rad", "attitude/phi-rad")
+
 
 def load(p):
     with open(p) as f:
@@ -20,6 +25,8 @@ def compare(a, b):
         first_div = None
         for i in range(n):
             d = abs(ra[i][j] - rb[i][j])
+            if wrapped(name):
+                d = abs((ra[i][j] - rb[i][j] + math.pi) % (2 * math.pi) - math.pi)
             rel = d / scale  # relative to the column largest magnitude, floored at 1e-3
             if d > worst_abs:
                 worst_abs, at = d, ra[i][0]

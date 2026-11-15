@@ -32,10 +32,12 @@ runs = {os.path.basename(p): load(p) for p in sys.argv[1:]}
 keys = list(sims)
 for r, run in runs.items():
     print(f"\n{r}: max |difference| over 0..30 s (NASA spread = largest difference between any two NASA sims)")
-    print(f"{'variable':34s}{'NASA spread':>12s}" + "".join(f"{'vs ' + k:>10s}" for k in keys))
+    print(f"{'variable':34s}{'NASA spread':>12s}" + "".join(f"{'vs ' + k:>10s}" for k in keys) + "  inside spread?")
     for v in VARS:
         sp = [x for a in keys for b in keys if a < b for x in [maxdiff(sims[a], sims[b], v)] if x is not None]
-        print(f"{v:34s}{max(sp):12.3g}" + "".join(fmt(maxdiff(run, sims[k], v)) for k in keys))
+        ds = [d for k in keys for d in [maxdiff(run, sims[k], v)] if d is not None]
+        inside = "yes" if max(ds) <= max(sp) else "NO"
+        print(f"{v:34s}{max(sp):12.3g}" + "".join(fmt(maxdiff(run, sims[k], v)) for k in keys) + f"  {inside}")
 if len(runs) == 2:
     a, b = list(runs.values())
     print("\n%s vs %s, max |diff|:" % tuple(runs))

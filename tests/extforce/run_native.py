@@ -8,6 +8,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "jsb
 PROPS = ["simulation/sim-time-sec", "position/h-sl-ft", "velocities/vtrue-kts",
          "aero/alpha-rad", "aero/beta-rad", "attitude/phi-rad", "attitude/theta-rad",
          "attitude/psi-rad", "velocities/p-rad_sec", "velocities/q-rad_sec", "velocities/r-rad_sec",
+         "position/h-agl-ft", "gear/wow",
          "forces/fbx-external-lbs", "forces/fby-external-lbs", "forces/fbz-external-lbs",
          "moments/l-external-lbsft", "moments/m-external-lbsft", "moments/n-external-lbsft"]
 

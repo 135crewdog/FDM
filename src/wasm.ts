@@ -6,7 +6,8 @@ import { JSBSim, JSBSimError, type ModuleFactory } from "./jsbsim.ts";
 
 export { JSBSim, JSBSimError };
 export const ROOT_DIR = new URL("../", import.meta.url).pathname;
-export const DATA = new URL("../jsbsim-data/", import.meta.url).pathname;
+/** JSBSim data root; JSBSIM_DATA overrides it (e.g. a modified copy under out/). */
+export const DATA = process.env.JSBSIM_DATA ? process.env.JSBSIM_DATA.replace(/\/?$/, "/") : new URL("../jsbsim-data/", import.meta.url).pathname;
 export const BIN = new URL("../wasm/bin/", import.meta.url).pathname;
 
 export type Variant = "jsbsim" | "jsbsim-weh";
@@ -56,6 +57,8 @@ export const LOG_PROPS = [
   "velocities/p-rad_sec",
   "velocities/q-rad_sec",
   "velocities/r-rad_sec",
+  "position/h-agl-ft",
+  "gear/wow",
 ] as const;
 
 export function sample(sim: JSBSim, props: readonly string[] = LOG_PROPS): number[] {

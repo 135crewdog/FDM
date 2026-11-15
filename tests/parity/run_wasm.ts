@@ -1,22 +1,23 @@
-// Run a JSBSim script in the WebAssembly package (headless, Node) and log every step.
-// usage: tsx tests/parity/run_wasm.ts scripts/c1721.xml out/c1721.wasm.csv
+// Run a JSBSim script in our WebAssembly build (headless, Node) and log every step.
+// usage: tsx tests/parity/run_wasm.ts scripts/c1721.xml out/c1721.wasm.csv [rateRotationalIntegrator]
+// JSBSIM_VARIANT=jsbsim-weh selects the -fwasm-exceptions build.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { createSdk, copyTree, DATA, LOG_PROPS, sample, toCsv, describeError } from "../../src/wasm.ts";
+import { createSim, LOG_PROPS, sample, toCsv, describeError } from "../../src/wasm.ts";
 
-const [script, out] = process.argv.slice(2);
-const sdk = await createSdk();
-for (const d of ["aircraft", "engine", "systems", "scripts"]) copyTree(sdk, DATA + d, d);
-sdk.setDebugLevel(0);
+const [script, out, rateInt] = process.argv.slice(2);
+const sim = await createSim();
+sim.setDebugLevel(0);
 const rows: number[][] = [];
 try {
-  if (!sdk.loadScript(script)) throw new Error("loadScript returned false");
-  if (!sdk.runIc()) throw new Error("runIc returned false");
-  rows.push(sample(sdk));
+  sim.loadScript(script);
+  if (rateInt) sim.setIntegrators({ rateRotational: Number(rateInt) });
+  sim.runIC();
+  rows.push(sample(sim));
   const t0 = performance.now();
-  while (sdk.run()) rows.push(sample(sdk));
+  while (sim.run()) rows.push(sample(sim));
   const ms = performance.now() - t0;
-  console.log(`${script}: ${rows.length} rows, ${(ms * 1000 / rows.length).toFixed(1)} us/step incl. logging`);
+  console.log(`${script}: ${rows.length} rows, ${(ms * 1000 / rows.length).toFixed(1)} us/step incl. logging (wasm ${sim.version.split(" ")[0]})`);
 } catch (e) {
   console.log(`${script}: FAILED in WASM: ${describeError(e)}`);
   process.exitCode = 2;
