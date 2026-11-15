@@ -104,6 +104,16 @@ crosses into JavaScript). Shared test helpers used by Node and the page: `src/ch
 - iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10.5 us/step, +20 forces by handle/bulk ~3 us;
   timer resolution 1 ms (time batches only).
 
+## Parked for later: publishing (user's decision, 2026-11-15)
+Revisit publishing only once we have a viable FDM that others could use for mobile flight sims. Do not post
+anything publicly (issues, pull requests, packages) without the user's explicit go-ahead. Candidates when the
+time comes:
+- an issue or pull request to 0x62/jsbsim-wasm: build all of JSBSim with exception support, so 22 more aircraft
+  load;
+- a JSBSim-Team bug report: the integrator-aware friction from 2010 (53709ba8) was lost in 2011, and AB2-AB4 body
+  rates never settle at rest. Include Codex's native reproduction, and a tested fix if session 03/04 produces one;
+- the FDM itself, with its validation reports.
+
 ## How to run
 ```sh
 npm ci
