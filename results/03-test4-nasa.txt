@@ -1,9 +1,9 @@
 # Test 4: NASA check case 02 (tumbling brick), JSBSim v1.3.3 files unchanged
 ## Builds under test
-- wasm jsbsim: sha256 8baa763e9360fd9eca8e7721546d6f730f45210163b4840335e3da00ccc3ecf7 (fdm-wasm-20261115.1912)
-- wasm jsbsim-weh: sha256 2711965a3781996d9e99d8de3ba7ef6e5e46cf7ed566c279d8f7b15a350274cf (fdm-wasm-20261115.1912)
-- wasm patches: []
-- native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none
+- wasm jsbsim: sha256 21c0bca883d7e9225a62bf7920c979f14c1950b507bd5be075821535f27d302f (fdm-wasm-20261115.1946)
+- wasm jsbsim-weh: sha256 7b294134e57eab0bb9dcf1eb92b7703ebe77295a1ece2c5736772f5ea252ba14 (fdm-wasm-20261115.1946)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}]
+- native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33
 
 wrote out/Atmos_02_jsbsim.csv (301 rows, variant jsbsim)
 wrote out/Atmos_02_jsbsim_rateint5.csv (301 rows, variant jsbsim)

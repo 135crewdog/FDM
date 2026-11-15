@@ -1,9 +1,9 @@
 # Test 3: external forces set from JS every step
 ## Builds under test
-- wasm jsbsim: sha256 8baa763e9360fd9eca8e7721546d6f730f45210163b4840335e3da00ccc3ecf7 (fdm-wasm-20261115.1912)
-- wasm jsbsim-weh: sha256 2711965a3781996d9e99d8de3ba7ef6e5e46cf7ed566c279d8f7b15a350274cf (fdm-wasm-20261115.1912)
-- wasm patches: []
-- native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none
+- wasm jsbsim: sha256 21c0bca883d7e9225a62bf7920c979f14c1950b507bd5be075821535f27d302f (fdm-wasm-20261115.1946)
+- wasm jsbsim-weh: sha256 7b294134e57eab0bb9dcf1eb92b7703ebe77295a1ece2c5736772f5ea252ba14 (fdm-wasm-20261115.1946)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}]
+- native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33
 
 extforce parity: variant jsbsim
 extforce parity: variant jsbsim
@@ -126,28 +126,28 @@ moments/n-external-lbsft        4.780e+01   4.78e+04 29.999999999998938 0.008333
 ## Cost per step, wasm jsbsim (Node)
 extforce bench: variant jsbsim
 workload per repetition: fresh load, 600 warm-up steps, then 6000 timed steps; 5 repetitions
-c172p, no external forces                          median 26.23 us/step, min 23.72, max 28.90
-c172p + 20 forces, not updated                     median 26.98 us/step, min 26.41, max 27.77
-c172p + 20 forces updated by name (140 writes)     median 305.71 us/step, min 255.32, max 332.56
-c172p + 20 forces updated by cached handle         median 36.24 us/step, min 29.54, max 50.59
-c172p + 20 forces updated by bulk array            median 43.71 us/step, min 41.87, max 48.38
+c172p, no external forces                          median 19.44 us/step, min 18.19, max 29.10
+c172p + 20 forces, not updated                     median 19.49 us/step, min 18.44, max 20.92
+c172p + 20 forces updated by name (140 writes)     median 260.56 us/step, min 249.87, max 281.70
+c172p + 20 forces updated by cached handle         median 28.47 us/step, min 28.19, max 28.57
+c172p + 20 forces updated by bulk array            median 24.24 us/step, min 23.89, max 24.39
 same full end state (18 properties) by name / handle / bulk: true
-writes only, the same 140 values per step (median of 5): by name 230.13 us, by handle 13.89 us, bulk 5.32 us
+writes only, the same 140 values per step (median of 5): by name 222.43 us, by handle 8.99 us, bulk 5.01 us
 
 ## Cost per step, wasm jsbsim-weh (Node)
 extforce bench: variant jsbsim-weh
 workload per repetition: fresh load, 600 warm-up steps, then 6000 timed steps; 5 repetitions
-c172p, no external forces                          median 18.70 us/step, min 18.61, max 21.53
-c172p + 20 forces, not updated                     median 14.81 us/step, min 13.58, max 20.33
-c172p + 20 forces updated by name (140 writes)     median 177.41 us/step, min 149.50, max 189.21
-c172p + 20 forces updated by cached handle         median 20.86 us/step, min 18.76, max 26.73
-c172p + 20 forces updated by bulk array            median 16.47 us/step, min 16.31, max 21.74
+c172p, no external forces                          median 12.70 us/step, min 12.25, max 16.82
+c172p + 20 forces, not updated                     median 14.34 us/step, min 13.53, max 17.25
+c172p + 20 forces updated by name (140 writes)     median 155.80 us/step, min 148.16, max 162.85
+c172p + 20 forces updated by cached handle         median 19.31 us/step, min 18.55, max 22.62
+c172p + 20 forces updated by bulk array            median 16.15 us/step, min 15.78, max 17.38
 same full end state (18 properties) by name / handle / bulk: true
-writes only, the same 140 values per step (median of 5): by name 165.62 us, by handle 6.84 us, bulk 3.44 us
+writes only, the same 140 values per step (median of 5): by name 130.77 us, by handle 4.53 us, bulk 2.11 us
 
 ## Cost per step, native (Python)
-workload per repetition: fresh load, 600 warm-up steps, then 6000 timed steps; 5 repetitions (native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none)
-c172p, no external forces                          median 6.85 us/step, min 6.55, max 7.08 (native, includes Python call overhead)
-c172p + 20 forces, not updated                     median 7.93 us/step, min 7.67, max 9.75 (native, includes Python call overhead)
-c172p + 20 forces, 7 props each set every step     median 144.00 us/step, min 120.44, max 172.34 (native, includes Python call overhead)
+workload per repetition: fresh load, 600 warm-up steps, then 6000 timed steps; 5 repetitions (native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33)
+c172p, no external forces                          median 6.68 us/step, min 6.51, max 7.29 (native, includes Python call overhead)
+c172p + 20 forces, not updated                     median 7.33 us/step, min 7.26, max 7.54 (native, includes Python call overhead)
+c172p + 20 forces, 7 props each set every step     median 128.85 us/step, min 119.66, max 136.75 (native, includes Python call overhead)
 jsbsim-data/ clean: no output files written into the data root

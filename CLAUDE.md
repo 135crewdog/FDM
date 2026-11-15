@@ -1,9 +1,12 @@
 # FDM repository: notes for future sessions
 
 Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The core is **JSBSim v1.3.3 compiled to
-WebAssembly by us** (Emscripten 6.0.13). Read `REPORT-02.md` first (our build, tests, recommendation; its "Review outcome" section
-withdraws the AB4 plan), then `REVIEW-codex-02.md` (independent review), then
-`REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
+WebAssembly by us** (Emscripten 6.0.13). Read in this order:
+1. `REPORT-03.md`: defect fixes, the acceptance gates, the floor and candidate 1 against them. **Start here.**
+2. `GATES.md`: the gates every integrator candidate must pass, and the rule that they are never changed after a result.
+3. `REPORT-02.md` (our build and tests; its "Review outcome" withdraws the AB4 plan) and `REVIEW-codex-02.md`
+   (independent review).
+4. `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
 
 ## Rule: label every finding by strength of evidence
 The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
@@ -18,6 +21,17 @@ Keep an "Evidence ledger" table near the top of each report. Rules that go with 
 - When an explanation turns out wrong, say so plainly.
 - Name, in each report, which claims an independent reviewer should check first.
 
+## Rule: gates before candidates (`GATES.md`)
+- The gate files are frozen: `tests/gates/gates.json`, `run_native.py`, `run_wasm.ts`, `evaluate.py`,
+  `fixtures/brick_poi.xml`, `tests/parity/compare.py`, `GATES.md`. Committed as `164c1d0` before anything was run.
+- Never edit a gate, tolerance or yardstick after seeing a result. If a gate is wrong: say so, keep the result, add a
+  new gate with a new name (G5b, G7, ...) and commit it before the next candidate runs.
+- `tests/gates/run.sh <config>` refuses to run a candidate if the frozen files are uncommitted or changed.
+- New candidates go into `tests/gates/configs.json` (not frozen).
+- Do not change JSBSim's physics except through `wasm/patches/*.patch`: small, explained in its header, switched by a
+  property that defaults to "unchanged JSBSim", and proven bit-identical when off (`tests/native/verify_key.sh
+  patched unpatched`, `tests/native/verify_wasm_patch_off.sh`).
+
 ## JSBSim data
 JSBSim v1.3.3's `aircraft/`, `engine/`, `systems/`, `scripts/` and `check_cases/NASA_EOM_2015/` are committed in
 `jsbsim-data/` (private, non-commercial project; the user's decision, 2026-11-15). Refresh with
@@ -31,74 +45,90 @@ NASA check-case reference data is in `reference/nasa-checkcases/`.
 - Two variants: **`jsbsim-weh` (`-fwasm-exceptions`, the default)** and `jsbsim` (`-fexceptions`, kept for comparison).
   Bit-identical results; weh is smaller and about 2x faster on the iPhone (REPORT-02 test 6). Needs WebAssembly
   exception handling in the browser (Safari 15.2+).
-- Built files are committed in `wasm/bin/` (`*.mjs`, `*.wasm`, `build-info.json` with the build version shown on the page).
-- No JSBSim patches are needed for v1.3.3. Put any future ones in `wasm/patches/*.patch` (applied by the build script).
+- Built files are committed in `wasm/bin/` (`*.mjs`, `*.wasm`, `build-info.json` with the build version, patch hashes
+  and binary hashes). Two builds of the same source differ in a few hundred bytes (JSBSim embeds the build time).
+- **Patches** live in `wasm/patches/*.patch`. `scripts/lib-jsbsim-src.sh` resets the pinned source and re-applies them on
+  every build, the same way for WebAssembly (`scripts/build-wasm.sh`) and for the native answer key
+  (`scripts/build-native.sh`). `PATCHSET=unpatched scripts/build-wasm.sh` builds without them into
+  `build/wasm-bin-unpatched/`. A wrong Emscripten version stops the build.
+- **`wasm/bin` contains patch 0001, switched off.** `simulation/integrator/friction-aware`: 0 = JSBSim unchanged
+  (default), 1 = integrator-aware friction (candidate 1), 2 = the 2010 code's formula (comparison only).
+- **Native answer key:** `pip jsbsim==1.3.3` cannot carry patches. `scripts/build-native.sh` builds the Python module
+  from source into `build/native/unpatched` and `build/native/patched`; use `PYTHONPATH=build/native/<set>`. The
+  unpatched build is bit-identical to pip on everything compared (REPORT-03, ledger 4).
 
 ## Binding API (`src/jsbsim.ts`, browser-safe; Node helpers in `src/wasm.ts`)
 ```ts
 const sim = await createSim();            // Node: loads wasm/bin/jsbsim-weh.mjs (JSBSIM_VARIANT=jsbsim for the other), copies jsbsim-data into MEMFS at /jsbsim
-sim.loadScript("scripts/c1723.xml");      // or sim.loadModel("f16"); errors throw JSBSimError with JSBSim's message
-sim.setIntegrators({ rateRotational: 5 });// AB4: NOT safe on the ground at any rate tested (REVIEW-codex-02); keep default (1) for now
+sim.dt = 1 / 480;                         // BEFORE loading (filters cache dt at load); after load it throws (setDtAfterLoad to force)
+sim.loadScript("scripts/c1723.xml");      // or sim.loadModel("f16"); sim.loadIC("reset00"); errors throw JSBSimError with JSBSim's message
+sim.setIntegrators({ rateRotational: 5 });// unknown ids throw. AB4/AB3 are NOT safe on the ground (REPORT-03); keep default (1) for now
 sim.runIC(); sim.run(); sim.runSteps(n);  // run() returns false when a script ends
 sim.getProperty(name); sim.setProperty(name, v);   // by name: ~1-2 us per call, fine for setup, not per step
 const h = sim.handle(name); sim.get(h); sim.set(h, v);          // cached handle: ~45 ns per write
 sim.bindInputs(names); sim.bindOutputs(names);                   // bulk: write sim.inputs (Float64Array),
 sim.inputs.set(values); sim.step(1); sim.outputs;                // step(n), read sim.outputs
-sim.reset();                              // fresh FGFDMExec, same files
+sim.reset();                              // fresh FGFDMExec, same files; ALL earlier handles become invalid, bulk bindings empty
 ```
-Raw embind class: `wasm/bindings.cpp` (every call catches C++ exceptions and returns a status; no exception
-crosses into JavaScript). Shared test helpers used by Node and the page: `src/checks.ts`.
+Raw embind class: `wasm/bindings.cpp`. Contract (tested by `tests/binding/regress.ts`, 75 checks, both variants):
+- Every public call catches every C++ exception (`std::string` and `const char*` too) and returns a status; the
+  wrapper throws `JSBSimError` with JSBSim's message. Nothing else is ever thrown.
+- Nothing fails silently: read-only writes, invalid handles (NaN, fractions, out of range, from before `reset()`),
+  bad dt, unknown integrator ids and bad step counts all throw.
+- Handles are numbers (generation x 2^20 + index). Re-read `sim.inputs`/`sim.outputs` after `reset()`, binding, or
+  anything that can allocate.
+- Socket input (`<input port=...>` in aircraft files) is disabled in our runtime, so no npm `ws` is needed.
+- `setProperty` still creates a missing property (as JSBSim does); `handle()` and bulk binding do not.
 
-## What was learned (sessions 01-02)
+Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `src/wasm.ts` (`JSBSIM_VARIANT`,
+`JSBSIM_BIN` to use another build directory, `describeBuild()` for the hash line).
+
+## What was learned (sessions 01-03)
 - Ours vs native `jsbsim==1.3.3`: same 59/61 aircraft load; bit-identical on the NASA brick and external forces;
   rounding-level on c1721/T38. c1723 and f16_test diverge from 1-ulp seeds (start altitude differs by 2 ulp of the
   Earth radius, different libm); native vs native with +1e-8 ft does the same. Compare within tolerances, not bits.
 - JSBSim's noise uses `std::default_random_engine`/`std::normal_distribution` (implementation-defined): models with
   active noise cannot match native Linux (libstdc++) step for step.
 - psi is reported in [0, 2pi): wrap angles before comparing.
-- **Integrator: undecided. Keep JSBSim's default (Euler body rates) until a candidate passes gates written down
-  before testing** (REPORT-02 "Review outcome"; Codex's "Tests to add").
-  - Euler body rates are robust on the ground but ~100x outside NASA's spread on the brick (10x even at 1000 Hz).
-  - AB4 (`simulation/integrator/rate/rotational = 5`) has body rates within ~1e-5 deg/s of NASA. But it **fails
-    on the ground at every rate tested, including 1000 Hz**:
-    - 5 aircraft never settle at rest;
-    - 737 and AH-1S hard landings run away;
-    - the f16 inverted impact runs away at 120/240 Hz.
-    The earlier "fine at 480/1000 Hz" claim was wrong (one crash, one taxi).
-  - Buss 2 attitude (`simulation/integrator/position/rotational = 7`) plus AB4/AB2 rates matches NASA attitude to
-    about 1e-4 deg (Codex). It does not help the ground.
-- Why AB4 chatters on the ground (REPORT-02, "Why AB4 misbehaves on the ground"):
-  - `FGAccelerations::CalculateFrictionForces` sizes friction to cancel slip in one **Euler** step (`v/dt`).
-    Under AB4 the 55/24 weight makes it overshoot.
-  - JSBSim fixed this in 2010 (commit 53709ba8, integrator-aware friction). The 2011 refactor 40279c20 removed it.
-  - PteroLabsAI/jsbsim PRs 12-13 (unreviewed fork) re-found it. They chose implicit-midpoint body rates instead.
-  - Phase 2 options, in order:
-    1. Restore the 2010 friction.
-    2. Implicit midpoint.
-    3. AB4 in the air, Euler on the ground.
-  - The 2011 loss was a sequence: e67c5e42 moved and disabled the code, 85b3a574 re-enabled friction in the
-    Euler-only form, and 40279c20 deleted it.
-  - Restoring it also changes translation (default AB2), so it is not a no-op under Euler rotation.
-  - f16 inverted-impact runaway: friction on the STRUCTURE contacts contributes (Codex ablation). The first
-    invalid operation is still unknown.
-  - `gear/wow` counts only BOGEY (wheel) contacts. Detect STRUCTURE contact separately.
-- **Known defects, to fix before phase 2 builds on them** (REPORT-02 "Review outcome"):
-  - Binding:
-    - `hasProperty`, `get`, `readOutputs` and `bindList` can throw raw WebAssembly exceptions.
-    - `std::string` throws show as "unknown C++ exception".
-    - Read-only writes report success.
-    - `reset()` keeps stale bulk arrays.
-    - NaN or fractional handles become handle 0.
-    - Bad integrator IDs and dt=0 are accepted.
-  - Harness:
-    - `tests/parity/compare.py` ignores NaN and truncates to the shorter log.
-    - `scripts/run-tests.sh` tests 2-3 compare the default build with itself since the default changed (set
-      `JSBSIM_VARIANT` explicitly).
-    - `tests/ab4/rate_sweep.ts` "first non-finite" really means rates > 1e6.
-  - Build: `scripts/build-wasm.sh` applies patches only on a fresh clone.
-  - Runtime: the 737 needs npm `ws` (missing).
-  - Set dt **before** loading a model (FCS filters cache dt at load).
-- Native runs write output files into the data root. These are git-ignored now; never commit them.
+- **Integrator: still undecided (session 04 decides).** Gates and results: `GATES.md`, REPORT-03, `results/03-gates-*.txt`.
+
+  | | G1 Rest | G2 Hard landing | G3 Extreme impacts | G4 NASA | G5 Rigid body | G6 Parity |
+  |---|---|---|---|---|---|---|
+  | Floor: Euler rates + Buss 2 attitude, no patch | PASS | FAIL | reference | FAIL | FAIL | PASS |
+  | Candidate 1 (patch 0001 on) + AB4 + Buss 2 | FAIL (c310 at 120 Hz) | FAIL | worse | PASS | FAIL | PASS |
+  | Candidate 1 + AB3 + Buss 2 | PASS | FAIL | worse | PASS | FAIL | PASS |
+  | Candidate 1 + AB2 + Buss 2 | PASS | FAIL | worse | FAIL | FAIL | PASS |
+
+  - Keep JSBSim's default body rates (Euler) in anything shipped until a candidate passes.
+  - Buss 2 attitude is `simulation/integrator/position/rotational = 7`.
+  - Floor: body rates 0.09 deg/s off NASA at 480 Hz (gate 2e-6); it also fails hard landings at 120/240 Hz (ah1s
+    also at 480 Hz), and Euler rates gain or lose energy fast when tumbling.
+  - Candidate 1 (integrator-aware friction) fixes settling at rest for AB2/AB3/AB4. It does **not** fix hard
+    landings or crashes with AB rates.
+  - At 1000 Hz, hard landings survive with the floor, AB3 and AB2, not with AB4.
+- What the ground problem is made of (REPORT-03 "What we learned"):
+  - Friction: `FGAccelerations::CalculateFrictionForces` assumes an Euler step. JSBSim fixed this in 2010 (53709ba8)
+    and lost it in 2011 (e67c5e42, 85b3a574, 40279c20). Patch 0001 restores it, adapted: it weights the
+    translational and rotational parts of the friction matrix by each scheme's leading weight, and uses the inertial
+    derivative. The 2010 formula as written lets a resting aircraft creep (Earth-rotation bias; ledger 16).
+  - Gear spring-dampers: the c310 at 120 Hz with AB4 oscillates in pitch even with all friction removed. Reading
+    (Reasoned, not tested): the damper is too stiff for AB4's stability limit, about 7x tighter than Euler's.
+  - Hard landings are numerically chaotic: native and WebAssembly agree for 3.4 s, then split within 0.15 s. One run
+    per case is a coin toss; judge on repeated, perturbed runs.
+  - f16 inverted impact: friction on STRUCTURE contacts contributes (Codex ablation). First invalid operation unknown.
+  - `gear/wow` counts only BOGEY contacts. The gates read every point: `gear/unit[k]/WOW` and `contact/unit[k]/WOW`.
+- G5 with AB4 fails only through JSBSim's multistep start-up (history filled with copies of the first derivative):
+  the energy changes in the first 4 steps and is constant afterwards (ledger 17). AB3 also drifts slowly after that.
+- **Session 04 plan** (REPORT-03 "What remains"): first add later gates (G5b drift after start-up; G2b/G3b repeated
+  perturbed runs; fix the step rates that matter), commit them, then candidate 2 (implicit-midpoint body rates,
+  PteroLabsAI/jsbsim PR 13, as patch 0002 with its own switch) and candidate 3 (AB in the air, Euler while any contact
+  point touches), then decide, then a second independent review.
+- Defects from the review of session 02 are fixed (REPORT-03 step 1). Still open: no memory-leak audit; `setProperty`
+  by name creates missing properties.
+- Set dt **before** loading a model (FCS filters cache dt at load). The binding now enforces it.
+- Native JSBSim writes output files into its data root unless told otherwise. Every native runner must go through
+  `tests/pylib/native.py` (`new_fdm()` sets a scratch output path); `scripts/run-tests.sh` fails if anything appears
+  in `jsbsim-data/`.
 - Property writes by name are slow (~1.8 us each with -fexceptions); use handles or bulk for per-step traffic.
 - `-fexceptions` costs ~50-100% per step vs no exceptions; `-fwasm-exceptions` costs nothing measurable.
 - iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10.5 us/step, +20 forces by handle/bulk ~3 us;
@@ -118,7 +148,11 @@ time comes:
 ```sh
 npm ci
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # native answer key, jsbsim==1.3.3
-scripts/run-tests.sh                  # tests 1-5 (session 02 results were produced with -fexceptions; weh is bit-identical) (or e.g. scripts/run-tests.sh 2 4); summaries to results/02-*, raw CSVs to out/
+scripts/run-tests.sh                  # tests 0-5 (0 = binding, comparator and build self-tests); or e.g. scripts/run-tests.sh 0 2
+                                      # NATIVE=pip|unpatched|patched picks the answer key; summaries to results/03-*, raw CSVs to out/
+scripts/build-native.sh               # native answer keys from source -> build/native/{unpatched,patched}
+tests/gates/run.sh floor              # one configuration through all gates (about 2 min) -> results/03-gates-<config>.txt
+.venv/bin/python tests/gates/summary.py floor c1-ab4 c1-ab3 c1-ab2   # side-by-side table
 npx tsx tests/smoke.ts                # 2-second sanity check of the build
 node scripts/build-site.mjs           # test page into site/ (ignored); serve with: python3 -m http.server -d site
 npx tsc                               # typecheck
@@ -127,17 +161,24 @@ Rebuild the WebAssembly (only when changing the binding, JSBSim version or flags
 ```sh
 git clone https://github.com/emscripten-core/emsdk.git && emsdk/emsdk install 6.0.13 && emsdk/emsdk activate 6.0.13
 source emsdk/emsdk_env.sh
-scripts/build-wasm.sh                 # both variants -> wasm/bin/ (JSBSim source cloned into build/, ignored)
+scripts/build-wasm.sh                 # both variants, with wasm/patches -> wasm/bin/ (JSBSim source cloned into build/, ignored)
+PATCHSET=unpatched scripts/build-wasm.sh   # without patches -> build/wasm-bin-unpatched/ (needed to run the floor)
 ```
 
 ## Layout
 - `wasm/`: CMake build, binding, patches, built files. `scripts/build-wasm.sh`: pinned versions (JSBSim tag, Emscripten).
 - `src/jsbsim.ts` wrapper, `src/wasm.ts` Node helpers, `src/checks.ts` shared checks (load matrix, force timing).
-- `tests/loadmatrix/` test 1, `tests/parity/` test 2, `tests/extforce/` test 3, `tests/nasa/` test 4, `tests/ab4/` test 5.
+- `tests/loadmatrix/` test 1, `tests/parity/` test 2 (and the strict comparator `compare.py`), `tests/extforce/`
+  test 3, `tests/nasa/` test 4, `tests/ab4/` test 5.
+- `tests/binding/` binding regression tests; `tests/build/` patch and build self-test; `tests/pylib/native.py` shared
+  set-up for native runs; `tests/native/` answer-key checks.
+- `tests/gates/`: the gates (`gates.json`, runners, `evaluate.py`, `run.sh`, `summary.py`), candidate list
+  (`configs.json`), diagnostics (`diag/`). `wasm/patches/`: JSBSim patches.
 - `tests/review/` and `results/review-codex-02/`: Codex's review tests and results (e.g. `ground_matrix.py`, a native
   stress matrix of 6 aircraft × 5 scenarios × 2 rates × 2 integrators).
 - `web/` page source (TypeScript, bundled by esbuild in `scripts/build-site.mjs`); `.github/workflows/pages.yml` deploys
   it from `main` to https://135crewdog.github.io/FDM/.
-- `results/02-*` session 02 summaries; `results/session01/` session 01's.
+- `results/03-*` session 03 summaries (`03-gates-*` are the gate reports); `results/02-*` session 02's;
+  `results/session01/` session 01's.
 - `prompts/`: prompts for other agents (e.g. `codex-review-02.md`, independent review of session 02). An independent
   review should be repeated after phase 2's integrator decision, before the hybrid wing-strip work builds on it.

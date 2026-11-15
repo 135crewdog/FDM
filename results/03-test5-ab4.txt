@@ -1,14 +1,14 @@
 # Test 5: AB4 side effects (rate/rotational = 5 vs default 1), wasm jsbsim-weh
 ## Builds under test
-- wasm jsbsim: sha256 8baa763e9360fd9eca8e7721546d6f730f45210163b4840335e3da00ccc3ecf7 (fdm-wasm-20261115.1912)
-- wasm jsbsim-weh: sha256 2711965a3781996d9e99d8de3ba7ef6e5e46cf7ed566c279d8f7b15a350274cf (fdm-wasm-20261115.1912)
-- wasm patches: []
-- native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none
+- wasm jsbsim: sha256 21c0bca883d7e9225a62bf7920c979f14c1950b507bd5be075821535f27d302f (fdm-wasm-20261115.1946)
+- wasm jsbsim-weh: sha256 7b294134e57eab0bb9dcf1eb92b7703ebe77295a1ece2c5736772f5ea252ba14 (fdm-wasm-20261115.1946)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}]
+- native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33
 
 
 ## scripts/c1723.xml
-scripts/c1723.xml: 24001 rows, 48.4 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
-scripts/c1723.xml: 24001 rows, 39.2 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/c1723.xml: 24001 rows, 37.8 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/c1723.xml: 24001 rows, 46.6 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
 rows: default 24001, AB4 24001; end time 200.00 s
 steps on ground: 2913, airborne: 21088
 weight-on-wheels changes at t = default [24.275] / AB4 [24.158]
@@ -24,15 +24,15 @@ velocities/p-rad_sec              1.187e-01       7.693e-02    -0.000985573     
 velocities/q-rad_sec              3.048e-01       8.808e-03       0.0121191       0.0125622
 velocities/r-rad_sec              5.895e-02       6.787e-03     0.000360861     0.000486939
 position/h-agl-ft                 6.706e-02       2.097e+00         1623.04         1624.04
-scripts/c1723.xml: 24001 rows, 21.2 us/step incl. logging (native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none)
+scripts/c1723.xml: 24001 rows, 20.2 us/step incl. logging (native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33)
 AB4, native vs wasm jsbsim-weh (the comparator refuses logs that contain NaN; that is expected for f16_test):
 rows: 24001 vs 24001
 position/h-sl-ft                3.851e-04   2.37e-07 160.68333333335153         None
 velocities/q-rad_sec            1.295e-04   4.31e-04 1.0166666666666655 0.6833333333333333
 
 ## scripts/f16_test.xml
-scripts/f16_test.xml: 84002 rows, 35.8 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
-scripts/f16_test.xml: 84002 rows, 35.8 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/f16_test.xml: 84002 rows, 33.1 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/f16_test.xml: 84002 rows, 27.8 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
 rows: default 84002, AB4 84002; end time 700.01 s
 steps on ground: 6188, airborne: 77814
 AB4: NON-FINITE or > 1e6 from t = 127.983 s
@@ -49,13 +49,13 @@ velocities/p-rad_sec             1.215e+162       2.454e-04     2.25514e-11     
 velocities/q-rad_sec             1.790e+161       1.009e+00    -2.44958e-10             nan
 velocities/r-rad_sec             4.497e+161       5.448e-02     1.21549e-10             nan
 position/h-agl-ft                 2.769e+16       2.539e+01         5.07968             nan
-scripts/f16_test.xml: 84002 rows, 14.8 us/step incl. logging (native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none)
+scripts/f16_test.xml: 84002 rows, 13.2 us/step incl. logging (native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33)
 AB4, native vs wasm jsbsim-weh (the comparator refuses logs that contain NaN; that is expected for f16_test):
 REFUSED: out/f16_test.ab4.native.csv: line 15365: position/h-agl-ft is nan (non-finite values are never compared)
 
 ## scripts/f16_runway_test.xml
-scripts/f16_runway_test.xml: 9601 rows, 39.5 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
-scripts/f16_runway_test.xml: 9601 rows, 42.2 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/f16_runway_test.xml: 9601 rows, 34.3 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
+scripts/f16_runway_test.xml: 9601 rows, 44.2 us/step incl. logging (wasm 1.3.3, variant jsbsim-weh)
 rows: default 9601, AB4 9601; end time 80.00 s
 steps on ground: 9601, airborne: 0
 weight-on-wheels changes at t = default [] / AB4 []
@@ -71,7 +71,7 @@ velocities/p-rad_sec              2.789e-01       0.000e+00    -6.95356e-10     
 velocities/q-rad_sec              5.622e-02       0.000e+00    -4.72229e-10      -0.0012693
 velocities/r-rad_sec              1.383e-01       0.000e+00     4.19471e-12       0.0323859
 position/h-agl-ft                 5.062e-03       0.000e+00          5.4518         5.45133
-scripts/f16_runway_test.xml: 9601 rows, 18.4 us/step incl. logging (native JSBSim 1.3.3 [pip] module sha256 5ccdba474d9b9e04 patches: none)
+scripts/f16_runway_test.xml: 9601 rows, 15.6 us/step incl. logging (native JSBSim 1.3.3 [patched] module sha256 5f1cce013f731dc8 patches: 0001-integrator-aware-friction.patch c8abb500ee33)
 AB4, native vs wasm jsbsim-weh (the comparator refuses logs that contain NaN; that is expected for f16_test):
 rows: 9601 vs 9601
 position/h-sl-ft                2.878e-03   5.23e-04 75.07496996999407 45.12498194999676
@@ -79,36 +79,36 @@ velocities/q-rad_sec            7.685e-02   1.37e+00 51.76664595999616   0.14999
 
 ## 5b: AB4 vs default at higher step rates (runaway and first NaN reported separately)
 
-scripts/f16_test.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 2711965a3781996d (fdm-wasm-20261115.1912, patches: none)]
+scripts/f16_test.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 7b294134e57eab0b (fdm-wasm-20261115.1946, patches: 0001-integrator-aware-friction.patch c8abb500ee33)]
 rate     integ   rates > 1e6 at t first NaN at t max|pqr| before  end h-agl ft    end kts   end phi  end theta  us/step
-120 Hz   default            never          never         1.94e+1          5.08       0.00    -2.702     -0.249     27.8
-120 Hz   AB4              127.983        128.025         4.75e+4           NaN 8.747974564751444e+94    -0.039     -0.015     32.1
-240 Hz   default            never          never         1.65e+1          5.08       0.00    -2.702     -0.249     26.9
-240 Hz   AB4              128.029        128.050         1.59e+5           NaN        NaN       NaN        NaN     22.6
-480 Hz   default            never          never         1.76e+1          5.08       0.00    -2.702     -0.249     25.6
-480 Hz   AB4                never          never         3.15e+1          5.08       0.04    -2.702     -0.249     24.9
-1000 Hz  default            never          never         1.58e+1          5.36       0.00     0.000     -0.005     24.5
-1000 Hz  AB4                never          never         1.54e+1          5.08       0.02    -2.702     -0.249     23.7
+120 Hz   default            never          never         1.94e+1          5.08       0.00    -2.702     -0.249     23.2
+120 Hz   AB4              127.983        128.025         4.75e+4           NaN 8.747974564751444e+94    -0.039     -0.015     30.3
+240 Hz   default            never          never         1.65e+1          5.08       0.00    -2.702     -0.249     22.6
+240 Hz   AB4              128.029        128.050         1.59e+5           NaN        NaN       NaN        NaN     23.5
+480 Hz   default            never          never         1.76e+1          5.08       0.00    -2.702     -0.249     22.6
+480 Hz   AB4                never          never         3.15e+1          5.08       0.04    -2.702     -0.249     22.4
+1000 Hz  default            never          never         1.58e+1          5.36       0.00     0.000     -0.005     23.2
+1000 Hz  AB4                never          never         1.54e+1          5.08       0.02    -2.702     -0.249     22.3
 
-scripts/f16_runway_test.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 2711965a3781996d (fdm-wasm-20261115.1912, patches: none)]
+scripts/f16_runway_test.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 7b294134e57eab0b (fdm-wasm-20261115.1946, patches: 0001-integrator-aware-friction.patch c8abb500ee33)]
 rate     integ   rates > 1e6 at t first NaN at t max|pqr| before  end h-agl ft    end kts   end phi  end theta  us/step
-120 Hz   default            never          never         7.59e-3          5.45      47.40     0.000     -0.003     30.4
-120 Hz   AB4                never          never         2.77e-1          5.45      47.35    -0.001     -0.003     26.6
-240 Hz   default            never          never         7.54e-3          5.45      47.40    -0.000     -0.003     27.2
-240 Hz   AB4                never          never         9.06e-2          5.45      47.40     0.000     -0.003     25.5
-480 Hz   default            never          never         7.52e-3          5.45      47.40     0.000     -0.003     25.0
-480 Hz   AB4                never          never         4.17e-2          5.45      47.40    -0.000     -0.003     26.9
-1000 Hz  default            never          never         7.51e-3          5.45      47.40     0.000     -0.003     23.7
-1000 Hz  AB4                never          never         1.70e-2          5.45      47.40    -0.000     -0.003     23.9
+120 Hz   default            never          never         7.59e-3          5.45      47.40     0.000     -0.003     37.8
+120 Hz   AB4                never          never         2.77e-1          5.45      47.35    -0.001     -0.003     24.2
+240 Hz   default            never          never         7.54e-3          5.45      47.40    -0.000     -0.003     23.2
+240 Hz   AB4                never          never         9.06e-2          5.45      47.40     0.000     -0.003     23.2
+480 Hz   default            never          never         7.52e-3          5.45      47.40     0.000     -0.003     27.4
+480 Hz   AB4                never          never         4.17e-2          5.45      47.40    -0.000     -0.003     26.5
+1000 Hz  default            never          never         7.51e-3          5.45      47.40     0.000     -0.003     24.8
+1000 Hz  AB4                never          never         1.70e-2          5.45      47.40    -0.000     -0.003     23.7
 
-scripts/c1723.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 2711965a3781996d (fdm-wasm-20261115.1912, patches: none)]
+scripts/c1723.xml: rate integrator default (1) vs AB4 (5) at several step sizes [wasm jsbsim-weh sha256 7b294134e57eab0b (fdm-wasm-20261115.1946, patches: 0001-integrator-aware-friction.patch c8abb500ee33)]
 rate     integ   rates > 1e6 at t first NaN at t max|pqr| before  end h-agl ft    end kts   end phi  end theta  us/step
-120 Hz   default            never          never         2.51e-1       1623.09      57.39    -0.016      0.169     40.8
-120 Hz   AB4                never          never         3.01e-1       1624.08      57.45    -0.016      0.170     36.5
-240 Hz   default            never          never         2.51e-1       1623.33      57.37    -0.016      0.169     23.8
-240 Hz   AB4                never          never         2.51e-1       1623.37      57.35    -0.016      0.169     23.6
-480 Hz   default            never          never         2.51e-1       1623.63      57.27    -0.016      0.168     23.6
-480 Hz   AB4                never          never         2.51e-1       1623.01      57.39    -0.016      0.169     24.0
-1000 Hz  default            never          never         2.51e-1       1623.02      57.39    -0.016      0.169     21.5
-1000 Hz  AB4                never          never         2.51e-1       1623.27      57.34    -0.016      0.169     21.6
+120 Hz   default            never          never         2.51e-1       1623.09      57.39    -0.016      0.169     35.5
+120 Hz   AB4                never          never         3.01e-1       1624.08      57.45    -0.016      0.170     29.8
+240 Hz   default            never          never         2.51e-1       1623.33      57.37    -0.016      0.169     28.7
+240 Hz   AB4                never          never         2.51e-1       1623.37      57.35    -0.016      0.169     25.6
+480 Hz   default            never          never         2.51e-1       1623.63      57.27    -0.016      0.168     23.1
+480 Hz   AB4                never          never         2.51e-1       1623.01      57.39    -0.016      0.169     20.8
+1000 Hz  default            never          never         2.51e-1       1623.02      57.39    -0.016      0.169     20.3
+1000 Hz  AB4                never          never         2.51e-1       1623.27      57.34    -0.016      0.169     21.8
 jsbsim-data/ clean: no output files written into the data root

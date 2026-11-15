@@ -2,6 +2,9 @@
 
 Date: 2026-11-15. Raw outputs: `results/02-*.txt`. How to rebuild and rerun: `CLAUDE.md`.
 
+> **Later work:** the defects listed under "Review outcome" were fixed in session 03, and the floor and the first
+> integrator candidate were tested against written gates. See `REPORT-03.md` and `GATES.md`.
+
 ## Summary
 
 > **Correction after independent review (Codex, 2026-11-15; `REVIEW-codex-02.md`).** The AB4 recommendation
