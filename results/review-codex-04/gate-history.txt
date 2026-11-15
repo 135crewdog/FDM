@@ -1,0 +1,17 @@
+e5bcd1d 2026-11-15T20:42:03Z Session 04 step 2a: later gates G5b, G2b, G3b and the judged step rates, before candidate 2 or 3 exists
+d32e1a1 2026-11-15T20:42:17Z REPORT-04: record the later-gates commit before any new candidate exists
+9fb7f63 2026-11-15T20:47:05Z Session 04 step 2b: G2 and G2b are not forward landings for four aircraft; add G2c, the forward hard landing
+18016cb 2026-11-15T20:59:47Z Session 04: patches 0002 (implicit midpoint) and 0003 (switch on contact), off by default and bit-identical when off
+45a0c73 2026-11-15T22:09:03Z Session 04 steps 2-4: the floor and candidates 1, 2, 3 through every gate, old and new; diagnostics
+dff0797 2026-11-15T22:17:38Z Session 04: REPORT-04, CLAUDE.md, prompts for the independent review and for session 05
+2d1a767 2026-11-15T22:30:05Z Session 04: iPhone run of the new build (pasted by the user)
+
+Frozen-file diffs against 164c1d0, e5bcd1d and 9fb7f63: empty.
+
+Patches present at e5bcd1d:
+wasm/patches/0001-integrator-aware-friction.patch
+
+Patches present at 9fb7f63:
+wasm/patches/0001-integrator-aware-friction.patch
+
+Session 03 tracked tests/build files: ''

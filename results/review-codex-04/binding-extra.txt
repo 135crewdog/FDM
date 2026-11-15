@@ -1,0 +1,10 @@
+{"test":"script dt","requested":"0","accepted":false,"error":"JSBSimError: loadScript(scripts/review-dt.xml): vector"}
+{"test":"script dt","requested":"-0.01","accepted":true,"actual_dt":-0.01}
+{"test":"script dt","requested":"nan","accepted":false,"error":"JSBSimError: loadScript(scripts/review-dt.xml): Expecting a numeric attribute value, but got: nan\n"}
+ordinary invalid batch: JSBSimError: setIntegrators: invalid integrator id 999 for simulation/integrator/rate/translational remaining rate: 1
+changing getter batch: JSBSimError: setProperty(simulation/integrator/rate/translational): invalid integrator id 999 for /fdm/jsbsim/simulation/integrator/rate/translational (valid: 0 none, 1 Euler, 2 trapezoidal, 3 AB2, 4 AB3, 5 AB4, 9 AB5; 6-8 are for position/rotational only) reads: 5 remaining rate: 5
+claimed read-only status write accepted: simulation/integrator/rate/contact-active reads: 1
+claimed read-only status write accepted: simulation/integrator/rate/contact-switches reads: 77
+claimed read-only status write accepted: simulation/integrator/midpoint/steps reads: 77
+auxiliary setting write accepted: simulation/integrator/rate/contact-hold-sec reads: -1
+auxiliary setting write accepted: simulation/integrator/rate/contact-release-mode reads: 99

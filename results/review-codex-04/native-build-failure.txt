@@ -1,0 +1,12 @@
+applying 0001-integrator-aware-friction.patch to /tmp/review04-build-failure-fafus9is/src-native-patched
+applying 0002-implicit-midpoint-body-rates.patch to /tmp/review04-build-failure-fafus9is/src-native-patched
+applying 0003-body-rate-scheme-on-contact.patch to /tmp/review04-build-failure-fafus9is/src-native-patched
+built patched 1.3.3 /tmp/review04-build-failure-fafus9is/native/patched/jsbsim/__init__.py
+
+INJECTED compile failure (exit 42)
+
+Build script exit code: 0
+Recorded set: patched recorded patch count: 3
+Actual midpoint property exists: False
+
+Copied binary is stale unpatched binary: True

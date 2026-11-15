@@ -1,0 +1,120 @@
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "floor", "hz": 480, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 0.5176295891349127, "eulerAngle_deg_Pitch": 0.246098316212084, "eulerAngle_deg_Roll": 0.37338762228424116, "bodyAngularRateWrtEi_deg_s_Roll": 0.06020347517753777, "bodyAngularRateWrtEi_deg_s_Pitch": 0.09189442716863638, "bodyAngularRateWrtEi_deg_s_Yaw": 0.024329507973536835}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.00104167 seconds (960 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "floor", "hz": 960, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 0.25856251242885264, "eulerAngle_deg_Pitch": 0.12289046547962812, "eulerAngle_deg_Roll": 0.18655372494680478, "bodyAngularRateWrtEi_deg_s_Roll": 0.030075935378278018, "bodyAngularRateWrtEi_deg_s_Pitch": 0.04589947634496738, "bodyAngularRateWrtEi_deg_s_Yaw": 0.012143557270043459}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "floor", "hz": 1000, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 0.24821031398482774, "eulerAngle_deg_Pitch": 0.11796874328391027, "eulerAngle_deg_Roll": 0.17908617630860135, "bodyAngularRateWrtEi_deg_s_Roll": 0.028871907688735376, "bodyAngularRateWrtEi_deg_s_Pitch": 0.044061665286090346, "bodyAngularRateWrtEi_deg_s_Yaw": 0.011657001878660367}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000833333 seconds (1200 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "floor", "hz": 1200, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 0.2068095953293323, "eulerAngle_deg_Pitch": 0.09828693470433336, "eulerAngle_deg_Roll": 0.14922046853948245, "bodyAngularRateWrtEi_deg_s_Roll": 0.024056622497198532, "bodyAngularRateWrtEi_deg_s_Pitch": 0.03671194842488745, "bodyAngularRateWrtEi_deg_s_Yaw": 0.009711458441632459}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000694444 seconds (1440 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "floor", "hz": 1440, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 0.17231886936338014, "eulerAngle_deg_Pitch": 0.0818916398890508, "eulerAngle_deg_Roll": 0.12433786919208956, "bodyAngularRateWrtEi_deg_s_Roll": 0.020044893694073807, "bodyAngularRateWrtEi_deg_s_Pitch": 0.03058905081014629, "bodyAngularRateWrtEi_deg_s_Yaw": 0.008091000790894753}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c3-ab4", "hz": 480, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 1.3075079664304212e-05, "eulerAngle_deg_Pitch": 1.3246837966107705e-05, "eulerAngle_deg_Roll": 1.6406392887802212e-05, "bodyAngularRateWrtEi_deg_s_Roll": 9.368638664852824e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.392669396693691e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.50974368959578e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.00104167 seconds (960 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c3-ab4", "hz": 960, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 3.2658807072039053e-06, "eulerAngle_deg_Pitch": 3.2970904726425942e-06, "eulerAngle_deg_Roll": 4.090082768470893e-06, "bodyAngularRateWrtEi_deg_s_Roll": 2.341446290188287e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 3.4800010340063636e-07, "bodyAngularRateWrtEi_deg_s_Yaw": 1.1272833333464405e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c3-ab4", "hz": 1000, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 3.0095192187218345e-06, "eulerAngle_deg_Pitch": 3.0370617309927184e-06, "eulerAngle_deg_Roll": 3.768212422983197e-06, "bodyAngularRateWrtEi_deg_s_Roll": 2.1578110320774613e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 3.2070131084083187e-07, "bodyAngularRateWrtEi_deg_s_Yaw": 1.0388960447471618e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000833333 seconds (1200 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c3-ab4", "hz": 1200, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 2.0887327423224633e-06, "eulerAngle_deg_Pitch": 2.1030776622410485e-06, "eulerAngle_deg_Roll": 2.6121131497802708e-06, "bodyAngularRateWrtEi_deg_s_Roll": 1.4981925033907828e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 2.2264131516180896e-07, "bodyAngularRateWrtEi_deg_s_Yaw": 7.213898811642139e-08}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000694444 seconds (1440 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c3-ab4", "hz": 1440, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 1.4492881064143148e-06, "eulerAngle_deg_Pitch": 1.4544756368195522e-06, "eulerAngle_deg_Roll": 1.8092663651714247e-06, "bodyAngularRateWrtEi_deg_s_Roll": 1.0401206651522443e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.5454407531478864e-07, "bodyAngularRateWrtEi_deg_s_Yaw": 5.0090179115613864e-08}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c2-mid", "hz": 480, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 6.872692949855264e-06, "eulerAngle_deg_Pitch": 1.3413596064992817e-05, "eulerAngle_deg_Roll": 2.3510707023888244e-05, "bodyAngularRateWrtEi_deg_s_Roll": 7.583876795447253e-06, "bodyAngularRateWrtEi_deg_s_Pitch": 1.0108397510144584e-05, "bodyAngularRateWrtEi_deg_s_Yaw": 3.0292655708308303e-06}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.00104167 seconds (960 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c2-mid", "hz": 960, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 1.7146033428616647e-06, "eulerAngle_deg_Pitch": 3.3466940294601955e-06, "eulerAngle_deg_Roll": 5.868355628990685e-06, "bodyAngularRateWrtEi_deg_s_Roll": 1.8957907794714401e-06, "bodyAngularRateWrtEi_deg_s_Pitch": 2.526864560259412e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 7.572307048064886e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c2-mid", "hz": 1000, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 1.5798080994500197e-06, "eulerAngle_deg_Pitch": 3.0836277460366546e-06, "eulerAngle_deg_Roll": 5.407312613670001e-06, "bodyAngularRateWrtEi_deg_s_Roll": 1.7471402404822811e-06, "bodyAngularRateWrtEi_deg_s_Pitch": 2.328731455669697e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 6.978534443646822e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000833333 seconds (1200 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c2-mid", "hz": 1200, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 1.0956186429211812e-06, "eulerAngle_deg_Pitch": 2.138739091606112e-06, "eulerAngle_deg_Roll": 3.7513301549552125e-06, "bodyAngularRateWrtEi_deg_s_Roll": 1.2132179882939909e-06, "bodyAngularRateWrtEi_deg_s_Pitch": 1.6170775993806785e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.845846923728914e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}
+
+Overriding simulation step size from the command line. New step size is: 0.000694444 seconds (1440 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"config": "c2-mid", "hz": 1440, "samples": 301, "max_errors": {"eulerAngle_deg_Yaw": 7.593605744204979e-07, "eulerAngle_deg_Pitch": 1.482572372424329e-06, "eulerAngle_deg_Roll": 2.6013444767158944e-06, "bodyAngularRateWrtEi_deg_s_Roll": 8.424417414776286e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.122877128612032e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 3.3648354147430837e-07}, "native": {"key": "patched", "version": "1.3.3", "module_sha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446", "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]}}

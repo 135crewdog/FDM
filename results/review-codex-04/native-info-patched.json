@@ -1,0 +1,11 @@
+{
+  "set": "patched",
+  "jsbsimTag": "v1.3.3",
+  "jsbsimCommit": "66f7fafc07fe13e7ede9db20873030fed2881713",
+  "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}],
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "python": "Python 3.12.14",
+  "module": "_jsbsim.so",
+  "moduleSha256": "925f531c535399b2de78840b722290179ae1c1fcb0479f6c06552a541fefb446",
+  "buildDate": "2026-11-15T22:40:49Z"
+}

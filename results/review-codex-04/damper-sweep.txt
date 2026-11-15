@@ -1,0 +1,20 @@
+# Predicted against measured: how much gear damping each body-rate scheme tolerates at rest
+
+Native JSBSim: native JSBSim 1.3.3 [patched] module sha256 925f531c535399b2 patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
+Measured: every ground-contact damper of the aircraft is multiplied by a scale; 40 s standing at rest with candidate 1
+(friction-aware) and Buss 2; 'settled' means all body rates below 1e-6 rad/s in the last 5 s (G1's limit). The scale
+is bisected. Predicted: the linear model in this file, which shares no code with JSBSim.
+
+| aircraft | step rate | body-rate scheme | predicted critical scale | measured critical scale | measured / predicted |
+|---|---|---|---|---|---|
+| c310 | 120 Hz | AB4 | 0.580 | 0.707 (between 0.706 and 0.708) | 1.22 |
+| c310 | 120 Hz | AB3 | 0.992 | 1.201 (between 1.199 and 1.203) | 1.21 |
+| c310 | 120 Hz | AB2 | 1.617 | 1.810 (between 1.807 and 1.814) | 1.12 |
+| c310 | 120 Hz | Euler | 2.424 | 2.581 (between 2.576 and 2.585) | 1.06 |
+| c310 | 240 Hz | AB4 | 1.138 | 1.439 (between 1.436 and 1.441) | 1.26 |
+| c310 | 240 Hz | AB3 | 1.961 | 2.258 (between 2.254 and 2.263) | 1.15 |
+| c310 | 480 Hz | AB4 | 2.266 | 2.638 (between 2.633 and 2.643) | 1.16 |
+| c172x | 120 Hz | AB4 | 1.091 | - (still settled at 2.728) | - |
+| f16 | 120 Hz | AB4 | 1.861 | - (still settled at 4.653) | - |
+| ah1s | 120 Hz | AB4 | 1.512 | - (still settled at 3.780) | - |
+| 737 | 120 Hz | AB4 | 4.479 | 6.651 (between 6.640 and 6.663) | 1.49 |

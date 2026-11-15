@@ -1,0 +1,44 @@
+RESULT {"test": "rest", "model": "c172x", "hz": 480, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+RESULT {"test": "rest", "model": "c172x", "hz": 1000, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+RESULT {"test": "rest", "model": "f16", "hz": 480, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+RESULT {"test": "rest", "model": "f16", "hz": 1000, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+RESULT {"test": "rest", "model": "c310", "hz": 480, "starts_in_contact": false, "equal_full_60s": false, "first_difference_time": 0.0020833333333333333, "column": "velocities/p-rad_sec"}
+RESULT {"test": "rest", "model": "c310", "hz": 1000, "starts_in_contact": false, "equal_full_60s": false, "first_difference_time": 0.001, "column": "velocities/p-rad_sec"}
+RESULT {"test": "rest", "model": "ah1s", "hz": 480, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+RESULT {"test": "rest", "model": "ah1s", "hz": 1000, "starts_in_contact": true, "equal_full_60s": true, "first_difference_time": null, "column": null}
+Could not bind to TCP input socket, error = 98
+Could not bind to UDP input socket, error = 98
+RESULT {"test": "rest", "model": "737", "hz": 480, "starts_in_contact": false, "equal_full_60s": false, "first_difference_time": 0.0020833333333333333, "column": "velocities/p-rad_sec"}
+Could not bind to TCP input socket, error = 98
+Could not bind to UDP input socket, error = 98
+RESULT {"test": "rest", "model": "737", "hz": 1000, "starts_in_contact": false, "equal_full_60s": false, "first_difference_time": 0.001, "column": "velocities/p-rad_sec"}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"test": "NASA airborne", "hz": 480, "equal_all_steps": true, "first_difference_time": null}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"test": "NASA airborne", "hz": 1000, "equal_all_steps": true, "first_difference_time": null}

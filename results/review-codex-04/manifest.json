@@ -1,0 +1,18 @@
+{
+  "base_commit": "2d1a767",
+  "wasm_sha256": {
+    "jsbsim.wasm": "22a9219b23b51ef27bd29c8ba288b662e05034923f2604feffe29f0e1777f115",
+    "jsbsim.mjs": "c3c9b7ea678efc1ca7af49a28609633d66912db2e5f839c67a2e973f5a6c0bd5",
+    "jsbsim-weh.wasm": "bfaa2e9188713b720834b8e7fb91f738c280aeea08886c6b10d116fdfeabbb4c",
+    "jsbsim-weh.mjs": "0c07599dff4dd5d73c3350d34cf385519418b17c8d12faa5d08cfa30695f7aaf"
+  },
+  "match_shipped_metadata": true,
+  "patch_sha256": {
+    "0003-body-rate-scheme-on-contact.patch": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22",
+    "0002-implicit-midpoint-body-rates.patch": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9",
+    "0001-integrator-aware-friction.patch": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"
+  },
+  "node": "v22.23.5",
+  "python": "Python 3.12.14",
+  "note": "All shipped patches, binaries and gate files unchanged; cap/guard are separate diagnostic native builds."
+}
