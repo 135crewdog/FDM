@@ -1,0 +1,13 @@
+[["time", "simulation/sim-time-sec", "id"],
+ ["gePosition_ft_X", "position/ecef-x-ft", "id"],
+ ["gePosition_ft_Y", "position/ecef-y-ft", "id"],
+ ["gePosition_ft_Z", "position/ecef-z-ft", "id"],
+ ["altitudeMsl_ft", "position/h-sl-ft", "id"],
+ ["longitude_deg", "position/long-gc-deg", "id"],
+ ["latitude_deg", "position/lat-geod-deg", "id"],
+ ["eulerAngle_deg_Yaw", "attitude/psi-deg", "yaw"],
+ ["eulerAngle_deg_Pitch", "attitude/theta-deg", "id"],
+ ["eulerAngle_deg_Roll", "attitude/phi-deg", "id"],
+ ["bodyAngularRateWrtEi_deg_s_Roll", "velocities/pi-rad_sec", "deg"],
+ ["bodyAngularRateWrtEi_deg_s_Pitch", "velocities/qi-rad_sec", "deg"],
+ ["bodyAngularRateWrtEi_deg_s_Yaw", "velocities/ri-rad_sec", "deg"]]

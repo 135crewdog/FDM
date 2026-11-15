@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSBSim WASM test</title>
+<style>
+  :root { color-scheme: light dark; --bg: #fff; --fg: #111; --muted: #666; --btn: #0a58ca; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #999; --btn: #4d8dff; } }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.4 -apple-system, system-ui, sans-serif; }
+  h1 { font-size: 18px; margin: 0 0 8px; }
+  button { font: inherit; padding: 10px 16px; border: 0; border-radius: 8px; background: var(--btn); color: #fff; margin: 4px 8px 12px 0; }
+  button:disabled { opacity: .5; }
+  pre { white-space: pre-wrap; word-break: break-word; font: 12px/1.35 ui-monospace, Menlo, monospace; }
+  #status { color: var(--muted); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<h1>JSBSim WebAssembly test</h1>
+<div id="status">Starting…</div>
+<button id="copy" disabled>Copy results</button><button id="rerun" disabled>Run again</button>
+<pre id="out"></pre>
+<footer>
+  This page runs <a href="https://www.npmjs.com/package/@0x62/jsbsim-wasm">@0x62/jsbsim-wasm</a>,
+  whose WebAssembly build contains JSBSim (LGPL 2.1, source:
+  <a href="https://github.com/JSBSim-Team/jsbsim">github.com/JSBSim-Team/jsbsim</a>).
+  Aircraft data (c172x, GPL) is JSBSim's, with licence headers intact. See <a href="NOTICE.txt">NOTICE.txt</a>.
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

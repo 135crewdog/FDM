@@ -1,0 +1,3 @@
+# Answer key: native JSBSim. 1.3.0 is the nearest PyPI release to the commit the WASM package
+# was built from (1a2e114, 27 commits before v1.3.0). See REPORT.md.
+jsbsim==1.3.0

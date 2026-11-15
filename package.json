@@ -1,0 +1,20 @@
+{
+  "name": "fdm-jsbsim-wasm-eval",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "dependencies": {
+    "@0x62/jsbsim-wasm": "1.2.4-beta.4"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "fetch-data": "scripts/fetch-jsbsim-data.sh",
+    "test": "scripts/run-tests.sh",
+    "build-site": "node scripts/build-site.mjs",
+    "typecheck": "tsc"
+  }
+}
