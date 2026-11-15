@@ -1,0 +1,21 @@
+hasProperty review/bad[ => non-Error thrown: [object WebAssembly.Exception] is Error: false
+hasProperty ../../.. => non-Error thrown: [object WebAssembly.Exception] is Error: false
+guarded invalid-path message: JSBSimError: getProperty(review/bad[): unknown C++ exception
+write read-only simulation time returned success; actual: 0
+get -1 => NaN
+get 10000000000 => NaN
+get 0.9 => 12
+get NaN => 12
+get 4294967296 => 12
+before growth: [ 56, 78 ]
+heap bytes before growth: 18022400
+growth: true old view length: 0 new view length: 2
+after growth: [ 90, 91 ]
+after reset inputs/outputs lengths: 2 2
+after reset stale output values: [ 90, 91 ]
+reset view write accepted
+old handle immediately after reset: JSBSimError: set(handle 0): invalid handle 0
+old/fresh handle IDs: 0 0
+old handle now writes fresh property: 1234
+zero dt accepted: 0
+unknown integrator accepted: 12345

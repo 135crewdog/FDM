@@ -1,0 +1,8 @@
+{
+  "hz": 480,
+  "seconds": 10,
+  "models": ["c172x", "f16"],
+  "integrators": [1, 5],
+  "initial": {"ic/h-sl-ft": 10000, "ic/lat-gc-deg": 30, "ic/long-gc-deg": 0, "ic/phi-deg": 5, "ic/theta-deg": 3, "ic/psi-true-deg": 20, "ic/u-fps": 300, "ic/v-fps": 10, "ic/w-fps": 20},
+  "properties": ["simulation/sim-time-sec", "position/h-sl-ft", "position/ecef-x-ft", "position/ecef-y-ft", "position/ecef-z-ft", "velocities/u-fps", "velocities/v-fps", "velocities/w-fps", "velocities/p-rad_sec", "velocities/q-rad_sec", "velocities/r-rad_sec", "attitude/phi-rad", "attitude/theta-rad", "attitude/psi-rad", "forces/fbx-total-lbs", "forces/fby-total-lbs", "forces/fbz-total-lbs", "moments/l-total-lbsft", "moments/m-total-lbsft", "moments/n-total-lbsft", "forces/fbx-aero-lbs", "forces/fby-aero-lbs", "forces/fbz-aero-lbs", "moments/l-aero-lbsft", "moments/m-aero-lbsft", "moments/n-aero-lbsft", "fcs/elevator-pos-rad", "fcs/left-aileron-pos-rad", "fcs/rudder-pos-rad", "propulsion/engine/thrust-lbs"]
+}

@@ -1,0 +1,48 @@
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "c172x", "scenario": "rest", "hz": 480, "integrator": 1, "initial": [0.0, 0.0, 0.0, 4.599999999778011, 0.0, 0.0, 0.0], "first_nonfinite": null, "tail_peak_rate": 6.458746010084215e-09, "end_time": 59.999999999986514, "end": [-1.5421442004455769e-09, 3.7499335140231474e-10, -1.8688887209441975e-11, 4.313107590517567, -1.6062036633480947e-09, -6.625864083077359e-09, 6.56248996590117e-09]}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "c172x", "scenario": "rest", "hz": 480, "integrator": 5, "initial": [0.0, 0.0, 0.0, 4.599999999778011, 0.0, 0.0, 0.0], "first_nonfinite": null, "tail_peak_rate": 0.016967170230621182, "end_time": 59.999999999986514, "end": [-0.016684141484791682, -0.0014139656065324155, -0.0002491156606030347, 4.310644755640752, -0.006456070524676643, -0.019504565254650764, 0.0005199049923457698]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "c172x", "scenario": "rest", "hz": 1000, "integrator": 1, "initial": [0.0, 0.0, 0.0, 4.599999999778011, 0.0, 0.0, 0.0], "first_nonfinite": null, "tail_peak_rate": 4.423387325200341e-09, "end_time": 59.999999999950866, "end": [1.3538060336602798e-09, 3.796612926761048e-09, -3.6608633672782255e-12, 4.313107590517773, -1.636134719192092e-08, 5.86409185152377e-09, 1.727482615393904e-08]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "c172x", "scenario": "rest", "hz": 1000, "integrator": 5, "initial": [0.0, 0.0, 0.0, 4.599999999778011, 0.0, 0.0, 0.0], "first_nonfinite": null, "tail_peak_rate": 0.008004897991632419, "end_time": 59.999999999950866, "end": [-0.00798116867116642, 0.0002661715171447616, -7.675464174021542e-05, 4.312492443960528, -0.0025304457394972465, -0.009324353450025764, 0.002805796853008044]}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "737", "scenario": "hard", "hz": 480, "integrator": 1, "initial": [0.0, 0.0, 0.0, 39.999999992917964, 100.00000000000004, -1.2101430968414213e-14, 30.000000000000036], "first_nonfinite": null, "tail_peak_rate": 5.105912632091795, "end_time": 14.999999999999309, "end": [-0.5379888880861668, 0.14796573382791972, 0.1559503922079704, 9.0595686448737, -16.22257932385084, 7.487609855528395, -4.8083871774901015]}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "737", "scenario": "hard", "hz": 480, "integrator": 5, "initial": [0.0, 0.0, 0.0, 39.999999992917964, 100.00000000000004, -1.2101430968414213e-14, 30.000000000000036], "first_nonfinite": 7.193749999999752, "tail_peak_rate": 1.543622160577056e+173, "end_time": 7.193749999999752, "end": [NaN, NaN, NaN, -168.53691566110555, NaN, NaN, NaN]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "737", "scenario": "hard", "hz": 1000, "integrator": 1, "initial": [0.0, 0.0, 0.0, 39.999999992917964, 100.00000000000004, -1.2101430968414213e-14, 30.000000000000036], "first_nonfinite": null, "tail_peak_rate": 7.791198876473313, "end_time": 14.999999999997126, "end": [0.08818835015184052, 0.1181889686430389, -0.11780830755950561, 5.239060087379048, -11.903728129281552, 35.7441839032642, 7.6574223210065435]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "737", "scenario": "hard", "hz": 1000, "integrator": 5, "initial": [0.0, 0.0, 0.0, 39.999999992917964, 100.00000000000004, -1.2101430968414213e-14, 30.000000000000036], "first_nonfinite": 5.417000000000144, "tail_peak_rate": 1.1679187730541878e+273, "end_time": 5.417000000000144, "end": [NaN, NaN, NaN, 50.53427439465533, 0.0, 0.0, 0.0]}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "ah1s", "scenario": "inverted", "hz": 480, "integrator": 1, "initial": [0.0, 0.0, 0.0, 39.99999999908823, 100.00000000000004, 1.1782360588633324e-13, 80.00000000000007], "first_nonfinite": 0.5187499999999988, "tail_peak_rate": 0, "end_time": 0.5187499999999988, "end": [-4.991512170502157e+72, 2.7257572713353737e+72, 6.925748950730901e+70, NaN, 0.0, -2.2224664601131822e+73, 0.0]}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+RESULT {"model": "ah1s", "scenario": "inverted", "hz": 480, "integrator": 5, "initial": [0.0, 0.0, 0.0, 39.99999999908823, 100.00000000000004, 1.1782360588633324e-13, 80.00000000000007], "first_nonfinite": 0.47708333333333225, "tail_peak_rate": 0, "end_time": 0.47708333333333225, "end": [-2.226698962602385e+71, 1.522351020905407e+71, 3.5168030225454284e+69, NaN, -0.0, 6.552797403524229e+71, -0.0]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "ah1s", "scenario": "inverted", "hz": 1000, "integrator": 1, "initial": [0.0, 0.0, 0.0, 39.99999999908823, 100.00000000000004, 1.1782360588633324e-13, 80.00000000000007], "first_nonfinite": 0.47200000000000036, "tail_peak_rate": 0, "end_time": 0.47200000000000036, "end": [6.261730535761029e+99, -7.43862648107357e+100, -1.782430949916591e+98, NaN, 0.0, -7.83202883099662e+101, 0.0]}
+
+Overriding simulation step size from the command line. New step size is: 0.001 seconds (1000 Hz)
+
+RESULT {"model": "ah1s", "scenario": "inverted", "hz": 1000, "integrator": 5, "initial": [0.0, 0.0, 0.0, 39.99999999908823, 100.00000000000004, 1.1782360588633324e-13, 80.00000000000007], "first_nonfinite": 0.47200000000000036, "tail_peak_rate": 0, "end_time": 0.47200000000000036, "end": [-1.650314631831584e+106, 1.130819225695896e+106, 2.620810841114855e+104, NaN, 0.0, 6.115472480714364e+106, 0.0]}

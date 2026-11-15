@@ -1,0 +1,96 @@
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 1, "attitude_integrator": 1, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.5155065887756791, "eulerAngle_deg_Pitch": 0.2508104350693543, "eulerAngle_deg_Roll": 0.3746691195999574, "bodyAngularRateWrtEi_deg_s_Roll": 0.06020347517753777, "bodyAngularRateWrtEi_deg_s_Pitch": 0.09189442715274154, "bodyAngularRateWrtEi_deg_s_Yaw": 0.024329507947815188}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 1, "attitude_integrator": 6, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.5156886185171743, "eulerAngle_deg_Pitch": 0.2508969581380711, "eulerAngle_deg_Roll": 0.3747611342147934, "bodyAngularRateWrtEi_deg_s_Roll": 0.06020347517753777, "bodyAngularRateWrtEi_deg_s_Pitch": 0.09189442715274154, "bodyAngularRateWrtEi_deg_s_Yaw": 0.024329507947815188}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 1, "attitude_integrator": 7, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.5176295857454534, "eulerAngle_deg_Pitch": 0.2460983148150433, "eulerAngle_deg_Roll": 0.3733876205729416, "bodyAngularRateWrtEi_deg_s_Roll": 0.06020347517753777, "bodyAngularRateWrtEi_deg_s_Pitch": 0.09189442715274154, "bodyAngularRateWrtEi_deg_s_Yaw": 0.024329507947815188}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 3, "attitude_integrator": 1, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.004447175106065515, "eulerAngle_deg_Pitch": 0.010378907265589987, "eulerAngle_deg_Roll": 0.021661197070159233, "bodyAngularRateWrtEi_deg_s_Roll": 3.8989831947500164e-05, "bodyAngularRateWrtEi_deg_s_Pitch": 5.389752511852919e-05, "bodyAngularRateWrtEi_deg_s_Yaw": 1.5320425408305027e-05}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 3, "attitude_integrator": 6, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.00433669401954262, "eulerAngle_deg_Pitch": 0.010411258877610408, "eulerAngle_deg_Roll": 0.02167230110080709, "bodyAngularRateWrtEi_deg_s_Roll": 3.8989831947500164e-05, "bodyAngularRateWrtEi_deg_s_Pitch": 5.389752511852919e-05, "bodyAngularRateWrtEi_deg_s_Yaw": 1.5320425408305027e-05}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 3, "attitude_integrator": 7, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 9.159411024484143e-05, "eulerAngle_deg_Pitch": 4.9613853548180487e-05, "eulerAngle_deg_Roll": 6.888121535553182e-05, "bodyAngularRateWrtEi_deg_s_Roll": 3.8989831947500164e-05, "bodyAngularRateWrtEi_deg_s_Pitch": 5.389752511852919e-05, "bodyAngularRateWrtEi_deg_s_Yaw": 1.5320425408305027e-05}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 4, "attitude_integrator": 1, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.004520811399288505, "eulerAngle_deg_Pitch": 0.010393256638081994, "eulerAngle_deg_Roll": 0.021717666785150413, "bodyAngularRateWrtEi_deg_s_Roll": 9.117157802052134e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.3686919437816414e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.4727721615345217e-07}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 4, "attitude_integrator": 6, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.004363049746075376, "eulerAngle_deg_Pitch": 0.010425608151223287, "eulerAngle_deg_Roll": 0.021728770788911334, "bodyAngularRateWrtEi_deg_s_Roll": 9.117157802052134e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.3686919437816414e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.4727721615345217e-07}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 4, "attitude_integrator": 7, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 1.2880214171673288e-05, "eulerAngle_deg_Pitch": 1.3216485712064241e-05, "eulerAngle_deg_Roll": 1.624824480472853e-05, "bodyAngularRateWrtEi_deg_s_Roll": 9.117157802052134e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.3686919437816414e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.4727721615345217e-07}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 5, "attitude_integrator": 1, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.004520535565688988, "eulerAngle_deg_Pitch": 0.01039329843104042, "eulerAngle_deg_Roll": 0.021717686167562533, "bodyAngularRateWrtEi_deg_s_Roll": 9.368391893360695e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.392669396693691e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.508867696983998e-07}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 5, "attitude_integrator": 6, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 0.00436277391281692, "eulerAngle_deg_Pitch": 0.01042564994460804, "eulerAngle_deg_Roll": 0.021728790170868706, "bodyAngularRateWrtEi_deg_s_Roll": 9.368391893360695e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.392669396693691e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.508867696983998e-07}}
+
+Overriding simulation step size from the command line. New step size is: 0.00208333 seconds (480 Hz)
+
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+RESULT {"rate_integrator": 5, "attitude_integrator": 7, "max_error_vs_sim01": {"eulerAngle_deg_Yaw": 1.3071706064238242e-05, "eulerAngle_deg_Pitch": 1.3244852965499376e-05, "eulerAngle_deg_Roll": 1.640354787468823e-05, "bodyAngularRateWrtEi_deg_s_Roll": 9.368391893360695e-07, "bodyAngularRateWrtEi_deg_s_Pitch": 1.392669396693691e-06, "bodyAngularRateWrtEi_deg_s_Yaw": 4.508867696983998e-07}}
