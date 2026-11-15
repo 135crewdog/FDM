@@ -1,0 +1,12 @@
+{
+  "buildVersion": "fdm-wasm-20261115.1442",
+  "buildDate": "2026-11-15T14:42:07Z",
+  "jsbsimTag": "v1.3.3",
+  "jsbsimCommit": "66f7fafc07fe13e7ede9db20873030fed2881713",
+  "emscripten": "6.0.13",
+  "repoCommitAtBuild": "b27693f",
+  "variants": {
+    "jsbsim": "-fexceptions (Emscripten JS-based exception handling) on all code",
+    "jsbsim-weh": "-fwasm-exceptions (native WebAssembly exception handling) on all code"
+  }
+}

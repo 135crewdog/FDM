@@ -1,8 +1,8 @@
 node_modules/
 .venv/
-jsbsim-data/
 out/
 site/
 dist/
 *.log
 __pycache__/
+build/

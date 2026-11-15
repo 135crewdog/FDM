@@ -4,12 +4,9 @@ This repo will hold the flight dynamics model for a flight-sim game that runs as
 So far it holds only an **evaluation of JSBSim compiled to WebAssembly** via `@0x62/jsbsim-wasm`
 (pinned 1.2.4-beta.4). Read `REPORT.md` first.
 
-## Rule: never commit JSBSim data files
-Do not commit JSBSim aircraft, engine, systems, scripts or check_cases files; many have unclear licences.
-They are fetched into `jsbsim-data/` (git-ignored) by `scripts/fetch-jsbsim-data.sh`.
-The deployed page (`site/`, built in CI) may contain only the few files it needs (c172x, its systems/autopilot,
-engine and propeller) with licence headers intact. NASA check-case data in `reference/` is a US Government work
-and fine to commit.
+## JSBSim data
+JSBSim v1.3.3's aircraft, engine, systems, scripts and check_cases/NASA_EOM_2015 folders are committed in
+`jsbsim-data/` (private, non-commercial project; user's decision 2026-11-15). Refresh with `scripts/fetch-jsbsim-data.sh <tag>`.
 
 ## What was learned
 - The package's JSBSim is master commit `1a2e114` (reports 1.2.5.dev1), not the v1.2.4 tag its version suggests.
