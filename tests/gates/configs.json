@@ -3,16 +3,68 @@
   "ref-default": {
     "role": "reference (harness check only, known answer from REVIEW-codex-02): JSBSim's defaults",
     "source": "unpatched",
-    "properties": {"simulation/integrator/rate/rotational": 1}
+    "properties": {
+      "simulation/integrator/rate/rotational": 1
+    }
   },
   "ref-ab4": {
     "role": "reference (harness check only, known answer from REVIEW-codex-02): AB4 body rates, known to fail on the ground",
     "source": "unpatched",
-    "properties": {"simulation/integrator/rate/rotational": 5}
+    "properties": {
+      "simulation/integrator/rate/rotational": 5
+    }
   },
   "floor": {
     "role": "FLOOR: JSBSim's default body rates (Euler) plus Buss 2 attitude. No patch. The fallback if nothing else passes.",
     "source": "unpatched",
-    "properties": {"simulation/integrator/rate/rotational": 1, "simulation/integrator/position/rotational": 7}
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "c1-ab4": {
+    "role": "CANDIDATE 1: integrator-aware friction (patch 0001, mode 1) with AB4 body rates and Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c1-ab3": {
+    "role": "CANDIDATE 1 variant: integrator-aware friction (mode 1) with AB3 body rates and Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 4,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c1-ab2": {
+    "role": "CANDIDATE 1 variant: integrator-aware friction (mode 1) with AB2 body rates and Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 3,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c1-euler": {
+    "role": "Comparison: the floor's integrators (Euler body rates, Buss 2) with integrator-aware friction on (it then only changes how friction treats translation, which JSBSim integrates with AB2)",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c1x-ab4-2010formula": {
+    "role": "Comparison only: the 2010 code's formula (patch 0001, mode 2) with AB4 body rates and Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 2
+    }
   }
 }

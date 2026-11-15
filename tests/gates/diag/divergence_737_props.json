@@ -1,0 +1,1 @@
+["position/h-agl-ft", "velocities/p-rad_sec", "velocities/q-rad_sec", "velocities/r-rad_sec", "velocities/u-fps", "velocities/w-fps", "attitude/theta-rad", "forces/fbz-total-lbs", "gear/unit[0]/WOW", "gear/unit[1]/WOW", "gear/unit[2]/WOW"]

@@ -1,0 +1,246 @@
+FDM patch 0001: integrator-aware ground friction (candidate 1 of session 03)
+
+What it changes
+  JSBSim sizes the ground friction forces so that each contact's slip velocity is zero after the
+  next integration step (FGAccelerations::CalculateFrictionForces, Catto's method). v1.3.3 assumes
+  that step is an Euler step: v + dt*vdot. But the rates are integrated by FGPropagate with a scheme
+  chosen at run time, and the multistep schemes (trapezoidal, Adams-Bashforth 2 to 5) weight the new
+  derivative by b0 (1.5 for AB2, 55/24 for AB4) and add past derivatives. The friction then
+  overshoots, and the aircraft never settles at rest (REPORT-02, REVIEW-codex-02).
+
+  JSBSim had integrator-aware friction in 2010 (commit 53709ba8, Bertrand Coconnier). It was moved
+  and disabled in e67c5e42, friction came back in the Euler-only form in 85b3a574, and the disabled
+  code was deleted in 40279c20 (2011). This patch restores the idea, adapted to v1.3.3.
+
+How it is switched
+  New property simulation/integrator/friction-aware (integer, default 0):
+    0  JSBSim v1.3.3, unchanged. Every statement computes exactly what the unpatched code computes
+       (checked: bit-identical logs, tests/native/verify_key.sh patched unpatched).
+    1  Friction consistent with the schemes in use (candidate 1).
+    2  The formula of the 2010 code, for comparison only.
+  With Euler for both rates (and with dt = 0, at initialization) all three are the same.
+
+Mode 1, the adaptation to v1.3.3
+  Let d(n) be the derivative FGPropagate will integrate (vUVWidot in the ECI frame for translation,
+  vPQRidot in the body frame for rotation) and b0, b1, ... the weights of its scheme. The step is
+  rate + dt*(b0*d(n) + b1*d(n-1) + ...).
+  - Right hand side: JSBSim's (slip + dt*vdot)/dt is the slip after an Euler step without friction.
+    The multistep step differs from it by dt*((b0-1)*d(n) + b1*d(n-1) + ...), so that is added,
+    for translation (rotated into the body frame) and for rotation, each with its own scheme.
+  - Matrix: a friction force F changes the next translational rate by dt*b0t*F/m and the next
+    rotational rate by dt*b0r*Jinv*(r x F). The translational and rotational parts of the system
+    matrix are weighted by b0t and b0r. This keeps the solution exact when translation and rotation
+    use different schemes (JSBSim's defaults are AB2 and Euler).
+  Differences from the 2010 code: (a) 2010 divided the right hand side by b0 for translation and
+  rotation separately and left the matrix alone, which is exact only when both use the same scheme;
+  (b) 2010 used the body-frame derivative vUVWdot where the integrated quantity is the inertial one,
+  which leaves a small bias on a rotating Earth; (c) the rotational history is now kept in the body
+  frame, so it needs no rotation.
+
+What it does not change
+  FGPropagate (only four read-only accessors are added), the contact forces, the friction limits,
+  the Gauss-Seidel solver, and everything else. Applied identically to the WebAssembly build and to
+  the native answer key by scripts/lib-jsbsim-src.sh.
+
+diff --git a/src/FGFDMExec.cpp b/src/FGFDMExec.cpp
+index b22284fd..cd8cc1a4 100644
+--- a/src/FGFDMExec.cpp
++++ b/src/FGFDMExec.cpp
+@@ -597,6 +597,11 @@ void FGFDMExec::LoadInputs(unsigned int idx)
+     Accelerations->in.MultipliersList = GroundReactions->GetMultipliersList();
+     Accelerations->in.TerrainVelocity = Propagate->GetTerrainVelocity();
+     Accelerations->in.TerrainAngularVel = Propagate->GetTerrainAngularVelocity();
++    // FDM patch 0001 (integrator-aware friction)
++    Accelerations->in.TranslationalRateIntegrator = Propagate->GetTranslationalRateIntegrator();
++    Accelerations->in.RotationalRateIntegrator = Propagate->GetRotationalRateIntegrator();
++    Accelerations->in.PastUVWidot = &Propagate->GetPastUVWidot();
++    Accelerations->in.PastPQRidot = &Propagate->GetPastPQRidot();
+     break;
+   default:
+     break;
+diff --git a/src/models/FGAccelerations.cpp b/src/models/FGAccelerations.cpp
+index 36f1524b..5f77d5db 100644
+--- a/src/models/FGAccelerations.cpp
++++ b/src/models/FGAccelerations.cpp
+@@ -55,6 +55,7 @@ INCLUDES
+ 
+ #include "FGAccelerations.h"
+ #include "FGFDMExec.h"
++#include "models/FGPropagate.h"
+ #include "input_output/FGLog.h"
+ 
+ using namespace std;
+@@ -70,6 +71,7 @@ FGAccelerations::FGAccelerations(FGFDMExec* fdmex)
+ {
+   Debug(0);
+   gravTorque = false;
++  frictionAware = 0;
+ 
+   vPQRidot.InitMatrix();
+   vUVWidot.InitMatrix();
+@@ -229,6 +231,32 @@ void FGAccelerations::SetHoldDown(bool hd)
+ // The friction forces are resolved in the body frame relative to the origin
+ // (Earth center).
+ 
++// FDM patch 0001 (integrator-aware friction).
++// Weights of the linear multistep schemes of FGPropagate::Integrate, which advances a rate by
++// dt*(b[0]*d(n) + b[1]*d(n-1) + ...), d(n) being the newest derivative. Returns the number of past
++// derivatives the scheme uses, or 0 for the schemes that only use d(n) with weight 1 (Euler) or that
++// are not linear multistep schemes: for those JSBSim's own formula is already exact.
++static int MultistepWeights(int scheme, double b[5])
++{
++  b[0] = 1.0; b[1] = b[2] = b[3] = b[4] = 0.0;
++  switch (scheme) {
++  case FGPropagate::eTrapezoidal:
++    b[0] = 0.5; b[1] = 0.5; return 1;
++  case FGPropagate::eAdamsBashforth2:
++    b[0] = 1.5; b[1] = -0.5; return 1;
++  case FGPropagate::eAdamsBashforth3:
++    b[0] = 23./12.; b[1] = -16./12.; b[2] = 5./12.; return 2;
++  case FGPropagate::eAdamsBashforth4:
++    b[0] = 55./24.; b[1] = -59./24.; b[2] = 37./24.; b[3] = -9./24.; return 3;
++  case FGPropagate::eAdamsBashforth5:
++    b[0] = 1901./720.; b[1] = -1387./360.; b[2] = 109./30.; b[3] = -637./360.; b[4] = 251./720.; return 4;
++  default:
++    return 0;
++  }
++}
++
++//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
++
+ void FGAccelerations::CalculateFrictionForces(double dt)
+ {
+   vector<LagrangeMultiplier*>& multipliers = *in.MultipliersList;
+@@ -243,12 +271,36 @@ void FGAccelerations::CalculateFrictionForces(double dt)
+   vector<double> a(n*n); // Will contain Jac*M^-1*Jac^T
+   vector<double> rhs(n);
+ 
++  // FDM patch 0001 (integrator-aware friction). The friction forces are sized so that the slip
++  // velocity of each contact is zero after the NEXT integration step. JSBSim v1.3.3 assumes that step
++  // is v + dt*vdot (Euler). FGPropagate may instead use a multistep scheme, which weights the new
++  // derivative by b[0] (not 1) and adds past derivatives. With frictionAware != 0 and dt > 0 the
++  // schemes actually used for the translational and the rotational rate are taken into account.
++  // With frictionAware == 0, with dt == 0 (initialization) and with Euler for both rates, every
++  // statement below computes exactly what JSBSim v1.3.3 computes.
++  double bt[5], br[5];
++  int nt = 0, nr = 0; // number of past derivatives used by the translational / rotational scheme
++  bt[0] = br[0] = 1.0;
++  const bool aware = (frictionAware == 1 || frictionAware == 2) && dt > 0. && in.PastUVWidot && in.PastPQRidot;
++  if (aware) {
++    nt = MultistepWeights(in.TranslationalRateIntegrator, bt);
++    nr = MultistepWeights(in.RotationalRateIntegrator, br);
++  }
++  // Mode 1: a friction force F changes the next translational rate by dt*bt[0]*F/m and the next
++  // rotational rate by dt*br[0]*J^-1*(r x F); the two parts of the matrix are weighted accordingly,
++  // which stays exact when translation and rotation use different schemes.
++  const bool weighted = aware && frictionAware == 1 && (nt > 0 || nr > 0);
++
+   // Assemble the linear system of equations
+   for (unsigned int i=0; i < n; i++) {
+     FGColumnVector3 U = multipliers[i]->ForceJacobian;
+     FGColumnVector3 r = multipliers[i]->LeverArm;
+     FGColumnVector3 v1 = U / in.Mass;
+     FGColumnVector3 v2 = in.Jinv * (r*U); // Should be J^-T but J is symmetric and so is J^-1
++    if (weighted) {
++      v1 *= bt[0];
++      v2 *= br[0];
++    }
+ 
+     for (unsigned int j=0; j < i; j++)
+       a[i*n+j] = a[j*n+i]; // Takes advantage of the symmetry of Jac^T*M^-1*Jac
+@@ -272,6 +324,31 @@ void FGAccelerations::CalculateFrictionForces(double dt)
+   if (dt > 0.) // Zeroes out the relative movement between the aircraft and the ground
+     wdot += (in.vPQR - in.Tec2b * in.TerrainAngularVel) / dt;
+ 
++  // FDM patch 0001 (integrator-aware friction). vdot and wdot above are (slip after an Euler step
++  // without friction)/dt. A multistep scheme lands elsewhere: it advances the rate by
++  // dt*(b[0]*d(n) + past) instead of dt*d(n), where d(n) is the derivative FGPropagate integrates
++  // (vUVWidot, ECI frame, and vPQRidot, body frame; friction is not yet included in either here).
++  // Mode 1 adds the difference, (b[0]-1)*d(n) + past, and the matrix carries b[0] (see above).
++  // Mode 2 is the formula of the 2010 code (JSBSim commit 53709ba8), for comparison: the matrix is
++  // left alone and the rate to resist is vdot + (past + slip/dt)/b[0], for translation and rotation
++  // separately. It is exact only when both rates use the same scheme and the frame is not rotating.
++  if (aware && nt > 0) {
++    FGColumnVector3 past;
++    for (int k=0; k < nt; k++) past += bt[k+1] * (*in.PastUVWidot)[k];
++    if (frictionAware == 1)
++      vdot += in.Ti2b * ((bt[0] - 1.0) * vUVWidot + past);
++    else
++      vdot = vUVWdot + (in.Ti2b * past + (in.vUVW - in.Tec2b * in.TerrainVelocity) / dt) / bt[0];
++  }
++  if (aware && nr > 0) {
++    FGColumnVector3 past;
++    for (int k=0; k < nr; k++) past += br[k+1] * (*in.PastPQRidot)[k];
++    if (frictionAware == 1)
++      wdot += (br[0] - 1.0) * vPQRidot + past;
++    else
++      wdot = vPQRdot + (past + (in.vPQR - in.Tec2b * in.TerrainAngularVel) / dt) / br[0];
++  }
++
+   // Prepare the linear system for the Gauss-Seidel algorithm :
+   // 1. Compute the right hand side member 'rhs'
+   // 2. Divide every line of 'a' and 'rhs' by a[i,i]. This is in order to save
+@@ -361,6 +438,7 @@ void FGAccelerations::bind(void)
+ 
+   PropertyManager->Tie("accelerations/gravity-ft_sec2", this, &FGAccelerations::GetGravAccelMagnitude);
+   PropertyManager->Tie("simulation/gravitational-torque", &gravTorque);
++  PropertyManager->Tie("simulation/integrator/friction-aware", &frictionAware); // FDM patch 0001
+   PropertyManager->Tie("forces/fbx-weight-lbs", this, eX, &FGAccelerations::GetWeight);
+   PropertyManager->Tie("forces/fby-weight-lbs", this, eY, &FGAccelerations::GetWeight);
+   PropertyManager->Tie("forces/fbz-weight-lbs", this, eZ, &FGAccelerations::GetWeight);
+diff --git a/src/models/FGAccelerations.h b/src/models/FGAccelerations.h
+index ca75c078..c61c86fa 100644
+--- a/src/models/FGAccelerations.h
++++ b/src/models/FGAccelerations.h
+@@ -38,6 +38,8 @@ SENTRY
+ INCLUDES
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+ 
++#include <deque>
++
+ #include "models/FGModel.h"
+ #include "math/FGColumnVector3.h"
+ #include "math/LagrangeMultiplier.h"
+@@ -360,6 +362,14 @@ public:
+     double Mass;
+     /// List of Lagrange multipliers set by FGLGear for friction forces calculations.
+     std::vector<LagrangeMultiplier*> *MultipliersList;
++    // FDM patch 0001 (integrator-aware friction). Integration schemes of the rates
++    // (FGPropagate::eIntegrateType) and the past rate derivatives kept by FGPropagate:
++    // [0] is the derivative used by the latest integration step, [1] the one before, ...
++    // Translational derivatives are expressed in the ECI frame, rotational ones in the body frame.
++    int TranslationalRateIntegrator = 1;
++    int RotationalRateIntegrator = 1;
++    const std::deque<FGColumnVector3>* PastUVWidot = nullptr;
++    const std::deque<FGColumnVector3>* PastPQRidot = nullptr;
+   } in;
+ 
+ private:
+@@ -371,6 +381,9 @@ private:
+   FGColumnVector3 vFrictionMoments;
+ 
+   bool gravTorque;
++  // FDM patch 0001: simulation/integrator/friction-aware. 0 = JSBSim v1.3.3 (default), 1 = friction
++  // consistent with the integration schemes of the rates, 2 = the weights of the 2010 code.
++  int frictionAware;
+ 
+   void CalculatePQRdot(void);
+   void CalculateUVWdot(void);
+diff --git a/src/models/FGPropagate.h b/src/models/FGPropagate.h
+index 71f4fee7..de32103e 100644
+--- a/src/models/FGPropagate.h
++++ b/src/models/FGPropagate.h
+@@ -438,6 +438,13 @@ public:
+ 
+   const FGColumnVector3& GetTerrainVelocity(void) const { return LocalTerrainVelocity; }
+   const FGColumnVector3& GetTerrainAngularVelocity(void) const { return LocalTerrainAngularVelocity; }
++
++  // FDM patch 0001 (integrator-aware friction): what FGAccelerations needs to know about the
++  // integration of the rates. Read-only; nothing in FGPropagate changes.
++  int GetTranslationalRateIntegrator(void) const { return (int)integrator_translational_rate; }
++  int GetRotationalRateIntegrator(void) const { return (int)integrator_rotational_rate; }
++  const std::deque<FGColumnVector3>& GetPastUVWidot(void) const { return VState.dqUVWidot; }
++  const std::deque<FGColumnVector3>& GetPastPQRidot(void) const { return VState.dqPQRidot; }
+   void RecomputeLocalTerrainVelocity();
+ 
+   double GetTerrainElevation(void) const;
