@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "frozen": "Correction to the later gates (GATES-04b.md). Committed before candidate 2 or 3 was written or run, and before any result of the floor or of candidate 1 on G2b/G3b had been looked at. This file, run_native_04b.py, run_wasm_04b.ts and evaluate_04b.py are frozen once committed. Perturbation draws, runs and everything else come from gates-04.json and gates.json.",
+
+  "G2c": {
+    "name": "Hard landing, forward, repeated",
+    "scenario": "hard_forward",
+    "scenario_definition": {
+      "seconds": 15,
+      "ic": {"ic/psi-true-deg": 0, "ic/h-agl-ft": 40, "ic/phi-deg": 0, "ic/theta-deg": 0, "ic/vn-fps": 100, "ic/ve-fps": 0, "ic/vd-fps": 30}
+    },
+    "required_start_body_velocity_fps": [100, 0, 30],
+    "start_body_velocity_tolerance_fps": 1e-3,
+    "min_fraction_ok": 1.0
+  },
+
+  "G2b_as_crash": {
+    "name": "G2b read as a crash case (backward or sideways touchdown), compared with the floor",
+    "allowance_fraction_of_runs": 0.05
+  }
+}
