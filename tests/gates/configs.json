@@ -66,5 +66,82 @@
       "simulation/integrator/position/rotational": 7,
       "simulation/integrator/friction-aware": 2
     }
+  },
+  "c2-mid": {
+    "role": "CANDIDATE 2: implicit-midpoint body rates (patch 0002, PteroLabsAI/jsbsim PR 13) with Buss 2 attitude; friction as in JSBSim",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 10,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "c2-mid-fa": {
+    "role": "CANDIDATE 2 with integrator-aware friction (patch 0001, mode 1): implicit-midpoint body rates, Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 10,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c3-ab4": {
+    "role": "CANDIDATE 3: AB4 body rates in the air, Euler while any contact point touches (patch 0003), Buss 2 attitude; friction as in JSBSim",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1
+    }
+  },
+  "c3-ab4-fa": {
+    "role": "CANDIDATE 3 with integrator-aware friction (patch 0001, mode 1): AB4 in the air, Euler on contact, Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c3-ab3": {
+    "role": "CANDIDATE 3 variant: AB3 body rates in the air, Euler while any contact point touches, Buss 2 attitude; friction as in JSBSim",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 4,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1
+    }
+  },
+  "c3-ab3-fa": {
+    "role": "CANDIDATE 3 variant with integrator-aware friction (mode 1): AB3 in the air, Euler on contact, Buss 2 attitude",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 4,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1,
+      "simulation/integrator/friction-aware": 1
+    }
+  },
+  "c3x-ab4-fa-hold": {
+    "role": "Comparison (the switch itself): c3-ab4-fa, but the on-contact scheme is kept for 0.1 s after the last contact",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1,
+      "simulation/integrator/friction-aware": 1,
+      "simulation/integrator/rate/contact-hold-sec": 0.1
+    }
+  },
+  "c3x-ab4-fa-keep": {
+    "role": "Comparison (the switch itself): c3-ab4-fa, but the multistep history is kept on release (contact-release-mode 0), not restarted",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1,
+      "simulation/integrator/friction-aware": 1,
+      "simulation/integrator/rate/contact-release-mode": 0
+    }
   }
 }

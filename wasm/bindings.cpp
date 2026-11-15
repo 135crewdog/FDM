@@ -76,9 +76,13 @@ class Sim {
       // No socket input in this runtime (see the header comment). Input elements loaded later
       // inherit the disabled state, so no socket is ever created.
       fdm_->GetInput()->Disable();
-      static const char* names[4] = {"simulation/integrator/rate/rotational", "simulation/integrator/rate/translational",
-                                     "simulation/integrator/position/rotational", "simulation/integrator/position/translational"};
-      for (int k = 0; k < 4; ++k) integ_[k] = fdm_->GetPropertyManager()->GetNode(names[k], false);
+      // The last one exists only with FDM patch 0003 (null otherwise).
+      static const char* names[5] = {"simulation/integrator/rate/rotational", "simulation/integrator/rate/translational",
+                                     "simulation/integrator/position/rotational", "simulation/integrator/position/translational",
+                                     "simulation/integrator/rate/rotational-on-contact"};
+      for (int k = 0; k < 5; ++k) integ_[k] = fdm_->GetPropertyManager()->GetNode(names[k], false);
+      // FDM patch 0002 adds scheme 10 (implicit midpoint) for the body rates; its counters tell us it is there.
+      midpoint_ = fdm_->GetPropertyManager()->GetNode("simulation/integrator/midpoint/steps", false) != nullptr;
       return 1;
     });
   }
@@ -207,8 +211,10 @@ class Sim {
   static std::string version() { return JSBSim::FGJSBBase::GetVersion(); }
 
  private:
-  // kind: 0 ordinary property, 1 integrator selector (rates, translational position), 2 integrator
-  // selector for rotational position (attitude), which also accepts the quaternion methods.
+  // kind: 0 ordinary property, 1 integrator selector (translational rate and position), 2 integrator
+  // selector for rotational position (attitude), which also accepts the quaternion methods, 3 selector
+  // for the body rates (also accepts 10, implicit midpoint, in a build with FDM patch 0002), 4 selector
+  // for the body rates while touching the ground (FDM patch 0003: as 3, plus -1 = no switching).
   struct Handle { SGPropertyNode_ptr node; int kind; };
 
   FGFDMExec* fdm() {
@@ -224,7 +230,8 @@ class Sim {
   }
 
   int kindOf(const SGPropertyNode* node) const {
-    for (int k = 0; k < 4; ++k) if (integ_[k] && node == integ_[k].ptr()) return k == 2 ? 2 : 1;
+    static const int kinds[5] = {3, 1, 2, 1, 4};
+    for (int k = 0; k < 5; ++k) if (integ_[k] && node == integ_[k].ptr()) return kinds[k];
     return 0;
   }
 
@@ -233,10 +240,15 @@ class Sim {
     if (kind != 0) {
       // JSBSim's integration switch silently does nothing for an unknown id (freezing the state).
       bool ok = v == std::floor(v) && v >= 0.0 && v <= 9.0 && (kind == 2 || !(v >= 6.0 && v <= 8.0));
+      if ((kind == 3 || kind == 4) && midpoint_ && v == 10.0) ok = true;
+      if (kind == 4 && v == -1.0) ok = true;
       if (!ok)
         throw JSBSim::BaseException("invalid integrator id " + num(v) + " for " + JSBSim::GetFullyQualifiedName(node) +
                                     " (valid: 0 none, 1 Euler, 2 trapezoidal, 3 AB2, 4 AB3, 5 AB4, 9 AB5" +
-                                    (kind == 2 ? ", 6 Buss 1, 7 Buss 2, 8 local linearization)" : "; 6-8 are for position/rotational only)"));
+                                    (kind == 2 ? ", 6 Buss 1, 7 Buss 2, 8 local linearization)"
+                                     : std::string("; 6-8 are for position/rotational only") +
+                                       ((kind == 3 || kind == 4) && midpoint_ ? "; 10 implicit midpoint" : "") +
+                                       (kind == 4 ? "; -1 no switching" : "") + ")"));
     }
     if (!node->setDoubleValue(v))
       throw JSBSim::BaseException("cannot write " + JSBSim::GetFullyQualifiedName(node) + ": the property is read-only");
@@ -292,7 +304,8 @@ class Sim {
 
   std::unique_ptr<FGFDMExec> fdm_;
   std::vector<Handle> handles_;
-  SGPropertyNode_ptr integ_[4];
+  SGPropertyNode_ptr integ_[5];
+  bool midpoint_ = false;
   std::vector<int> in_, out_;
   std::vector<double> inBuf_, outBuf_;
   std::string err_;

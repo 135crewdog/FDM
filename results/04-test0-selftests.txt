@@ -1,9 +1,9 @@
 # Test 0: self-tests of the harness and the binding
 ## Builds under test
-- wasm jsbsim: sha256 cc1d7f4c5c581ced30d4d4370caecb6bfbffe274686fe054bdf68aba3f99f6f3 (fdm-wasm-20261115.2029)
-- wasm jsbsim-weh: sha256 b04e6859e9aae726c81971cef882f722aba677a4787f01d9af6e9d2fbe26e818 (fdm-wasm-20261115.2029)
-- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}]
-- native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e patches: 0001-integrator-aware-friction.patch c8abb500ee33
+- wasm jsbsim: sha256 22a9219b23b51ef27bd29c8ba288b662e05034923f2604feffe29f0e1777f115 (fdm-wasm-20261115.2054)
+- wasm jsbsim-weh: sha256 bfaa2e9188713b720834b8e7fb91f738c280aeea08886c6b10d116fdfeabbb4c (fdm-wasm-20261115.2054)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]
+- native JSBSim 1.3.3 [patched] module sha256 04b0929860cdfa9a patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
 
 ## Comparator self-test (synthetic bad logs must be refused)
 PASS  missing files: exit 2, expected 2
@@ -119,6 +119,11 @@ PASS  setIntegrators: positionRotational 10  [setIntegrators: invalid integrator
 PASS  setProperty('simulation/integrator/rate/rotational', 12345)  [setProperty(simulation/integrator/rate/rotational): invalid integrator id 12345 for /fdm/jsbsim/simulation/int...]
 PASS  integrator unchanged by the rejected values  [1]
 PASS  valid integrators accepted (AB4 rates, Buss 2 attitude)  [[5,7]]
+PASS  implicit midpoint (10) accepted for the body rates; Euler (1) on contact  [[10,1]]
+PASS  setIntegrators: rateTranslational 10 (midpoint is for the body rates only)  [setIntegrators: invalid integrator id 10 for simulation/integrator/rate/translational]
+PASS  setIntegrators: rateRotationalOnContact 7  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational-on-contact]
+PASS  setProperty('simulation/integrator/rate/rotational-on-contact', -2)  [setProperty(simulation/integrator/rate/rotational-on-contact): invalid integrator id -2 for /fdm/jsbsim/simula...]
+PASS  switching off again (-1) and back to AB4, Buss 2  [[5,-1]]
 ## 6. Step counts are validated
 PASS  runSteps(NaN)  [runSteps: invalid step count NaN (must be a non-negative integer)]
 PASS  step(NaN)  [step: invalid step count NaN (must be a non-negative integer)]
@@ -131,7 +136,7 @@ PASS  step(2**32)  [step: invalid step count 4294967296 (must be a non-negative 
 PASS  runSteps(5) runs 5 steps  [5]
 ## 7. The 737 runs on a clean install (its socket input must not need the npm package 'ws')
 PASS  737: load, runIC, 200 steps, finite  [{"n":200,"h":4.599567137658596}]
-# 75 passed, 0 failed (variant jsbsim)
+# 80 passed, 0 failed (variant jsbsim)
 
 # Binding regression tests, variant jsbsim-weh
 ## 1. Every C++ exception becomes a JSBSimError with JSBSim's message
@@ -205,6 +210,11 @@ PASS  setIntegrators: positionRotational 10  [setIntegrators: invalid integrator
 PASS  setProperty('simulation/integrator/rate/rotational', 12345)  [setProperty(simulation/integrator/rate/rotational): invalid integrator id 12345 for /fdm/jsbsim/simulation/int...]
 PASS  integrator unchanged by the rejected values  [1]
 PASS  valid integrators accepted (AB4 rates, Buss 2 attitude)  [[5,7]]
+PASS  implicit midpoint (10) accepted for the body rates; Euler (1) on contact  [[10,1]]
+PASS  setIntegrators: rateTranslational 10 (midpoint is for the body rates only)  [setIntegrators: invalid integrator id 10 for simulation/integrator/rate/translational]
+PASS  setIntegrators: rateRotationalOnContact 7  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational-on-contact]
+PASS  setProperty('simulation/integrator/rate/rotational-on-contact', -2)  [setProperty(simulation/integrator/rate/rotational-on-contact): invalid integrator id -2 for /fdm/jsbsim/simula...]
+PASS  switching off again (-1) and back to AB4, Buss 2  [[5,-1]]
 ## 6. Step counts are validated
 PASS  runSteps(NaN)  [runSteps: invalid step count NaN (must be a non-negative integer)]
 PASS  step(NaN)  [step: invalid step count NaN (must be a non-negative integer)]
@@ -217,7 +227,7 @@ PASS  step(2**32)  [step: invalid step count 4294967296 (must be a non-negative 
 PASS  runSteps(5) runs 5 steps  [5]
 ## 7. The 737 runs on a clean install (its socket input must not need the npm package 'ws')
 PASS  737: load, runIC, 200 steps, finite  [{"n":200,"h":4.599567137658596}]
-# 75 passed, 0 failed (variant jsbsim-weh)
+# 80 passed, 0 failed (variant jsbsim-weh)
 
 ## Build self-test (patches always re-applied and hashed; wrong Emscripten version refused)
 PASS  unpatched tree equals the pinned commit

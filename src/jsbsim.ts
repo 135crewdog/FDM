@@ -88,8 +88,12 @@ class LogBuffer {
 }
 
 export interface IntegratorSettings {
-  /** simulation/integrator/rate/rotational (body rates): 0 none, 1 rect Euler (default), 2 trapezoidal, 3 AB2, 4 AB3, 5 AB4, 9 AB5 */
+  /** simulation/integrator/rate/rotational (body rates): 0 none, 1 rect Euler (default), 2 trapezoidal, 3 AB2, 4 AB3, 5 AB4, 9 AB5,
+   *  10 implicit midpoint (patch 0002) */
   rateRotational?: number;
+  /** simulation/integrator/rate/rotational-on-contact (patch 0003): the body-rate scheme while any contact point touches the
+   *  ground; -1 (default) = no switching, otherwise the same ids as rateRotational (1 = Euler) */
+  rateRotationalOnContact?: number;
   /** simulation/integrator/rate/translational: same ids; JSBSim's default is 3 (AB2) */
   rateTranslational?: number;
   /** simulation/integrator/position/rotational (attitude): same ids plus 6 Buss 1, 7 Buss 2, 8 local linearization; default 1 */
@@ -100,12 +104,17 @@ export interface IntegratorSettings {
 
 const INTEGRATOR_PROPS: [keyof IntegratorSettings, string][] = [
   ["rateRotational", "simulation/integrator/rate/rotational"],
+  ["rateRotationalOnContact", "simulation/integrator/rate/rotational-on-contact"],
   ["rateTranslational", "simulation/integrator/rate/translational"],
   ["positionRotational", "simulation/integrator/position/rotational"],
   ["positionTranslational", "simulation/integrator/position/translational"],
 ];
 function validIntegrator(slot: keyof IntegratorSettings, id: number): boolean {
-  if (!Number.isInteger(id) || id < 0 || id > 9) return false;
+  if (!Number.isInteger(id)) return false;
+  if (slot === "rateRotationalOnContact" && id === -1) return true;
+  // 10 (implicit midpoint) exists only for the body rates and only in a build with patch 0002; the C++ side has the last word.
+  if ((slot === "rateRotational" || slot === "rateRotationalOnContact") && id === 10) return true;
+  if (id < 0 || id > 9) return false;
   return slot === "positionRotational" || !(id >= 6 && id <= 8);
 }
 
@@ -285,6 +294,8 @@ export class JSBSim {
   setIntegrators(s: IntegratorSettings): void {
     for (const [k, prop] of INTEGRATOR_PROPS)
       if (s[k] !== undefined && !validIntegrator(k, s[k]!)) throw new JSBSimError(`setIntegrators: invalid integrator id ${s[k]} for ${prop}`);
+    for (const [k, prop] of INTEGRATOR_PROPS)
+      if (s[k] !== undefined && !this.hasProperty(prop)) throw new JSBSimError(`setIntegrators: ${prop} does not exist in this build`);
     for (const [k, prop] of INTEGRATOR_PROPS) if (s[k] !== undefined) this.setProperty(prop, s[k]!);
   }
 

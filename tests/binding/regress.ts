@@ -132,6 +132,24 @@ mustWork("valid integrators accepted (AB4 rates, Buss 2 attitude)", () => {
   return [sim.getProperty("simulation/integrator/rate/rotational"), sim.getProperty("simulation/integrator/position/rotational")];
 }, (r) => r[0] === 5 && r[1] === 7);
 
+// Patches 0002 and 0003 add settings. In the patched build they are validated like the others; in an unpatched build they do not exist.
+if (sim.hasProperty("simulation/integrator/rate/rotational-on-contact")) {
+  mustWork("implicit midpoint (10) accepted for the body rates; Euler (1) on contact", () => {
+    sim.setIntegrators({ rateRotational: 10, rateRotationalOnContact: 1 });
+    return [sim.getProperty("simulation/integrator/rate/rotational"), sim.getProperty("simulation/integrator/rate/rotational-on-contact")];
+  }, (r) => r[0] === 10 && r[1] === 1);
+  mustThrow("setIntegrators: rateTranslational 10 (midpoint is for the body rates only)", () => sim.setIntegrators({ rateTranslational: 10 }), /integrator/);
+  mustThrow("setIntegrators: rateRotationalOnContact 7", () => sim.setIntegrators({ rateRotationalOnContact: 7 }), /integrator/);
+  mustThrow("setProperty('simulation/integrator/rate/rotational-on-contact', -2)", () => sim.setProperty("simulation/integrator/rate/rotational-on-contact", -2), /integrator/);
+  mustWork("switching off again (-1) and back to AB4, Buss 2", () => {
+    sim.setIntegrators({ rateRotational: 5, rateRotationalOnContact: -1 });
+    return [sim.getProperty("simulation/integrator/rate/rotational"), sim.getProperty("simulation/integrator/rate/rotational-on-contact")];
+  }, (r) => r[0] === 5 && r[1] === -1);
+} else {
+  mustThrow("setIntegrators: rateRotational 10 in a build without patch 0002", () => sim.setIntegrators({ rateRotational: 10 }), /integrator/);
+  mustThrow("setIntegrators: rateRotationalOnContact in a build without patch 0003", () => sim.setIntegrators({ rateRotationalOnContact: 1 }), /does not exist/);
+}
+
 console.log("## 6. Step counts are validated");
 sim.runIC();
 for (const [label, n] of [["NaN", NaN], ["-1", -1], ["2.5", 2.5], ["2**32", 2 ** 32]] as const) {

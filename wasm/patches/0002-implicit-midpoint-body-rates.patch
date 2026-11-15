@@ -1,0 +1,279 @@
+FDM patch 0002: implicit midpoint scheme for the body rates (candidate 2 of session 04)
+
+Where it comes from
+  PteroLabsAI/jsbsim pull request 13, commit 33384d9981614509c65698f5f8be8eb8d1950228
+  ("Add an implicit midpoint scheme for the body rates", Alexander Kalmykov, 2026-10-20), fetched with
+  git from refs/pull/13/head. That fork is unreviewed. Only the source changes of that one commit are
+  taken (src/FGFDMExec.cpp, src/models/FGPropagate.cpp, src/models/FGPropagate.h), unchanged. Not taken:
+  its test (tests/TestTumblingBody.py) and the pull request's second commit (fe9ee6e6), which makes the
+  scheme JSBSim's default.
+
+What it changes
+  simulation/integrator/rate/rotational accepts a new value, 10: the body rates are stepped by the
+  implicit midpoint rule, J*(w2-w1) = dt*(M - m x (J*m)) with m = (w1+w2)/2. It conserves the kinetic
+  energy and |J*w| of a torque-free body at any step size. The moment M (aerodynamics, gear, friction)
+  stays explicit: it is taken back from the derivative FGAccelerations computed. Newton's method solves
+  each step, in parts that turn the body at most 1 rad.
+  Paths other than the normal one, as the pull request wrote them:
+    - Euler fallback: rates or moments that are not finite, or that would turn the body more than
+      1000 rad in one step, are stepped by Euler.
+    - Failure: if Newton does not converge in 20 iterations, or the Jacobian is singular, an exception
+      is thrown (the simulation step fails).
+    - Rounding exit: a Newton correction that stops shrinking is accepted up to 1E-8 of the rates.
+
+Added by us (the only difference from the pull request's code)
+  Counters, so that the gates can report how often each path is taken. They only count; the simulation
+  never reads them. Properties under simulation/integrator/midpoint/: steps, newton-iterations,
+  max-newton-iterations, split-steps, rounding-exits, euler-fallbacks, not-converged, singular-jacobian.
+
+How it is switched
+  By the value 10 of simulation/integrator/rate/rotational. JSBSim's default (1, Euler) is unchanged.
+  With any other value every statement computes exactly what the code without this patch computes
+  (checked: bit-identical logs, tests/native/verify_key.sh patched unpatched and
+  tests/native/verify_wasm_patch_off.sh). FGPropagate::Inputs gains the inertia matrix and its inverse,
+  which are only read by the new scheme.
+
+Interaction with patch 0001 (integrator-aware friction)
+  Patch 0001 treats every scheme it does not know, this one included, as an Euler step. That is right to
+  first order: the midpoint step differs from Euler only in the gyroscopic term.
+
+diff --git a/src/FGFDMExec.cpp b/src/FGFDMExec.cpp
+index cd8cc1a..363c187 100644
+--- a/src/FGFDMExec.cpp
++++ b/src/FGFDMExec.cpp
+@@ -437,6 +437,8 @@ void FGFDMExec::LoadInputs(unsigned int idx)
+   case ePropagate:
+     Propagate->in.vPQRidot     = Accelerations->GetPQRidot();
+     Propagate->in.vUVWidot     = Accelerations->GetUVWidot();
++    Propagate->in.J            = MassBalance->GetJ();
++    Propagate->in.Jinv         = MassBalance->GetJinv();
+     Propagate->in.DeltaT       = dT;
+     break;
+   case eInput:
+diff --git a/src/models/FGPropagate.cpp b/src/models/FGPropagate.cpp
+index 24dcec0..1422248 100644
+--- a/src/models/FGPropagate.cpp
++++ b/src/models/FGPropagate.cpp
+@@ -58,6 +58,8 @@ COMMENTS, REFERENCES,  and NOTES
+ [8] Phillips W.F, Hailey C.E and Gebert G.A, "Review of Attitude Representations
+     Used for Aircraft Kinematics", Journal Of Aircraft Vol. 38, No. 4,
+     July-August 2001
++[9] Ernst Hairer, Christian Lubich and Gerhard Wanner, "Geometric Numerical
++    Integration", Second edition (2006), Springer
+ 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ INCLUDES
+@@ -224,7 +226,10 @@ bool FGPropagate::Run(bool Holding)
+ 
+   if (!FDMExec->IntegrationSuspended()) {
+     Integrate(VState.qAttitudeECI,      VState.vQtrndot,      VState.dqQtrndot,          dt, integrator_rotational_position);
+-    Integrate(VState.vPQRi,             in.vPQRidot,          VState.dqPQRidot,          dt, integrator_rotational_rate);
++    if (integrator_rotational_rate == eImplicitMidpoint)
++      IntegrateMidpoint(dt);
++    else
++      Integrate(VState.vPQRi,           in.vPQRidot,          VState.dqPQRidot,          dt, integrator_rotational_rate);
+     Integrate(VState.vInertialPosition, VState.vInertialVelocity, VState.dqInertialVelocity, dt, integrator_translational_position);
+     Integrate(VState.vInertialVelocity, in.vUVWidot,          VState.dqUVWidot,          dt, integrator_translational_rate);
+   }
+@@ -331,6 +336,107 @@ void FGPropagate::CalculateUVW(void)
+ 
+ //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
++// The implicit midpoint step needs the inertia, so only the body rates take it.
++[[noreturn]] static void ThrowMidpointMisuse(void)
++{
++  LogException err;
++  err << "Can only use the implicit midpoint method for the rotational rate!";
++  throw err;
++}
++
++// Over 300 random bodies, Newton took at most 7 iterations for a part turning
++// 1 rad and failed for some at 2.25 rad.
++constexpr double MaxTurnPerPartRad = 1.0;
++constexpr int MaxNewtonIterations = 20;
++// 1000 rad a step is 240000 rad/s at 240 Hz, beyond any rigid body: faster
++// rates are diverging.
++constexpr double MaxTurnPerStepRad = 1000.0;
++// Newton converges quadratically: a step this small leaves an error far below
++// double precision.
++constexpr double NewtonTolerance = 1E-12;
++// Chosen: m x (J*m) rounds to about 2E-16 times the inertia ratio of the body in
++// a part turning 1 rad, so a correction stalled by rounding is taken up to
++// ratios of 5E7.
++constexpr double RoundingTolerance = 1E-8;
++
++static FGMatrix33 Skew(const FGColumnVector3& v)
++{ return FGMatrix33(0.0, -v(3), v(2), v(3), 0.0, -v(1), -v(2), v(1), 0.0); }
++
++// The rates after h from J*(w2-w1) = h*(M - m x (J*m)), m = (w1+w2)/2, solved
++// by Newton in parts that each turn the body at most MaxTurnPerPartRad at the
++// spin given.
++static FGColumnVector3 MidpointRates(const FGMatrix33& J, const FGColumnVector3& M,
++                                     FGColumnVector3 w, double h, double spin,
++                                     FGPropagate::MidpointCounters& count)
++{
++  const int parts = max(1, static_cast<int>(ceil(h * spin / MaxTurnPerPartRad)));
++  const double dt = h / parts;
++  if (parts > 1) count.splitSteps++;   // FDM patch 0002: counters only, no effect on the result
++  for (int part = 0; part < parts; ++part) {
++    FGColumnVector3 w2 = w;
++    double lastSize = 0.0;
++    for (int iteration = 0;; ++iteration) {
++      const FGColumnVector3 m = 0.5 * (w + w2);
++      const FGColumnVector3 Jm = J * m;
++      const FGMatrix33 Jacobian = J + 0.5 * dt * (Skew(m) * J - Skew(Jm));
++      if (iteration == MaxNewtonIterations || !Jacobian.Invertible()) {
++        if (Jacobian.Invertible()) count.notConverged++; else count.singular++;
++        LogException err;
++        err << "FGPropagate: no midpoint step for the body rates at "
++            << w.Magnitude() << " rad/s: "
++            << (Jacobian.Invertible() ? "Newton did not converge" : "singular Jacobian");
++        throw err;
++      }
++      const FGColumnVector3 step = Jacobian.Inverse() * (J * (w2 - w) + dt * (m * Jm - M));
++      w2 -= step;
++      count.newtonIterations++;
++      if (iteration + 1 > count.maxNewtonIterations) count.maxNewtonIterations = iteration + 1;
++      // Rounding scales with the larger rates, wherever the moment takes them.
++      const double scale = max(w.Magnitude(), w2.Magnitude());
++      const double size = step.Magnitude();
++      // A correction that stops shrinking has met the rounding of m x (J*m).
++      if (size <= NewtonTolerance * scale)
++        break;
++      if (iteration > 0 && size >= lastSize && size <= RoundingTolerance * scale) {
++        count.roundingExits++;
++        break;
++      }
++      lastSize = size;
++    }
++    w = w2;
++  }
++  return w;
++}
++
++//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
++// The implicit midpoint rule keeps the kinetic energy and |J*w| of a free body
++// whatever the step (see ref [9], section IV.2): explicit Euler adds energy to a
++// tumbling body. The moment stays explicit.
++
++void FGPropagate::IntegrateMidpoint(double dt)
++{
++  VState.dqPQRidot.push_front(in.vPQRidot);
++  VState.dqPQRidot.pop_back();
++
++  const FGColumnVector3 w = VState.vPQRi;
++  // The moment the derivative was computed from, friction included. Not
++  // FGAccelerations::GetMoments(): a hold-down overrides the derivative only.
++  const FGColumnVector3 Moment = in.J * in.vPQRidot + w * (in.J * w);
++  const double spin = w.Magnitude();
++  // A strike can spin a resting body up within the step.
++  const double pushedSpin = (w + dt * (in.Jinv * Moment)).Magnitude();
++  // Diverging or NaN rates or moments fail the test and are stepped by Euler.
++  midpoint.steps++;
++  if (dt * spin <= MaxTurnPerStepRad && dt * pushedSpin <= MaxTurnPerStepRad)
++    VState.vPQRi = MidpointRates(in.J, Moment, w, dt, max(spin, pushedSpin), midpoint);
++  else {
++    midpoint.eulerFallbacks++;
++    VState.vPQRi += dt * in.vPQRidot;
++  }
++}
++
++//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
++
+ void FGPropagate::Integrate( FGColumnVector3& Integrand,
+                              FGColumnVector3& Val,
+                              deque <FGColumnVector3>& ValDot,
+@@ -363,6 +469,8 @@ void FGPropagate::Integrate( FGColumnVector3& Integrand,
+       err << "Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!";
+       throw err;
+     }
++  case eImplicitMidpoint:
++    ThrowMidpointMisuse();
+   default:
+     break;
+   }
+@@ -466,6 +574,8 @@ void FGPropagate::Integrate( FGQuaternion& Integrand,
+     break; // The quaternion q is not normal so the normalization needs to be done.
+   case eNone: // do nothing, freeze rotational rate
+     break;
++  case eImplicitMidpoint:
++    ThrowMidpointMisuse();
+   default:
+     break;
+   }
+@@ -911,6 +1021,15 @@ void FGPropagate::bind(void)
+   PropertyManager->Tie("orbital/period-sec", &OrbitalPeriod);
+ 
+   PropertyManager->Tie("simulation/integrator/rate/rotational", (int*)&integrator_rotational_rate);
++  // FDM patch 0002: counters of the implicit midpoint scheme (id 10 above). They only count.
++  PropertyManager->Tie("simulation/integrator/midpoint/steps", &midpoint.steps);
++  PropertyManager->Tie("simulation/integrator/midpoint/newton-iterations", &midpoint.newtonIterations);
++  PropertyManager->Tie("simulation/integrator/midpoint/max-newton-iterations", &midpoint.maxNewtonIterations);
++  PropertyManager->Tie("simulation/integrator/midpoint/split-steps", &midpoint.splitSteps);
++  PropertyManager->Tie("simulation/integrator/midpoint/rounding-exits", &midpoint.roundingExits);
++  PropertyManager->Tie("simulation/integrator/midpoint/euler-fallbacks", &midpoint.eulerFallbacks);
++  PropertyManager->Tie("simulation/integrator/midpoint/not-converged", &midpoint.notConverged);
++  PropertyManager->Tie("simulation/integrator/midpoint/singular-jacobian", &midpoint.singular);
+   PropertyManager->Tie("simulation/integrator/rate/translational", (int*)&integrator_translational_rate);
+   PropertyManager->Tie("simulation/integrator/position/rotational", (int*)&integrator_rotational_position);
+   PropertyManager->Tie("simulation/integrator/position/translational", (int*)&integrator_translational_position);
+diff --git a/src/models/FGPropagate.h b/src/models/FGPropagate.h
+index de32103..94e1a49 100644
+--- a/src/models/FGPropagate.h
++++ b/src/models/FGPropagate.h
+@@ -84,6 +84,11 @@ CLASS DOCUMENTATION
+     3: Adams Bashforth 2
+     4: Adams Bashforth 3
+     5: Adams Bashforth 4
++    6: Buss 1 (rotational position only)
++    7: Buss 2 (rotational position only)
++    8: Local linearization (rotational position only)
++    9: Adams Bashforth 5
++    10: Implicit midpoint (rotational rate only)
+     @endcode
+ 
+     @author Jon S. Berndt, Mathias Froehlich, Bertrand Coconnier
+@@ -152,9 +157,23 @@ public:
+   /// Destructor
+   ~FGPropagate();
+ 
++  /// FDM patch 0002: how often each path of the implicit midpoint step was taken (doubles, so that
++  /// they can be tied to properties and never overflow). They are never read by the simulation.
++  struct MidpointCounters {
++    double steps = 0;               ///< steps taken with the scheme
++    double newtonIterations = 0;    ///< Newton iterations in total
++    double maxNewtonIterations = 0; ///< most iterations in one part of a step
++    double splitSteps = 0;          ///< steps solved in more than one part (turn > 1 rad in the step)
++    double roundingExits = 0;       ///< parts accepted on the looser tolerance (1E-8 of the rates)
++    double eulerFallbacks = 0;      ///< steps taken by Euler (non-finite or diverging rates or moments)
++    double notConverged = 0;        ///< exceptions thrown: Newton did not converge
++    double singular = 0;            ///< exceptions thrown: singular Jacobian
++  };
++
+   /// These define the indices use to select the various integrators.
+   enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
+-                       eAdamsBashforth3, eAdamsBashforth4, eBuss1, eBuss2, eLocalLinearization, eAdamsBashforth5};
++                       eAdamsBashforth3, eAdamsBashforth4, eBuss1, eBuss2, eLocalLinearization, eAdamsBashforth5,
++                       eImplicitMidpoint};
+ 
+   /** Initializes the FGPropagate class after instantiation and prior to first execution.
+       The base class FGModel::InitModel is called first, initializing pointers to the
+@@ -619,6 +638,8 @@ public:
+     FGColumnVector3 vPQRidot;
+     FGColumnVector3 vUVWidot;
+     FGColumnVector3 vOmegaPlanet;
++    FGMatrix33 J;
++    FGMatrix33 Jinv;
+     double SemiMajor;
+     double SemiMinor;
+     double GM; // Gravitational parameter
+@@ -683,6 +704,9 @@ private:
+                   double dt,
+                   eIntegrateType integration_type);
+ 
++  void IntegrateMidpoint(double dt);
++  MidpointCounters midpoint;
++
+   void UpdateLocationMatrices(void);
+   void UpdateBodyMatrices(void);
+   void UpdateVehicleState(void);

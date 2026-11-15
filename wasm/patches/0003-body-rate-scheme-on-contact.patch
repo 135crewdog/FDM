@@ -1,0 +1,186 @@
+FDM patch 0003: switch the body-rate scheme while a contact point touches the ground
+(candidate 3 of session 04)
+
+What it changes
+  JSBSim integrates the body rates with one scheme, chosen by simulation/integrator/rate/rotational.
+  The multistep schemes (AB2 to AB4) are accurate in flight and fragile on the ground; Euler is the
+  reverse (REPORT-03). With this patch a second scheme can take over while the aircraft touches the
+  ground:
+    simulation/integrator/rate/rotational-on-contact   integer, default -1
+       -1  no switching: JSBSim unchanged.
+       an integrator id (1 = Euler): that scheme integrates the body rates in every step whose
+       derivative was computed with a contact point touching, and for contact-hold-sec afterwards.
+       In all other steps simulation/integrator/rate/rotational is used, as before.
+    simulation/integrator/rate/contact-hold-sec        seconds, default 0
+       how long the on-contact scheme stays after the last contact (against rapid switching while
+       bouncing or chattering).
+    simulation/integrator/rate/contact-release-mode    integer, default 1
+       what happens to the multistep history when the in-air scheme takes over again:
+       1  the history of past derivatives is restarted from the current derivative, exactly as JSBSim
+          does at start-up. The first step in the air is then an Euler step with the current
+          derivative: no extra impulse.
+       0  the history is kept. It still holds derivatives that contain ground forces, and the
+          extrapolation adds an impulse of about half a step of the last ground moment. Kept for
+          comparison only.
+    simulation/integrator/rate/contact-active, .../contact-switches
+       which scheme the latest step used, and how often the scheme has changed (counters; the
+       simulation never reads them).
+
+How contact is detected
+  FGFDMExec::LoadInputs passes "does any contact point touch" to FGPropagate before each step: every
+  point of FGGroundReactions counts, wheels (BOGEY) and airframe (STRUCTURE), each by its own WOW flag.
+  gear/wow is not used, because it ignores the airframe points. The flag belongs to the same instant
+  as the derivative that the step integrates, so a derivative that contains ground forces is always
+  integrated by the on-contact scheme.
+
+Why nothing else is needed on touch-down
+  The on-contact scheme used here (Euler) needs no history, so switching to it adds nothing. The
+  history deque keeps being filled, as in unpatched JSBSim.
+
+Interaction with patch 0001 (integrator-aware friction)
+  Friction forces exist only while a contact point touches, and then the on-contact scheme integrates
+  them. So the accessor that tells the friction code which body-rate scheme is in use returns the
+  on-contact scheme when the switch is on.
+
+How it is switched off
+  With rotational-on-contact = -1 (the default) the step uses integrator_rotational_rate through the
+  same calls as before. Checked: bit-identical logs (tests/native/verify_key.sh patched unpatched,
+  tests/native/verify_wasm_patch_off.sh). FGPropagate::Inputs gains one flag, which is only read when
+  the switch is on. Like JSBSim's own integrator selections, the new settings return to their defaults
+  when the model is re-initialised.
+
+diff --git a/src/FGFDMExec.cpp b/src/FGFDMExec.cpp
+index 363c187..45cba81 100644
+--- a/src/FGFDMExec.cpp
++++ b/src/FGFDMExec.cpp
+@@ -440,6 +440,11 @@ void FGFDMExec::LoadInputs(unsigned int idx)
+     Propagate->in.J            = MassBalance->GetJ();
+     Propagate->in.Jinv         = MassBalance->GetJinv();
+     Propagate->in.DeltaT       = dT;
++    // FDM patch 0003: does any contact point touch? Every point counts, wheels (BOGEY) and airframe
++    // (STRUCTURE); gear/wow would only count the wheels.
++    Propagate->in.AnyContact   = false;
++    for (int i = 0; i < GroundReactions->GetNumGearUnits(); i++)
++      if (GroundReactions->GetGearUnit(i)->GetWOW()) { Propagate->in.AnyContact = true; break; }
+     break;
+   case eInput:
+     break;
+diff --git a/src/models/FGPropagate.cpp b/src/models/FGPropagate.cpp
+index 1422248..78f8c44 100644
+--- a/src/models/FGPropagate.cpp
++++ b/src/models/FGPropagate.cpp
+@@ -92,6 +92,13 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
+ 
+   integrator_rotational_rate = eRectEuler;
+   integrator_translational_rate = eAdamsBashforth2;
++  // FDM patch 0003: off by default, like every other default set here
++  integrator_rotational_rate_contact = -1;
++  contactHoldSec = 0.0;
++  contactReleaseMode = 1;
++  contactTimer = 0.0;
++  contactActive = false;
++  contactSwitches = 0.0;
+   integrator_rotational_position = eRectEuler;
+   integrator_translational_position = eAdamsBashforth3;
+ 
+@@ -130,6 +137,13 @@ bool FGPropagate::InitModel(void)
+ 
+   integrator_rotational_rate = eRectEuler;
+   integrator_translational_rate = eAdamsBashforth2;
++  // FDM patch 0003: off by default, like every other default set here
++  integrator_rotational_rate_contact = -1;
++  contactHoldSec = 0.0;
++  contactReleaseMode = 1;
++  contactTimer = 0.0;
++  contactActive = false;
++  contactSwitches = 0.0;
+   integrator_rotational_position = eRectEuler;
+   integrator_translational_position = eAdamsBashforth3;
+ 
+@@ -226,10 +240,30 @@ bool FGPropagate::Run(bool Holding)
+ 
+   if (!FDMExec->IntegrationSuspended()) {
+     Integrate(VState.qAttitudeECI,      VState.vQtrndot,      VState.dqQtrndot,          dt, integrator_rotational_position);
+-    if (integrator_rotational_rate == eImplicitMidpoint)
++    // FDM patch 0003 (body-rate scheme switched on ground contact). With the switch off (-1, the
++    // default) rate_scheme is integrator_rotational_rate and nothing else here is executed.
++    eIntegrateType rate_scheme = integrator_rotational_rate;
++    if (integrator_rotational_rate_contact >= 0) {
++      // in.AnyContact: a contact point (BOGEY or STRUCTURE) touched the ground when the derivative
++      // integrated below was computed, so that derivative contains ground forces.
++      if (in.AnyContact) contactTimer = contactHoldSec;
++      const bool useContact = in.AnyContact || contactTimer > 0.0;
++      if (!in.AnyContact && contactTimer > 0.0) contactTimer -= dt;
++      if (useContact != contactActive) {
++        contactActive = useContact;
++        contactSwitches++;
++        // Back in the air: the multistep history still holds derivatives that contain ground
++        // forces. Extrapolating from them would add an impulse of about half a step of the last
++        // ground moment. Mode 1 restarts the history from the current derivative, as JSBSim does at
++        // start-up (the first step is then an Euler step). Mode 0 keeps the history (comparison).
++        if (!useContact && contactReleaseMode == 1) VState.dqPQRidot.assign(5, in.vPQRidot);
++      }
++      if (useContact) rate_scheme = (eIntegrateType)integrator_rotational_rate_contact;
++    }
++    if (rate_scheme == eImplicitMidpoint)
+       IntegrateMidpoint(dt);
+     else
+-      Integrate(VState.vPQRi,           in.vPQRidot,          VState.dqPQRidot,          dt, integrator_rotational_rate);
++      Integrate(VState.vPQRi,           in.vPQRidot,          VState.dqPQRidot,          dt, rate_scheme);
+     Integrate(VState.vInertialPosition, VState.vInertialVelocity, VState.dqInertialVelocity, dt, integrator_translational_position);
+     Integrate(VState.vInertialVelocity, in.vUVWidot,          VState.dqUVWidot,          dt, integrator_translational_rate);
+   }
+@@ -1021,6 +1055,12 @@ void FGPropagate::bind(void)
+   PropertyManager->Tie("orbital/period-sec", &OrbitalPeriod);
+ 
+   PropertyManager->Tie("simulation/integrator/rate/rotational", (int*)&integrator_rotational_rate);
++  // FDM patch 0003: body-rate scheme while a contact point touches the ground (-1 = no switching)
++  PropertyManager->Tie("simulation/integrator/rate/rotational-on-contact", &integrator_rotational_rate_contact);
++  PropertyManager->Tie("simulation/integrator/rate/contact-hold-sec", &contactHoldSec);
++  PropertyManager->Tie("simulation/integrator/rate/contact-release-mode", &contactReleaseMode);
++  PropertyManager->Tie("simulation/integrator/rate/contact-active", &contactActive);
++  PropertyManager->Tie("simulation/integrator/rate/contact-switches", &contactSwitches);
+   // FDM patch 0002: counters of the implicit midpoint scheme (id 10 above). They only count.
+   PropertyManager->Tie("simulation/integrator/midpoint/steps", &midpoint.steps);
+   PropertyManager->Tie("simulation/integrator/midpoint/newton-iterations", &midpoint.newtonIterations);
+diff --git a/src/models/FGPropagate.h b/src/models/FGPropagate.h
+index 94e1a49..5fb0733 100644
+--- a/src/models/FGPropagate.h
++++ b/src/models/FGPropagate.h
+@@ -461,7 +461,10 @@ public:
+   // FDM patch 0001 (integrator-aware friction): what FGAccelerations needs to know about the
+   // integration of the rates. Read-only; nothing in FGPropagate changes.
+   int GetTranslationalRateIntegrator(void) const { return (int)integrator_translational_rate; }
+-  int GetRotationalRateIntegrator(void) const { return (int)integrator_rotational_rate; }
++  // FDM patch 0003: friction acts only while a contact point touches the ground, and then the
++  // on-contact scheme integrates the body rates (when that switch is on).
++  int GetRotationalRateIntegrator(void) const
++  { return integrator_rotational_rate_contact >= 0 ? integrator_rotational_rate_contact : (int)integrator_rotational_rate; }
+   const std::deque<FGColumnVector3>& GetPastUVWidot(void) const { return VState.dqUVWidot; }
+   const std::deque<FGColumnVector3>& GetPastPQRidot(void) const { return VState.dqPQRidot; }
+   void RecomputeLocalTerrainVelocity();
+@@ -644,6 +647,9 @@ public:
+     double SemiMinor;
+     double GM; // Gravitational parameter
+     double DeltaT;
++    /// FDM patch 0003: true if any contact point (BOGEY or STRUCTURE) touched the ground when the
++    /// derivatives above were computed.
++    bool AnyContact = false;
+   } in;
+ 
+ private:
+@@ -688,6 +694,14 @@ private:
+   eIntegrateType integrator_rotational_position;
+   eIntegrateType integrator_translational_position;
+ 
++  // FDM patch 0003 (body-rate scheme switched on ground contact)
++  int integrator_rotational_rate_contact; ///< scheme for the body rates while touching; -1 = no switching (default)
++  double contactHoldSec;                  ///< keep the on-contact scheme this long after the last contact (default 0)
++  int contactReleaseMode;                 ///< 1 = restart the multistep history on release (default), 0 = keep it
++  double contactTimer;                    ///< time left of the hold
++  bool contactActive;                     ///< the on-contact scheme was used in the latest step
++  double contactSwitches;                 ///< number of changes between the two schemes (a counter, never read)
++
+   void CalculateInertialVelocity(void);
+   void CalculateUVW(void);
+   void CalculateQuatdot(void);

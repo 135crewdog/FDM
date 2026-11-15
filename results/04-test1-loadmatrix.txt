@@ -1,13 +1,13 @@
 # Test 1: every aircraft loads (ours vs native)
 ## Builds under test
-- wasm jsbsim: sha256 cc1d7f4c5c581ced30d4d4370caecb6bfbffe274686fe054bdf68aba3f99f6f3 (fdm-wasm-20261115.2029)
-- wasm jsbsim-weh: sha256 b04e6859e9aae726c81971cef882f722aba677a4787f01d9af6e9d2fbe26e818 (fdm-wasm-20261115.2029)
-- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}]
-- native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e patches: 0001-integrator-aware-friction.patch c8abb500ee33
+- wasm jsbsim: sha256 22a9219b23b51ef27bd29c8ba288b662e05034923f2604feffe29f0e1777f115 (fdm-wasm-20261115.2054)
+- wasm jsbsim-weh: sha256 bfaa2e9188713b720834b8e7fb91f738c280aeea08886c6b10d116fdfeabbb4c (fdm-wasm-20261115.2054)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}]
+- native JSBSim 1.3.3 [patched] module sha256 04b0929860cdfa9a patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
 
 jsbsim: 59/61 aircraft load
 jsbsim-weh: 59/61 aircraft load
-native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e patches: 0001-integrator-aware-friction.patch c8abb500ee33: 59/61 aircraft load
+native JSBSim 1.3.3 [patched] module sha256 04b0929860cdfa9a patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a: 59/61 aircraft load
 
 ## jsbsim vs native (61 aircraft folders)
 
