@@ -5,7 +5,7 @@ import { createSim, DATA, type Variant } from "../../src/wasm.ts";
 import { tryLoad, type LoadResult } from "../../src/checks.ts";
 
 const variant = (process.argv[2] ?? "jsbsim") as Variant;
-const names = readdirSync(join(DATA, "aircraft")).filter((d) => statSync(join(DATA, "aircraft", d)).isDirectory()).sort();
+const names = readdirSync(join(DATA, "aircraft")).filter((d) => statSync(join(DATA, "aircraft", d)).isDirectory() && !/^c172p_ext\d+$/.test(d)).sort(); // skip test-generated copies
 let sim = await createSim({ variant });
 const results: LoadResult[] = [];
 for (const name of names) {

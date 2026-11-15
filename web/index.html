@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JSBSim WASM test</title>
+<title>FDM JSBSim test</title>
 <style>
-  :root { color-scheme: light dark; --bg: #fff; --fg: #111; --muted: #666; --btn: #0a58ca; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #999; --btn: #4d8dff; } }
+  :root { color-scheme: light dark; --bg: #fff; --fg: #111; --muted: #666; --btn: #0a58ca; --btn2: #5a6270; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #999; --btn: #4d8dff; --btn2: #737b88; } }
   body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.4 -apple-system, system-ui, sans-serif; }
-  h1 { font-size: 18px; margin: 0 0 8px; }
-  button { font: inherit; padding: 10px 16px; border: 0; border-radius: 8px; background: var(--btn); color: #fff; margin: 4px 8px 12px 0; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  #version { font-weight: 600; margin-bottom: 8px; }
+  button { font: inherit; padding: 10px 14px; border: 0; border-radius: 8px; background: var(--btn); color: #fff; margin: 4px 8px 8px 0; }
+  button.secondary { background: var(--btn2); }
   button:disabled { opacity: .5; }
   pre { white-space: pre-wrap; word-break: break-word; font: 12px/1.35 ui-monospace, Menlo, monospace; }
   #status { color: var(--muted); }
@@ -17,16 +19,17 @@
 </style>
 </head>
 <body>
-<h1>JSBSim WebAssembly test</h1>
+<h1>FDM: JSBSim WebAssembly test (session 02)</h1>
+<div id="version">Build __BUILD_VERSION__ · built __BUILD_DATE__</div>
 <div id="status">Starting…</div>
-<button id="copy" disabled>Copy results</button><button id="rerun" disabled>Run again</button>
+<button id="copy" disabled>Copy results</button>
+<button id="run-js" disabled>Run again (-fexceptions, default)</button>
+<button id="run-weh" class="secondary" disabled>Run -fwasm-exceptions build</button>
 <pre id="out"></pre>
 <footer>
-  This page runs <a href="https://www.npmjs.com/package/@0x62/jsbsim-wasm">@0x62/jsbsim-wasm</a>,
-  whose WebAssembly build contains JSBSim (LGPL 2.1, source:
-  <a href="https://github.com/JSBSim-Team/jsbsim">github.com/JSBSim-Team/jsbsim</a>).
-  Aircraft data (c172x, GPL) is JSBSim's, with licence headers intact. See <a href="NOTICE.txt">NOTICE.txt</a>.
+  Our own WebAssembly build of <a href="https://github.com/JSBSim-Team/jsbsim">JSBSim</a> __JSBSIM_TAG__ (LGPL 2.1),
+  with JSBSim's aircraft, engine and systems files (licence headers intact). See <a href="NOTICE.txt">NOTICE.txt</a>.
 </footer>
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=__BUILD_VERSION__"></script>
 </body>
 </html>

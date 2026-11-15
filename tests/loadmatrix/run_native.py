@@ -1,10 +1,10 @@
 """Test 1 (native side): load every aircraft folder in native JSBSim 1.3.3 -> out/loadmatrix.native.json"""
-import json, os, sys, tempfile, time
+import json, os, re, sys, tempfile, time
 import jsbsim
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "jsbsim-data"))
 out = os.path.abspath("out/loadmatrix.native.json")
 os.chdir(tempfile.mkdtemp())
-names = sorted(d for d in os.listdir(os.path.join(ROOT, "aircraft")) if os.path.isdir(os.path.join(ROOT, "aircraft", d)))
+names = sorted(d for d in os.listdir(os.path.join(ROOT, "aircraft")) if os.path.isdir(os.path.join(ROOT, "aircraft", d)) and not re.match(r"c172p_ext\d+$", d))  # skip test-generated copies
 res = []
 for n in names:
     t0 = time.perf_counter()

@@ -23,8 +23,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - name: Fetch JSBSim data (not stored in this repo)
-        run: scripts/fetch-jsbsim-data.sh
+      # wasm/bin/ (our JSBSim build) and jsbsim-data/ are committed; this only assembles the page.
       - run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

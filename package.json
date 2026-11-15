@@ -1,13 +1,11 @@
 {
-  "name": "fdm-jsbsim-wasm-eval",
+  "name": "fdm-jsbsim-wasm",
   "private": true,
   "type": "module",
   "version": "0.0.0",
-  "dependencies": {
-    "@0x62/jsbsim-wasm": "1.2.4-beta.4"
-  },
   "devDependencies": {
     "@types/node": "26.6.6",
+    "esbuild": "0.28.2",
     "tsx": "4.23.15",
     "typescript": "7.0.2"
   },
