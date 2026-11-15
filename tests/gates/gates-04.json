@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "frozen": "Later gates of session 04 (GATES-04.md). This file, GATES-04.md, run_native_04.py, run_wasm_04.ts and evaluate_04.py are committed BEFORE candidate 2 or 3 is run. They were written AFTER the floor's and candidate 1's results on G1-G6 had been seen (REPORT-03). Never edit a number here after seeing a result: add a new gate instead. Everything not defined here (aircraft, scenarios, state list, runaway limit, G1/G4/G5 thresholds, bodies and spins) is read from the frozen gates.json.",
+
+  "judged_rates_hz": [480, 1000],
+  "reported_rates_hz": [120, 240],
+
+  "G5b": {
+    "name": "Torque-free rigid body after start-up",
+    "measure_from_seconds": 1.0,
+    "seconds": 60,
+    "max_relative_drift": 1e-6
+  },
+
+  "repeats": {
+    "note": "Run 0 is the unperturbed case (the same start as G2/G3). Runs 1-20 add these three numbers to the scenario's ic/h-agl-ft (ft), ic/vd-fps (ft/s) and ic/theta-deg (deg). Drawn once from a uniform distribution on [-1e-6, 1e-6] (Python random.Random(20261115), rounded to 3 digits) and written out here so that native and WebAssembly use exactly the same numbers.",
+    "perturbed_properties": ["ic/h-agl-ft", "ic/vd-fps", "ic/theta-deg"],
+    "draws": [
+      [0, 0, 0],
+      [-0.398e-6, -0.049e-6, 0.533e-6],
+      [0.322e-6, 0.210e-6, -0.297e-6],
+      [0.395e-6, 0.559e-6, -0.095e-6],
+      [-0.615e-6, 0.897e-6, 0.984e-6],
+      [0.757e-6, -0.520e-6, 0.364e-6],
+      [-0.700e-6, 0.088e-6, -0.010e-6],
+      [0.741e-6, 0.650e-6, 0.436e-6],
+      [-0.327e-6, 0.704e-6, 0.547e-6],
+      [-0.270e-6, -0.267e-6, 0.258e-6],
+      [0.090e-6, 0.221e-6, -0.984e-6],
+      [0.851e-6, -0.401e-6, 0.521e-6],
+      [0.791e-6, -0.293e-6, 0.886e-6],
+      [0.617e-6, -0.826e-6, -0.580e-6],
+      [0.539e-6, -0.931e-6, 0.279e-6],
+      [-0.110e-6, 0.927e-6, 0.932e-6],
+      [0.483e-6, 0.718e-6, -0.529e-6],
+      [-0.774e-6, -0.381e-6, 0.238e-6],
+      [0.603e-6, -0.300e-6, -0.998e-6],
+      [-0.474e-6, -0.375e-6, 0.352e-6],
+      [0.679e-6, 0.871e-6, 0.157e-6]
+    ]
+  },
+
+  "G2b": {
+    "name": "Hard landing, repeated",
+    "scenario": "hard",
+    "min_fraction_ok": 1.0
+  },
+
+  "G3b": {
+    "name": "Extreme impacts, repeated",
+    "scenarios": ["inverted", "banked", "nose"],
+    "allowance_fraction_of_runs": 0.05
+  }
+}
