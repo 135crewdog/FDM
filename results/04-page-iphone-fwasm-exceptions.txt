@@ -1,0 +1,40 @@
+(Pasted by the user from https://135crewdog.github.io/FDM/ on the iPhone, 2026-11-15, after session 04's last push.
+The load-matrix lines of the 59 aircraft that loaded are shortened to one summary line; everything else is verbatim.)
+
+FDM JSBSim WebAssembly test — build fdm-wasm-20261115.2054 (built 2026-11-15T20:54:18Z)
+Variant: jsbsim-weh.wasm, -fwasm-exceptions (default); JSBSim v1.3.3 (66f7fafc07); Emscripten 6.0.13
+Page built 2026-11-15T22:17:51.151Z; run at 2026-11-15T22:29:00.221Z
+User agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1
+Screen: 393x852 @3x; cores: 4; standalone PWA: false
+Timer resolution (performance.now): 1000.0 us
+Data (417 files) 320 ms; module + files into memory 551 ms; JSBSim reports: 1.3.3 Nov 15 2026 20:29:37
+
+1) Load matrix: loadModel on every aircraft folder (61). Native JSBSim 1.3.3 loads all but LM and blank.
+   ok   (59 aircraft, 0 to 22 ms each; slowest: Short_S23 22 ms, 737 13 ms)
+   FAIL LM                   1 ms  loadModel(LM) returned false. Could not open file: Path "/jsbsim/aircraft/LM/LM.xml" JSBSim failed to open the configuration file: Path "/jsbsim/aircraft/LM/LM.
+   FAIL blank                0 ms  loadModel(blank) returned false. YOU HAVE AN INCOMPATIBLE CFG FILE FOR THIS AIRCRAFT. RESULTS WILL BE UNPREDICTABLE !! Current version needed is: 2.0 You have v
+   59/61 load (expected 59): PASS
+
+2) Errors are JavaScript Errors with JSBSim's message, and the instance keeps working
+   malformed XML: JSBSimError: loadModel(broken_xml): In file /jsbsim/aircraft/broken_xml/broken_xml.xml: line 5 XML parse error: no element found
+   text where a number belongs: JSBSimError: loadModel(broken_value): Expecting a numeric attribute value, but got: not-a-number
+   missing aircraft: JSBSimError: loadModel(does_not_exist) returned false. Could not open file: Path "/jsbsim/aircraft/does_not_exist/does_not_exist.xml" JSBSim failed to open the configuration file: Path "/jsbsim/aircraft/does_not_e
+   afterwards, same instance: c172x ran 120 steps, alt 4007.6 ft
+
+3) Time per step (3000 steps after 300 warm-up; whole batch timed). Unmodified c172x (reset01, in the air)
+   and f16 (our airborne init file: 10000 ft, 400 kt, engine running).
+   c172x  dt=1/120     13.0 us/step  (39 ms for 25.0 s sim; end 2619 ft 148 kt)
+   c172x  dt=1/480      8.7 us/step  (26 ms for 6.3 s sim; end 4226 ft 60 kt)
+   c172x  dt=1/1000     8.3 us/step  (25 ms for 3.0 s sim; end 4103 ft 84 kt)
+   f16    dt=1/120     10.0 us/step  (30 ms for 25.0 s sim; end 5526 ft 383 kt)
+   f16    dt=1/480     10.0 us/step  (30 ms for 6.3 s sim; end 9828 ft 367 kt)
+   f16    dt=1/1000    10.3 us/step  (31 ms for 3.0 s sim; end 10001 ft 383 kt)
+
+4) 20 external forces (c172x + 20 runtime forces), 7 values each written before every step:
+   none = forces defined but not updated; name = 140 setProperty by name; handle = 140 writes by cached handle;
+   bulk = one Float64Array of 140 values per step.
+   dt=1/120   none   11.0  name   69.7  handle   14.7  bulk   13.3  us/step   (name/handle/bulk same end state: yes)
+   dt=1/480   none    9.0  name   67.3  handle   12.7  bulk   11.7  us/step   (name/handle/bulk same end state: yes)
+   dt=1/1000  none    9.3  name   70.3  handle   12.0  bulk   11.3  us/step   (name/handle/bulk same end state: yes)
+
+Done. Page still responsive.

@@ -69,6 +69,7 @@ answer key. **Reasoned** = explanation, not tested.
 | 19 | "Worse than the floor" in the crash cases does not rank integrators | Reasoned, from 8 and one traced case | At 1000 Hz every configuration except the floor loses the same case, the inverted ah1s (21 of 21), which the floor itself loses at 120, 240 and 480 Hz (21 of 21 each). Trace: at first contact a wheel reports 31,000 ft of compression and the ground pushes with 50 to 300 million pounds; a difference in the third digit of the state decides whether that step is survived. Test: finding 9's patch. |
 | 20 | No configuration costs measurably more | Supported | c172x at 1000 Hz in Node, flight / on the ground: floor 19.2 / 25.0, `c1-ab4` 19.4 / 24.5, `c2-mid` 20.1 / 26.4, `c3-ab4` 19.3 / 23.8 microseconds per step. The scatter between repetitions is about 2. |
 | 21 | Candidate 3 also holds at 960 Hz | Supported (native only; a confirmation run, not a gate) | Rest 1.7e-8 rad/s, NASA 3.5e-7 deg/s, energy 1.1e-9; c172x, f16, c310: 21 of 21 in every landing and impact. `results/04-diag-confirm-960-c3-ab4.txt`. |
+| 22 | The new build (all three patches inside, switched off) runs on the iPhone at the same speed as session 02's build | Verified (the user's iPhone, Safari 27.2) | 59 of 61 aircraft load; errors arrive as `JSBSimError`. c172x 13.0, 8.7, 8.3 and f16 10.0, 10.0, 10.3 microseconds per step at 120, 480, 1000 Hz (session 02: 8 to 13 and about 10.5). 20 forces by handle or bulk cost 2 to 4 more. The end states (height, speed) equal the Chromium run's. This times JSBSim's defaults, not `c3-ab4`. `results/04-page-iphone-fwasm-exceptions.txt`. |
 
 Yardsticks changed after seeing results, and how to read around them:
 
@@ -256,10 +257,11 @@ with a 0.1 s hold, and with the history kept. Results: findings 16 to 18.
 - **"Needs patch 0003 only" means switches, not files.** The recommended configuration leaves patches 0001 and
   0002 switched off. As a file, patch 0003 is written on top of 0002 and does not apply without it.
 - **Pushed to `main`** at each checkpoint, as the prompt asked.
-- **The test page runs the new build** in headless Chromium (59 of 61 aircraft load, as native;
-  `results/04-page-chromium-fwasm-exceptions.txt`). It has not been run on the iPhone.
-- **Not done:** the optional ground energy-balance gate; an iPhone run of the new build (the page at
-  https://135crewdog.github.io/FDM/ serves it); a memory-leak audit; a test of finding 9.
+- **The test page runs the new build** in headless Chromium and on the iPhone (finding 22; added after the
+  session's last push, when the user pasted the iPhone results). The page uses JSBSim's default integrators. At
+  480 Hz a step costs about 9 microseconds on the iPhone, so one second of flight costs about 4 ms.
+- **Not done:** the optional ground energy-balance gate; an iPhone timing of `c3-ab4` itself (in Node it costs
+  the same as the defaults, finding 20); a memory-leak audit; a test of finding 9.
 
 ## What remains for session 05
 

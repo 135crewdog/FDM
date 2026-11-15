@@ -174,8 +174,10 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
   in `jsbsim-data/`.
 - Property writes by name are slow (~1.8 us each with -fexceptions); use handles or bulk for per-step traffic.
 - `-fexceptions` costs ~50-100% per step vs no exceptions; `-fwasm-exceptions` costs nothing measurable.
-- iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10.5 us/step, +20 forces by handle/bulk ~3 us;
-  timer resolution 1 ms (time batches only).
+- iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10 us/step, +20 forces by handle/bulk ~3 us;
+  timer resolution 1 ms (time batches only). Unchanged with patches 0001-0003 in the build, switched off
+  (`results/04-page-iphone-fwasm-exceptions.txt`). `c3-ab4` itself has not been timed on the iPhone (the page uses
+  the default integrators).
 
 ## Parked for later: publishing (user's decision, 2026-11-15)
 Revisit publishing only once we have a viable FDM that others could use for mobile flight sims. Do not post
