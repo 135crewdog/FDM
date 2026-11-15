@@ -13,6 +13,9 @@ Date: 2026-11-15. Raw outputs: `results/`. How to rerun: `CLAUDE.md`.
   try/catch in normal operation (for example, to decide whether `<default value="...">` holds a number or a
   property name). As a result **c172x, f16 and 20 other of the 60 bundled aircraft fail to load** in the package.
   All 22 load in native JSBSim. Error reports reach JavaScript only as a bare number with no message.
+- On an iPhone (Safari 27.2), JSBSim takes **about 5 µs per step** for a c172x-based model, and about 60 µs with
+  20 runtime forces set by name. That is well within budget even at 1000 Hz. Errors are caught, and the page keeps
+  working after them.
 - The package's label is also misleading. It says "1.2.4", but it is built from a JSBSim master commit
   (`1a2e114`, 15 Feb 2026, 27 commits before v1.3.0) and reports `1.2.5.dev1`. It is a beta from a single
   maintainer.
@@ -185,7 +188,35 @@ Desktop Chromium (headless, this container) for reference:
 | + 20 forces updated | 1/480 | 135 | 188 |
 | + 20 forces updated | 1/1000 | 126 | 212 |
 
-iPhone results: _pending: to be pasted from the device._
+**iPhone results** (Safari tab, not the home-screen PWA; pasted from the device on 2026-11-15):
+
+- User agent: `Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1`.
+  That is Safari 27.2. Newer iOS versions freeze the OS number in the user agent at 18_7.
+- Screen 393×852 @3x; 4 cores reported; timer resolution 1 ms.
+- The package loaded in 25 ms (it was cached).
+
+| Case | dt | avg µs/step | 3000 steps took |
+|---|---|---|---|
+| c172x_noap | 1/120 | **5.7** | 17 ms (25 s of flight) |
+| c172x_noap | 1/480 | **5.0** | 15 ms |
+| c172x_noap | 1/1000 | **5.0** | 15 ms |
+| + 20 forces updated every step | 1/120 | **58.3** | 175 ms |
+| + 20 forces updated every step | 1/480 | **62.0** | 186 ms |
+| + 20 forces updated every step | 1/1000 | **59.7** | 179 ms |
+
+- **Errors:** every load error was caught on the iPhone too (as a bare number; the page decoded the text). The same
+  instance kept working after each failure, and the page stayed responsive.
+- **Same results as desktop:** final altitude and airspeed in every timing run were identical to the desktop
+  Chromium run, to the printed precision.
+- **Speed:** the iPhone was about 2.5× faster than this container's Chromium, and faster than native JSBSim on
+  this container's CPU. At 1000 Hz, JSBSim alone needs about 5 ms per simulated second (0.5% of a core). With 20
+  forces set by name it needs about 60 ms per second (6%). At 120 Hz both are negligible.
+- **Worst-case single steps** could not be measured: Safari's 1 ms timer resolution is coarser than a step.
+  'Worst 1000 µs' and 'worst-25-block 40/80 µs' are just one timer tick landing inside a step or block. The only
+  reliable bound is the averages. Measuring frame spikes properly would need many steps per timed batch, or a run
+  inside a real frame loop.
+- The 20-force cost is still about 90% property writes by name. Reducing this is a reason for our own binding,
+  but even as it is, the cost is affordable.
 
 ## What it would take to build our own
 

@@ -22,6 +22,7 @@ and fine to commit.
   bulk transfer in our own build.
 - JSBSim's default rotational-rate integrator is first-order Euler. Set
   `simulation/integrator/rate/rotational = 5` (AB4) to match the NASA check case.
+- iPhone (Safari 27.2): ~5 µs/step for a c172x-based model, ~60 µs with 20 forces set by name; timer resolution is 1 ms.
 - Recommendation: compile JSBSim to WASM ourselves (see REPORT.md).
 
 ## How to run
