@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Run one configuration through all the gates (native and WebAssembly), then judge it.
 #   tests/gates/run.sh <config> [ground nasa rigid flights cost]
-# Result: results/03-gates-<config>.txt (the evaluator's report). Raw measurements: out/gates/<config>/.
+# Result: results/<SESSION>-gates-<config>.txt (the evaluator's report; SESSION defaults to 04; session 03's
+# reports are results/03-gates-*). Raw measurements: out/gates/<config>/.
 # The freeze rule is enforced here: nothing but the two reference configurations runs unless the gate
 # files are committed and unchanged (so the gates cannot be edited after a result has been seen).
 set -euo pipefail
@@ -36,4 +37,4 @@ for pid in "${pids[@]:-}"; do [ -z "$pid" ] || wait "$pid" || status=1; done
 [ $status = 0 ] || { echo "error: a runner failed; see out/gates/$CONFIG/*.log" >&2; tail -5 out/gates/$CONFIG/*.log >&2; exit 1; }
 # Timing runs alone, after the measurements, so that nothing else competes for the processor.
 if [[ " $PARTS " == *" cost "* ]]; then JSBSIM_BIN="$BIN" JSBSIM_VARIANT=jsbsim-weh npx tsx tests/gates/cost.ts "$CONFIG" > "out/gates/$CONFIG/cost.log" 2>&1; fi
-$PY tests/gates/evaluate.py "$CONFIG" | tee "results/03-gates-$CONFIG.txt"
+$PY tests/gates/evaluate.py "$CONFIG" | tee "results/${SESSION:-04}-gates-$CONFIG.txt"

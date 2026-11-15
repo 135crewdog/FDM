@@ -1,0 +1,31 @@
+# Native answer key check: candidate [patched] against reference [unpatched]
+- unpatched: native JSBSim 1.3.3 [unpatched] module sha256 6a407d4dfd1b3b1c patches: none
+- patched: native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e patches: 0001-integrator-aware-friction.patch c8abb500ee33
+
+## Test 1: load matrix (same aircraft load, same failure messages)
+native JSBSim 1.3.3 [unpatched] module sha256 6a407d4dfd1b3b1c patches: none: 59/61 aircraft load
+native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e patches: 0001-integrator-aware-friction.patch c8abb500ee33: 59/61 aircraft load
+59/61 vs 59/61 load; aircraft with a different result or message: none
+PASS  load matrix identical
+
+## Test 2: scripts, every step
+PASS  c1721: bit-identical (1202 rows)
+PASS  T38: bit-identical (12001 rows)
+PASS  c1723: bit-identical (24001 rows)
+PASS  f16_test: bit-identical (84002 rows)
+
+## Test 3: external forces, every step
+PASS  c172p + scheduled external force: bit-identical (3601 rows)
+
+## Test 4: NASA check case 02 (default and AB4 body rates), 301 samples
+PASS  Atmos_02, default: bit-identical (301 rows)
+PASS  Atmos_02, AB4: bit-identical (301 rows)
+
+## Review's controlled flights (c172x and f16, Euler and AB4 body rates, 480 Hz, 10 s, 30 properties)
+PASS  controlled flight c172x, rate integrator 1: bit-identical (4801 rows)
+PASS  controlled flight c172x, rate integrator 5: bit-identical (4801 rows)
+PASS  controlled flight f16, rate integrator 1: bit-identical (4801 rows)
+PASS  controlled flight f16, rate integrator 5: bit-identical (4801 rows)
+
+jsbsim-data/ clean
+# RESULT: PASS: [patched] agrees with [unpatched]

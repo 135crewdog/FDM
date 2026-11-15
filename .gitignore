@@ -5,7 +5,7 @@ site/
 dist/
 *.log
 __pycache__/
-build/
+/build/
 # generated test aircraft/scripts inside the committed JSBSim data
 jsbsim-data/aircraft/c172p_ext*/
 jsbsim-data/scripts/ext_*.xml

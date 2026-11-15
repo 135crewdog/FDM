@@ -1,21 +1,21 @@
 {
-  "buildVersion": "fdm-wasm-20261115.1946",
-  "buildDate": "2026-11-15T19:46:13Z",
+  "buildVersion": "fdm-wasm-20261115.2029",
+  "buildDate": "2026-11-15T20:29:48Z",
   "jsbsimTag": "v1.3.3",
   "jsbsimCommit": "66f7fafc07fe13e7ede9db20873030fed2881713",
   "patchSet": "patched",
   "patches": [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}],
   "bindingSha256": "def341c90f0782e0f7182e8e2ba7b62118385c7793beaaad844af078e619a49a",
   "emscripten": "6.0.13",
-  "repoCommitAtBuild": "a33e699",
+  "repoCommitAtBuild": "df54682",
   "variants": {
     "jsbsim": "-fexceptions (Emscripten JS-based exception handling) on all code",
     "jsbsim-weh": "-fwasm-exceptions (native WebAssembly exception handling) on all code"
   },
   "sha256": {
-    "jsbsim.wasm": "21c0bca883d7e9225a62bf7920c979f14c1950b507bd5be075821535f27d302f",
+    "jsbsim.wasm": "cc1d7f4c5c581ced30d4d4370caecb6bfbffe274686fe054bdf68aba3f99f6f3",
     "jsbsim.mjs": "eb25d881b2f57bf1504b554848521d68a1fefa630757cb3290c0ec32d586623c",
-    "jsbsim-weh.wasm": "7b294134e57eab0bb9dcf1eb92b7703ebe77295a1ece2c5736772f5ea252ba14",
+    "jsbsim-weh.wasm": "b04e6859e9aae726c81971cef882f722aba677a4787f01d9af6e9d2fbe26e818",
     "jsbsim-weh.mjs": "0c07599dff4dd5d73c3350d34cf385519418b17c8d12faa5d08cfa30695f7aaf"
   }
 }
