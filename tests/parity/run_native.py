@@ -1,20 +1,18 @@
 """Run a JSBSim script in native JSBSim (Python package) and log every step.
 usage: python tests/parity/run_native.py scripts/c1721.xml out/c1721.native.csv [rateRotationalIntegrator]"""
-import os, sys, tempfile, time
-import jsbsim
+import os, sys, time
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pylib"))
+import native
 
 PROPS = ["simulation/sim-time-sec", "position/h-sl-ft", "velocities/vtrue-kts",
          "aero/alpha-rad", "aero/beta-rad", "attitude/phi-rad", "attitude/theta-rad",
          "attitude/psi-rad", "velocities/p-rad_sec", "velocities/q-rad_sec", "velocities/r-rad_sec",
          "position/h-agl-ft", "gear/wow"]
-ROOT = os.path.abspath(os.environ.get("JSBSIM_DATA") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "jsbsim-data"))
 PERTURB_H = float(os.environ.get("PERTURB_H", "0"))  # ft added to the initial altitude (sensitivity check)
 
 def main(script, out, rate_int=None):
     out = os.path.abspath(out)
-    os.chdir(tempfile.mkdtemp())  # scripts may write output files; keep them out of the repo
-    fdm = jsbsim.FGFDMExec(ROOT)
-    fdm.set_debug_level(0)
+    fdm = native.new_fdm()  # output files go to a scratch directory, not the data root
     fdm.load_script(script)
     if rate_int:
         fdm["simulation/integrator/rate/rotational"] = float(rate_int)
@@ -26,7 +24,7 @@ def main(script, out, rate_int=None):
     while fdm.run():
         rows.append([fdm[p] for p in PROPS])
     dt = time.perf_counter() - t0
-    print(f"{script}: {len(rows)} rows, {dt * 1e6 / len(rows):.1f} us/step incl. logging (native {jsbsim.__version__})")
+    print(f"{script}: {len(rows)} rows, {dt * 1e6 / len(rows):.1f} us/step incl. logging ({native.describe()})")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as f:
         f.write(",".join(PROPS) + "\n")

@@ -1,6 +1,7 @@
 // Node helpers for our WebAssembly JSBSim build: create an instance with the JSBSim data copied into
 // its in-memory file system. The browser-safe wrapper is src/jsbsim.ts.
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { JSBSim, JSBSimError, type ModuleFactory } from "./jsbsim.ts";
 
@@ -8,7 +9,8 @@ export { JSBSim, JSBSimError };
 export const ROOT_DIR = new URL("../", import.meta.url).pathname;
 /** JSBSim data root; JSBSIM_DATA overrides it (e.g. a modified copy under out/). */
 export const DATA = process.env.JSBSIM_DATA ? process.env.JSBSIM_DATA.replace(/\/?$/, "/") : new URL("../jsbsim-data/", import.meta.url).pathname;
-export const BIN = new URL("../wasm/bin/", import.meta.url).pathname;
+/** Directory of the built files; JSBSIM_BIN overrides it (e.g. build/wasm-bin-unpatched/). */
+export const BIN = process.env.JSBSIM_BIN ? process.env.JSBSIM_BIN.replace(/\/?$/, "/") : new URL("../wasm/bin/", import.meta.url).pathname;
 
 export type Variant = "jsbsim" | "jsbsim-weh";
 const DATA_DIRS = ["aircraft", "engine", "systems", "scripts"];
@@ -17,8 +19,24 @@ const DATA_DIRS = ["aircraft", "engine", "systems", "scripts"];
  * Create a JSBSim instance. By default copies aircraft/engine/systems/scripts into MEMFS.
  * Set JSBSIM_LOG=1 to echo JSBSim's console output.
  */
+/** The variant createSim() uses when none is given: JSBSIM_VARIANT, else jsbsim-weh (-fwasm-exceptions, the default since the iPhone test in REPORT-02). */
+export function currentVariant(): Variant {
+  const v = process.env.JSBSIM_VARIANT ?? "jsbsim-weh";
+  if (v !== "jsbsim" && v !== "jsbsim-weh") throw new Error(`JSBSIM_VARIANT must be jsbsim or jsbsim-weh, got ${v}`);
+  return v;
+}
+
+/** One line that identifies the binary under test: variant, hash of the .wasm, build version, patches. */
+export function describeBuild(variant: Variant = currentVariant()): string {
+  const sha = createHash("sha256").update(readFileSync(join(BIN, `${variant}.wasm`))).digest("hex");
+  const infoPath = join(BIN, "build-info.json");
+  const info = existsSync(infoPath) ? JSON.parse(readFileSync(infoPath, "utf8")) : {};
+  const patches = (info.patches ?? []).map((p: { file: string; sha256: string }) => `${p.file} ${p.sha256.slice(0, 12)}`).join(", ") || "none";
+  return `wasm ${variant} sha256 ${sha.slice(0, 16)} (${info.buildVersion ?? "unknown build"}, patches: ${patches})`;
+}
+
 export async function createSim(opts: { variant?: Variant; dirs?: string[] } = {}): Promise<JSBSim> {
-  const variant = opts.variant ?? (process.env.JSBSIM_VARIANT as Variant | undefined) ?? "jsbsim-weh"; // -fwasm-exceptions is the default since the iPhone test (REPORT-02)
+  const variant = opts.variant ?? currentVariant();
   const factory = (await import(join(BIN, `${variant}.mjs`))).default as ModuleFactory;
   const sim = await JSBSim.create({
     factory,

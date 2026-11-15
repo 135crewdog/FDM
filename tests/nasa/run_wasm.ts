@@ -3,15 +3,16 @@
 // and step rate in Hz (default: the script's 100 Hz).
 // Logs the same quantities as check_cases/NASA_EOM_2015/scripts/Atmos_02.xml, at 10 Hz.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { createSim, copyTree, DATA, describeError } from "../../src/wasm.ts";
+import { createSim, copyTree, currentVariant, DATA, describeError } from "../../src/wasm.ts";
 
 const cols: [string, string, string][] = JSON.parse(readFileSync(new URL("./columns.json", import.meta.url), "utf8"));
 const conv = (kind: string, v: number) =>
   kind === "deg" ? v * (180.0 / Math.PI) : kind === "yaw" ? ((v + 180.0) % 360.0) - 180 : v;
 
+// usage: JSBSIM_VARIANT=<variant> tsx tests/nasa/run_wasm.ts [rateInt=1] [hz=0 (script's 100 Hz)] [out.csv]
 const rateInt = process.argv[2] && process.argv[2] !== "1" ? process.argv[2] : undefined;
-const hz = process.argv[3] ? Number(process.argv[3]) : undefined;
-const outFile = `out/Atmos_02_wasm${rateInt ? `_rateint${rateInt}` : ""}${hz ? `_${hz}hz` : ""}.csv`;
+const hz = process.argv[3] && Number(process.argv[3]) > 0 ? Number(process.argv[3]) : undefined;
+const outFile = process.argv[4] ?? `out/Atmos_02_${currentVariant()}${rateInt ? `_rateint${rateInt}` : ""}${hz ? `_${hz}hz` : ""}.csv`;
 const sim = await createSim({ dirs: [] });
 copyTree(sim, DATA + "check_cases/NASA_EOM_2015/aircraft", "aircraft");
 copyTree(sim, DATA + "check_cases/NASA_EOM_2015/scripts", "scripts");
@@ -33,4 +34,4 @@ try {
 }
 mkdirSync("out", { recursive: true });
 writeFileSync(outFile, rows.join("\n") + "\n");
-console.log(`wrote ${outFile} (${rows.length - 1} rows)`);
+console.log(`wrote ${outFile} (${rows.length - 1} rows, variant ${currentVariant()})`);

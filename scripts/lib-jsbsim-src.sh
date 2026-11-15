@@ -4,7 +4,7 @@
 JSBSIM_TAG="v1.3.3"
 JSBSIM_COMMIT_PIN="66f7fafc07fe13e7ede9db20873030fed2881713"
 JSBSIM_REPO="${JSBSIM_REPO:-https://github.com/JSBSim-Team/jsbsim.git}"
-PATCH_DIR="$ROOT/wasm/patches"
+PATCH_DIR="${PATCH_DIR:-$ROOT/wasm/patches}"   # overridable only for tests/build/selftest_patches.sh
 
 # patch_files <set>: the patch files of a patch set, one per line, in the order applied.
 #   patched   = every wasm/patches/*.patch (sorted by name)
@@ -38,7 +38,7 @@ prepare_src() {
   local src="$1" set="$2" p
   if [ ! -d "$src/.git" ]; then
     rm -rf "$src"
-    git clone -q --depth 1 --branch "$JSBSIM_TAG" "$JSBSIM_REPO" "$src"
+    git -c advice.detachedHead=false clone -q --depth 1 --branch "$JSBSIM_TAG" "$JSBSIM_REPO" "$src" 2>/dev/null || git -c advice.detachedHead=false clone -q --branch "$JSBSIM_TAG" "$JSBSIM_REPO" "$src"
   fi
   local head; head="$(git -C "$src" rev-parse HEAD)"
   [ "$head" = "$JSBSIM_COMMIT_PIN" ] || { echo "error: $src is at $head, pinned is $JSBSIM_COMMIT_PIN" >&2; return 1; }

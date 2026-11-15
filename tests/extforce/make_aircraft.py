@@ -1,5 +1,5 @@
 """Make copies of c172p with N runtime-controllable external forces (into git-ignored jsbsim-data/).
-Also writes a matching script. usage: python tests/extforce/make_aircraft.py 1 20"""
+Also writes a matching script. usage: python tests/extforce/make_aircraft.py 0 1 20   (0 = no force at all: the benchmark baseline)"""
 import os, re, sys
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "jsbsim-data")
 
@@ -24,5 +24,5 @@ def make(n):
 </runscript>
 """)
 
-for a in sys.argv[1:] or ["1", "20"]:
+for a in sys.argv[1:] or ["0", "1", "20"]:
     make(int(a))

@@ -1,0 +1,39 @@
+PASS  identical logs (ref,cand): exit 0, expected 0
+PASS  identical logs (cand,ref): exit 0, expected 0
+PASS  identical logs, --gate (ref,cand): exit 0, expected 0
+PASS  identical logs, --gate (cand,ref): exit 0, expected 0
+PASS  difference inside tolerance, --gate (ref,cand): exit 0, expected 0
+PASS  difference inside tolerance, --gate (cand,ref): exit 0, expected 0
+FAIL  NaN in candidate (ref,cand): exit 0, expected 2
+FAIL  NaN in candidate (cand,ref): exit 0, expected 2
+FAIL  +Inf in candidate (ref,cand): exit 0, expected 2
+FAIL  +Inf in candidate (cand,ref): exit 0, expected 2
+FAIL  -Inf in candidate (ref,cand): exit 0, expected 2
+FAIL  -Inf in candidate (cand,ref): exit 0, expected 2
+FAIL  truncated candidate (one row, NaN): the review's probe (ref,cand): exit 0, expected 2
+FAIL  truncated candidate (one row, NaN): the review's probe (cand,ref): exit 0, expected 2
+FAIL  truncated candidate (finite) (ref,cand): exit 0, expected 2
+FAIL  truncated candidate (finite) (cand,ref): exit 0, expected 2
+FAIL  candidate longer (ref,cand): exit 0, expected 2
+FAIL  candidate longer (cand,ref): exit 0, expected 2
+FAIL  time-shifted candidate (ref,cand): exit 0, expected 2
+FAIL  time-shifted candidate (cand,ref): exit 0, expected 2
+FAIL  different header (ref,cand): exit 1, expected 2
+FAIL  different header (cand,ref): exit 1, expected 2
+FAIL  columns in a different order (ref,cand): exit 1, expected 2
+FAIL  columns in a different order (cand,ref): exit 1, expected 2
+FAIL  missing value in a row (ref,cand): exit 1, expected 2
+FAIL  missing value in a row (cand,ref): exit 1, expected 2
+FAIL  text where a number belongs (ref,cand): exit 1, expected 2
+FAIL  text where a number belongs (cand,ref): exit 1, expected 2
+FAIL  header only (ref,cand): exit 0, expected 2
+FAIL  header only (cand,ref): exit 0, expected 2
+FAIL  empty file (ref,cand): exit 1, expected 2
+FAIL  empty file (cand,ref): exit 1, expected 2
+FAIL  rate out of tolerance, --gate (ref,cand): exit 0, expected 1
+FAIL  rate out of tolerance, --gate (cand,ref): exit 0, expected 1
+FAIL  position out of tolerance, --gate (ref,cand): exit 0, expected 1
+FAIL  position out of tolerance, --gate (cand,ref): exit 0, expected 1
+PASS  rate out of tolerance, no --gate (report only) (ref,cand): exit 0, expected 0
+PASS  rate out of tolerance, no --gate (report only) (cand,ref): exit 0, expected 0
+# 30 comparator self-test(s) FAILED
