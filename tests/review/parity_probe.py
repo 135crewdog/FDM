@@ -14,7 +14,9 @@ out=ROOT/'out/review'; out.mkdir(parents=True,exist_ok=True)
 os.chdir(tempfile.mkdtemp(prefix='codex-parity-'))
 for model in C['models']:
     for integ in C['integrators']:
-        f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data')); f.set_debug_level(0)
+        f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data'))
+        f.set_output_path(os.getcwd())  # session 03: keep JSBSim's output files out of jsbsim-data/ (cwd is a temp dir)
+        f.set_debug_level(0)
         f.set_dt(1/C['hz']); assert f.load_model(model); f.disable_output()
         for p,v in C['initial'].items(): f[p]=v
         f['simulation/integrator/rate/rotational']=integ

@@ -1,0 +1,96 @@
+Done. Tap 'Copy results' and paste them back.
+FDM JSBSim WebAssembly test — build fdm-wasm-20261115.1912 (built 2026-11-15T19:12:54Z)
+Variant: jsbsim-weh.wasm, -fwasm-exceptions (default); JSBSim v1.3.3 (66f7fafc07); Emscripten 6.0.13
+Page built 2026-11-15T19:20:59.378Z; run at 2026-11-15T19:21:13.604Z
+User agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
+Screen: 1280x720 @1x; cores: 4; standalone PWA: false
+Timer resolution (performance.now): 100.0 us
+Data (423 files) 131 ms; module + files into memory 141 ms; JSBSim reports: 1.3.3 Nov 15 2026 19:12:43
+
+1) Load matrix: loadModel on every aircraft folder (61). Native JSBSim 1.3.3 loads all but LM and blank.
+   ok   737                 56 ms
+   ok   787-8               16 ms
+   ok   A320                12 ms
+   ok   A4                   6 ms
+   ok   B17                 22 ms
+   ok   B747                13 ms
+   ok   Boeing314           20 ms
+   ok   C130                11 ms
+   ok   Camel               17 ms
+   ok   Concorde            22 ms
+   ok   DHC6                17 ms
+   ok   F450                11 ms
+   ok   F4N                  8 ms
+   ok   F80C                 3 ms
+   ok   J246                15 ms
+   ok   J3Cub                5 ms
+   ok   L17                  5 ms
+   ok   L410                 9 ms
+   FAIL LM                   1 ms  loadModel(LM) returned false. Could not open file: Path "/jsbsim/aircraft/LM/LM.xml" JSBSim failed to open the configuration file: Path "/jsbsim/aircraft/LM/LM.
+   ok   MD11                 7 ms
+   ok   OV10                 7 ms
+   ok   Pterosaur            5 ms
+   ok   SGS                  5 ms
+   ok   Short_S23           39 ms
+   ok   Shuttle              4 ms
+   ok   Submarine_Scout      9 ms
+   ok   T37                  6 ms
+   ok   T38                  5 ms
+   ok   X15                  4 ms
+   ok   XB-70               10 ms
+   ok   ZLT-NT              15 ms
+   ok   ah1s                12 ms
+   ok   ball                 2 ms
+   ok   ballx                2 ms
+   FAIL blank                1 ms  loadModel(blank) returned false. YOU HAVE AN INCOMPATIBLE CFG FILE FOR THIS AIRCRAFT. RESULTS WILL BE UNPREDICTABLE !! Current version needed is: 2.0 You have v
+   ok   c172p                4 ms
+   ok   c172r                4 ms
+   ok   c172x               11 ms
+   ok   c182                 5 ms
+   ok   c310                 7 ms
+   ok   dr1                  6 ms
+   ok   f104                 9 ms
+   ok   f15                  8 ms
+   ok   f16                 12 ms
+   ok   f22                 10 ms
+   ok   fokker100            5 ms
+   ok   fokker50             5 ms
+   ok   global5000           5 ms
+   ok   minisgs              3 ms
+   ok   mk82                 3 ms
+   ok   p51d                12 ms
+   ok   pa28                 7 ms
+   ok   paraglider           5 ms
+   ok   pc7                  7 ms
+   ok   pogo-jsbsim          8 ms
+   ok   sgs126               2 ms
+   ok   sgs233               2 ms
+   ok   t6texan2             3 ms
+   ok   weather-balloon      2 ms
+   ok   wrightFlyer1903      5 ms
+   ok   x24b                 3 ms
+   59/61 load (expected 59): PASS
+
+2) Errors are JavaScript Errors with JSBSim's message, and the instance keeps working
+   malformed XML: JSBSimError: loadModel(broken_xml): In file /jsbsim/aircraft/broken_xml/broken_xml.xml: line 5 XML parse error: no element found
+   text where a number belongs: JSBSimError: loadModel(broken_value): Expecting a numeric attribute value, but got: not-a-number
+   missing aircraft: JSBSimError: loadModel(does_not_exist) returned false. Could not open file: Path "/jsbsim/aircraft/does_not_exist/does_not_exist.xml" JSBSim failed to open the configuration file: Path "/jsbsim/aircraft/does_not_e
+   afterwards, same instance: c172x ran 120 steps, alt 4007.6 ft
+
+3) Time per step (3000 steps after 300 warm-up; whole batch timed). Unmodified c172x (reset01, in the air)
+   and f16 (our airborne init file: 10000 ft, 400 kt, engine running).
+   c172x  dt=1/120     34.1 us/step  (102 ms for 25.0 s sim; end 2619 ft 148 kt)
+   c172x  dt=1/480     22.6 us/step  (68 ms for 6.3 s sim; end 4226 ft 60 kt)
+   c172x  dt=1/1000    17.0 us/step  (51 ms for 3.0 s sim; end 4103 ft 84 kt)
+   f16    dt=1/120     19.1 us/step  (57 ms for 25.0 s sim; end 5526 ft 383 kt)
+   f16    dt=1/480     17.5 us/step  (53 ms for 6.3 s sim; end 9828 ft 367 kt)
+   f16    dt=1/1000    17.4 us/step  (52 ms for 3.0 s sim; end 10001 ft 383 kt)
+
+4) 20 external forces (c172x + 20 runtime forces), 7 values each written before every step:
+   none = forces defined but not updated; name = 140 setProperty by name; handle = 140 writes by cached handle;
+   bulk = one Float64Array of 140 values per step.
+   dt=1/120   none   22.5  name  132.8  handle   27.6  bulk   24.6  us/step   (name/handle/bulk same end state: yes)
+   dt=1/480   none   16.6  name  111.1  handle   24.6  bulk   20.8  us/step   (name/handle/bulk same end state: yes)
+   dt=1/1000  none   16.7  name  130.2  handle   23.2  bulk   27.2  us/step   (name/handle/bulk same end state: yes)
+
+Done. Page still responsive.

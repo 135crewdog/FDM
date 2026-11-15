@@ -16,7 +16,9 @@ cols=json.loads((ROOT/'tests/nasa/columns.json').read_text())
 os.chdir(tempfile.mkdtemp(prefix='codex-nasa-'))
 for rate in [1,3,4,5]:
     for attitude in [1,6,7]:
-        f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data/check_cases/NASA_EOM_2015'));f.set_debug_level(0)
+        f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data/check_cases/NASA_EOM_2015'))
+        f.set_output_path(os.getcwd())  # session 03: keep JSBSim's output files out of jsbsim-data/ (cwd is a temp dir)
+        f.set_debug_level(0)
         assert f.load_script('scripts/Atmos_02.xml',1/480)
         f.disable_output()
         f['simulation/integrator/rate/rotational']=rate

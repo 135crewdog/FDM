@@ -26,7 +26,9 @@ OUT = ROOT/'results/review-codex-02'
 os.chdir(tempfile.mkdtemp(prefix='codex-crash-'))
 
 def trial(hz, variant):
-    f = jsbsim.FGFDMExec(str(ROOT/'jsbsim-data')); f.set_debug_level(0)
+    f = jsbsim.FGFDMExec(str(ROOT/'jsbsim-data'))
+    f.set_output_path(os.getcwd())  # session 03: keep JSBSim's output files out of jsbsim-data/ (cwd is a temp dir)
+    f.set_debug_level(0)
     assert f.load_script('scripts/f16_test.xml',1/hz)
     f.disable_output()
     f['simulation/integrator/rate/rotational'] = 5

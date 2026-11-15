@@ -13,7 +13,9 @@ props=['velocities/'+p+'-rad_sec' for p in 'pqr']+['position/h-agl-ft',
 for model,scenario,seconds in [('c172x','rest',60),('737','hard',15),('ah1s','inverted',15)]:
     for hz in [480,1000]:
         for integrator in [1,5]:
-            f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data'));f.set_debug_level(0)
+            f=jsbsim.FGFDMExec(str(ROOT/'jsbsim-data'))
+            f.set_output_path(os.getcwd())  # session 03: keep JSBSim's output files out of jsbsim-data/ (cwd is a temp dir)
+            f.set_debug_level(0)
             init='reset_at_rest' if model=='c172x' else 'reset00'
             script=Path('spot.xml').resolve()
             script.write_text(f'<runscript name="review"><use aircraft="{model}" initialize="{init}"/><run start="0" end="100" dt="{1/hz}"/></runscript>')

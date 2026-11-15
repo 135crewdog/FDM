@@ -21,6 +21,7 @@ STATE = RATES + ['position/h-agl-ft', 'velocities/v-north-fps',
 
 def trial(model, hz, integ, scenario):
     f = jsbsim.FGFDMExec(str(DATA))
+    f.set_output_path(os.getcwd())  # session 03: keep JSBSim's output files out of jsbsim-data/ (cwd is a temp dir)
     f.set_debug_level(0)
     f.set_dt(1/hz)
     assert f.load_model(model)
