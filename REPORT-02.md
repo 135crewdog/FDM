@@ -213,7 +213,20 @@ Desktop Chromium (headless, this container), µs per step (`results/02-test6-pag
 
 The end states are identical in both builds and with all force methods.
 
-**iPhone results: pending** (to be pasted by the user).
+**Mac, Safari 27.0.1** (macOS, 8 cores, timer 1 ms; pasted by the user 2026-11-15; `-fexceptions` build):
+
+- Load matrix 59/61, PASS, with the same two failures and messages as native.
+- Errors: all three are `JSBSimError`s with JSBSim's message, and the same instance flew afterwards.
+- End states are identical to desktop Chromium in every timing run.
+- Data download 955 ms; module plus files into memory 744 ms (first visit).
+
+| | 1/120 | 1/480 | 1/1000 |
+|---|---|---|---|
+| c172x, µs/step | 36.7 | 23.3 | 21.7 |
+| f16, µs/step | 27.3 | 27.3 | 26.7 |
+| 20 forces: none / name / handle / bulk | 32.3 / 318 / 36.7 / 35.3 | 23.3 / 311 / 27.7 / 26.3 | 21.7 / 305 / 26.0 / 25.0 |
+
+**iPhone results: pending.** The `-fwasm-exceptions` run on Safari is also pending.
 
 ## Not done / limits
 
