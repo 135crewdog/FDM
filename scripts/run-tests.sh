@@ -78,6 +78,13 @@ if has 4; then {
   $PY tests/nasa/compare.py out/Atmos_02_wasm.csv out/Atmos_02_native.csv
   echo; echo "## AB4 (simulation/integrator/rate/rotational = 5), WASM vs NASA and vs native"
   $PY tests/nasa/compare.py out/Atmos_02_wasm_rateint5.csv out/Atmos_02_native_rateint5.csv
+  echo; echo "## Higher step rates (script dt overridden), WASM, body rates only"
+  for hz in 480 1000; do
+    npx tsx tests/nasa/run_wasm.ts 1 $hz >/dev/null; npx tsx tests/nasa/run_wasm.ts 5 $hz >/dev/null
+    for f in out/Atmos_02_wasm_${hz}hz.csv out/Atmos_02_wasm_rateint5_${hz}hz.csv; do
+      $PY tests/nasa/compare.py $f | grep -E "^Atmos|^variable|Rate"
+    done
+  done
 } 2>&1 | tee results/02-test4-nasa.txt; fi
 
 if has 5; then {
@@ -88,7 +95,11 @@ if has 5; then {
     npx tsx tests/parity/run_wasm.ts scripts/$s.xml out/$s.ab4.wasm.csv 5
     $PY tests/ab4/compare.py out/$s.wasm.csv out/$s.ab4.wasm.csv
     $PY tests/parity/run_native.py scripts/$s.xml out/$s.ab4.native.csv 5 2>/dev/null | tail -1
-    echo "AB4: WASM vs native"; $PY tests/parity/compare.py out/$s.ab4.native.csv out/$s.ab4.wasm.csv | head -1
-    $PY tests/parity/compare.py out/$s.ab4.native.csv out/$s.ab4.wasm.csv | sort -k3 -g | tail -1
+    echo "AB4, native vs WASM:"; $PY tests/parity/compare.py out/$s.ab4.native.csv out/$s.ab4.wasm.csv > out/$s.ab4.cmp.txt || true
+    grep -E "rows|h-sl-ft|q-rad" out/$s.ab4.cmp.txt || true
+  done
+  echo; echo "## 5b: AB4 vs default at higher step rates (first non-finite time, peak body rate, end state)"
+  for s in f16_test f16_runway_test c1723; do
+    echo; npx tsx tests/ab4/rate_sweep.ts scripts/$s.xml
   done
 } 2>&1 | tee results/02-test5-ab4.txt; fi
