@@ -1,0 +1,29 @@
+# Anatomy of the hard-landing runs: configuration `floor`
+
+Native JSBSim: native JSBSim 1.3.3 [unpatched] module sha256 6a407d4dfd1b3b1c patches: none
+21 runs per case (gates-04.json). 'Failed' = runaway or non-finite (G2's definition). 'Below ground' = the centre of gravity
+was under the surface at some step before the run ended or failed. 'Tipped' = pitch or roll beyond 60 deg.
+'Thrown' = finite to the end, but the centre of gravity rose more than 100 ft above the ground after touching it.
+
+| scenario | aircraft | rate | failed | failed after going below ground | failed without going below ground | finite: stayed above ground and upright | finite: tipped or below ground | finite: thrown above 100 ft | tumbling before the first touch | lowest point of any run, ft |
+|---|---|---|---|---|---|---|---|---|---|---|
+| G2c forward | c172x | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 3.3 |
+| G2c forward | c172x | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 3.3 |
+| G2c forward | f16 | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 4.3 |
+| G2c forward | f16 | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 4.3 |
+| G2c forward | c310 | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 2.5 |
+| G2c forward | c310 | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 2.5 |
+| G2c forward | ah1s | 480 Hz | 10 | 10 | 0 | 0 | 11 | 3 | 21 | -81.8 |
+| G2c forward | ah1s | 1000 Hz | 4 | 4 | 0 | 0 | 17 | 1 | 21 | -30.4 |
+| G2c forward | 737 | 480 Hz | 12 | 12 | 0 | 0 | 9 | 6 | 0 | -261.8 |
+| G2c forward | 737 | 1000 Hz | 0 | 0 | 0 | 0 | 21 | 20 | 0 | -241.3 |
+| G2b as first written | c172x | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 3.3 |
+| G2b as first written | c172x | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 3.3 |
+| G2b as first written | f16 | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 4.0 |
+| G2b as first written | f16 | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 4.1 |
+| G2b as first written | c310 | 480 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 21 | 2.8 |
+| G2b as first written | c310 | 1000 Hz | 0 | 0 | 0 | 21 | 0 | 0 | 21 | 2.8 |
+| G2b as first written | ah1s | 480 Hz | 20 | 20 | 0 | 0 | 1 | 1 | 21 | -34.6 |
+| G2b as first written | ah1s | 1000 Hz | 0 | 0 | 0 | 0 | 21 | 2 | 21 | -32.3 |
+| G2b as first written | 737 | 480 Hz | 8 | 8 | 0 | 0 | 13 | 12 | 0 | -168.6 |
+| G2b as first written | 737 | 1000 Hz | 2 | 2 | 0 | 0 | 19 | 16 | 0 | -163.8 |

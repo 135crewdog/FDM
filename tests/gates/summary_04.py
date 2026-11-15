@@ -24,17 +24,21 @@ def cost(c):
 
 
 def main(configs):
+    import evaluate_04b as B
     rows = []
     for c in configs:
         v = json.loads((REPO / f"out/gates/{c}/verdict04.json").read_text())
+        vb = json.loads((REPO / f"out/gates/{c}/verdict04b.json").read_text())
         old = json.loads((REPO / f"out/gates/{c}/verdict.json").read_text())["verdicts"]
         rep = L.repeats(c)
+        fw = B.forward(c)
         _, worst1 = L.g1_at(c)
         _, num4 = L.g4_at(c)
         rb = {p: {(r["body"], r["spin"], r["hz"]): r for r in L.jsonl(REPO / f"out/gates/{c}/rigidb.{p}.jsonl")} for p in L.PLATFORMS}
         for hz in L.JUDGED:
             k = str(hz)
             g2 = [sum(sum(L.run_ok(r) for r in rep[p][(m, G4["G2b"]["scenario"], hz)]) for m in G["aircraft"]) for p in L.PLATFORMS]
+            g2c = [sum(sum(L.run_ok(r) for r in fw[p][(m, hz)]) for m in G["aircraft"]) for p in L.PLATFORMS]
             g3 = [sum(L.g3b_counts(rep, p, hz).values()) for p in L.PLATFORMS]
             worst5 = 0.0
             for p in L.PLATFORMS:
@@ -42,26 +46,47 @@ def main(configs):
                     if h == hz and spin not in G["G5"]["report_only_spins"]:
                         worst5 = max(worst5, float("inf") if ("error" in r or not r["finite"]) else max(r["energy_drift"], r["momentum_magnitude_drift"]))
             n2 = L.N_RUNS * len(G["aircraft"])
-            n3 = L.N_RUNS * len(G["aircraft"]) * len(G4["G3b"]["scenarios"])
+            n3 = n2 * len(G4["G3b"]["scenarios"])
+            crash = "reference" if vb["G2b_as_crash"] == "reference" else {True: "no worse", False: "**WORSE**", None: "incomplete"}[vb["G2b_as_crash"][k]]
             rows.append([f"`{c}`", f"{hz} Hz",
-                         f"{W[v['G1'][k]]} {worst1[hz]:.0e} rad/s",
-                         f"{W[v['G2b'][k]]} {g2[0]} / {g2[1]} of {n2}",
-                         (f"reference {g3[0]} / {g3[1]} of {n3}" if v["G3b"] == "reference" else f"{W[v['G3b'][k]]} {g3[0]} / {g3[1]} of {n3}"),
-                         f"{W[v['G4'][k]]} {num4[hz][0]:.1e} deg/s, {num4[hz][1]:.1e} deg",
+                         f"{W[v['G1'][k]]} {worst1[hz]:.0e}",
+                         f"{W[vb['G2c'][k]]} {g2c[0]} / {g2c[1]}",
+                         f"{crash} {g2[0]} / {g2[1]}",
+                         (f"reference {g3[0]} / {g3[1]}" if v["G3b"] == "reference" else f"{'no worse' if v['G3b'][k] else '**WORSE**'} {g3[0]} / {g3[1]}"),
+                         f"{W[v['G4'][k]]} {num4[hz][0]:.1e}, {num4[hz][1]:.1e}",
                          f"{W[v['G5b'][k]]} {worst5:.1e}",
                          W[v["G6"]],
-                         f"**{'PASS' if v['decision'][k] else 'FAIL' if v['decision'][k] is False else 'incomplete'}**",
+                         f"**{'PASS' if vb['decision_corrected'][k] else 'FAIL' if vb['decision_corrected'][k] is False else 'incomplete'}**",
+                         "PASS" if v["decision"][k] else "FAIL" if v["decision"][k] is False else "incomplete",
                          " ".join(f"{g}:{'P' if old[g] else ('ref' if old[g] is None else 'F')}" for g in ("G1", "G2", "G3", "G4", "G5", "G6")),
                          cost(c)])
-    head = ["configuration", "step rate", "G1 Rest (worst rate)", "G2b Hard landing x21 (good runs, native / WebAssembly)",
-            "G3b Impacts x21 (runaway runs, native / WebAssembly)", "G4 NASA (rate error, attitude error)", "G5b Rigid body after start-up (worst drift)",
-            "G6 Parity", "all", "session 03 gates, all rates (P pass, F fail)", "cost, c172x 1000 Hz, flight / ground"]
+    n2 = L.N_RUNS * len(G["aircraft"])
+    head = ["configuration", "step rate", "G1 Rest (worst rate, rad/s)", f"G2c Forward hard landing (good runs of {n2}, native / WebAssembly)",
+            f"G2b Backward or sideways touchdown (good runs of {n2}; against the floor)",
+            f"G3b Impacts (runaway runs of {n2 * 3}; against the floor)", "G4 NASA (rate error deg/s, attitude error deg)",
+            "G5b Rigid body after start-up (worst drift)", "G6 Parity", "all, corrected", "all, as first committed",
+            "session 03 gates, all rates, single runs", "cost, c172x 1000 Hz, flight / ground"]
     print("| " + " | ".join(head) + " |")
     print("|" + "---|" * len(head))
     for r in rows:
         print("| " + " | ".join(r) + " |")
     print()
-    print("Limits: G1 body rates < 1e-6 rad/s; G2b every run good; G3b runaway runs at most the floor's + 15; G4 rate error < 2e-6 deg/s and attitude error < 1e-3 deg; G5b drift < 1e-6; G6 within the parity tolerances.")
+    print("Limits: G1 body rates < 1e-6 rad/s. G2c every run good. G2b bad runs at most the floor's + 5 (as first committed: every run good). "
+          "G3b runaway runs at most the floor's + 15. G4 rate error < 2e-6 deg/s and attitude error < 1e-3 deg. G5b drift < 1e-6. G6 within the parity tolerances. "
+          "'All, corrected' = G1, G2c, G2b against the floor, G3b, G4, G5b, G6 (GATES-04b.md). 'All, as first committed' = G1, G2b every run good, G3b, G4, G5b, G6 (GATES-04.md).")
+    print()
+    print("G2c and G2b by aircraft at the judged rates (good runs of 21, native / WebAssembly). The c172x, f16 and c310 land and stay upright; "
+          "the 737 and ah1s tip over or tumble and pass through the ground (results/04-diag-landing-anatomy-*.txt).")
+    print()
+    models = list(G["aircraft"])
+    print("| configuration | step rate | " + " | ".join(f"G2c {m}" for m in models) + " | " + " | ".join(f"G2b {m}" for m in models) + " |")
+    print("|---|---|" + "---|" * (2 * len(models)))
+    for c in configs:
+        rep, fw = L.repeats(c), B.forward(c)
+        for hz in L.JUDGED:
+            a = [" / ".join(str(sum(L.run_ok(r) for r in fw[p][(m, hz)])) for p in L.PLATFORMS) for m in models]
+            b = [" / ".join(str(sum(L.run_ok(r) for r in rep[p][(m, G4["G2b"]["scenario"], hz)])) for p in L.PLATFORMS) for m in models]
+            print(f"| `{c}` | {hz} Hz | " + " | ".join(a) + " | " + " | ".join(b) + " |")
 
 
 if __name__ == "__main__":

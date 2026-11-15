@@ -298,8 +298,8 @@ def sweep(cases=None):
 
 
 def landing_ok(model, hz, props, scale, run, root):
-    """One G2b hard landing (same set-up and checks as run_native_04.repeat_trial) on a scaled-damper aircraft."""
-    sc = G["scenarios"]["hard"]
+    """One G2c forward hard landing (same set-up and checks as run_native_04.repeat_trial) on a scaled-damper aircraft."""
+    sc = json.loads((HERE.parent / "gates-04b.json").read_text())["G2c"]["scenario_definition"]
     ic = dict(sc["ic"])
     for p, d in zip(G4["repeats"]["perturbed_properties"], G4["repeats"]["draws"][run]):
         ic[p] = ic[p] + d
@@ -329,7 +329,7 @@ def landing():
     print("# Hard landings against the gear damping scale")
     print()
     print(f"Native JSBSim: {native.describe()}")
-    print(f"G2b's hard landing, runs 0 to {runs - 1} of gates-04.json, on copies of the aircraft whose ground-contact dampers are")
+    print(f"G2c's forward hard landing, runs 0 to {runs - 1} of gates-04.json, on copies of the aircraft whose ground-contact dampers are")
     print("multiplied by a scale. Each cell: runs that stay finite and without runaway, of %d." % runs)
     print("If stiff dampers were the cause of the failures, softer dampers (scale < 1) would cure them and stiffer ones")
     print("would make them worse, and the scale that fails would move in proportion to the step rate.")
@@ -339,7 +339,7 @@ def landing():
         print()
         print("| aircraft | step rate | " + " | ".join(f"x{s:g}" for s in scales) + " |")
         print("|---|---|" + "---|" * len(scales))
-        for model in ("737", "ah1s"):
+        for model in ("737", "ah1s", "c310"):
             for hz in (120, 240, 480, 1000):
                 cells = []
                 for s in scales:

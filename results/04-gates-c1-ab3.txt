@@ -2,9 +2,9 @@
 
 - Role: CANDIDATE 1 variant: integrator-aware friction (mode 1) with AB3 body rates and Buss 2 attitude
 - Source: JSBSim v1.3.3 patched; properties: `simulation/integrator/rate/rotational` = 4, `simulation/integrator/position/rotational` = 7, `simulation/integrator/friction-aware` = 1
-- native: native JSBSim 1.3.3 [patched] module sha256 3ae9b49d9449079e; patches: 0001-integrator-aware-friction.patch c8abb500ee33
-- wasm-jsbsim-weh: wasm jsbsim-weh sha256 b04e6859e9aae726 (fdm-wasm-20261115.2029, patches: 0001-integrator-aware-friction.patch c8abb500ee33); patches: 0001-integrator-aware-friction.patch c8abb500ee33
-- wasm-jsbsim: wasm jsbsim sha256 cc1d7f4c5c581ced (fdm-wasm-20261115.2029, patches: 0001-integrator-aware-friction.patch c8abb500ee33); patches: 0001-integrator-aware-friction.patch c8abb500ee33
+- native: native JSBSim 1.3.3 [patched] module sha256 04b0929860cdfa9a; patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
+- wasm-jsbsim-weh: wasm jsbsim-weh sha256 bfaa2e9188713b72 (fdm-wasm-20261115.2054, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a); patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
+- wasm-jsbsim: wasm jsbsim sha256 22a9219b23b51ef2 (fdm-wasm-20261115.2054, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a); patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a
 - Gate definitions: gates.json sha256 784d92c9ec8cc472; last commit touching the frozen gate files: 164c1d0 2026-11-15T19:38:15+00:00
 
 ## G1 Rest: PASS
@@ -113,14 +113,14 @@ Position differences (native; reported, not gated; largest over 30 s). Cause: `b
 
 | workload | aircraft | rate | median us/step | min | max |
 |---|---|---|---|---|---|
-| flight | c172x | 120 Hz | 27.80 | 26.48 | 31.94 |
-| flight | f16 | 120 Hz | 22.40 | 21.69 | 29.25 |
-| ground at rest | c172x | 120 Hz | 30.26 | 29.63 | 31.12 |
-| ground at rest | f16 | 120 Hz | 24.47 | 23.12 | 25.94 |
-| flight | c172x | 1000 Hz | 20.86 | 18.64 | 26.16 |
-| flight | f16 | 1000 Hz | 21.71 | 20.91 | 22.28 |
-| ground at rest | c172x | 1000 Hz | 25.33 | 24.39 | 28.99 |
-| ground at rest | f16 | 1000 Hz | 24.34 | 22.97 | 26.59 |
+| flight | c172x | 120 Hz | 28.78 | 26.84 | 34.06 |
+| flight | f16 | 120 Hz | 23.85 | 23.27 | 28.39 |
+| ground at rest | c172x | 120 Hz | 31.20 | 29.50 | 47.08 |
+| ground at rest | f16 | 120 Hz | 25.99 | 23.61 | 29.95 |
+| flight | c172x | 1000 Hz | 18.77 | 18.32 | 29.39 |
+| flight | f16 | 1000 Hz | 22.41 | 20.92 | 30.84 |
+| ground at rest | c172x | 1000 Hz | 24.64 | 24.38 | 37.43 |
+| ground at rest | f16 | 1000 Hz | 24.41 | 23.92 | 24.82 |
 
 ## Summary
 
