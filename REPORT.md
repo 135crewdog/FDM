@@ -193,7 +193,8 @@ Desktop Chromium (headless, this container) for reference:
 - User agent: `Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1`.
   That is Safari 27.2. Newer iOS versions freeze the OS number in the user agent at 18_7.
 - Screen 393×852 @3x; 4 cores reported; timer resolution 1 ms.
-- The package loaded in 25 ms (it was cached).
+- The package loaded in 25 ms when cached and 623 ms on a cold load.
+- A second run 20 minutes later gave the same results: averages within 0.5 µs/step (6.0/5.3/5.3 and 57.3/62.0/61.0 µs) and identical final states.
 
 | Case | dt | avg µs/step | 3000 steps took |
 |---|---|---|---|
