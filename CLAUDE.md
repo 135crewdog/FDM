@@ -8,6 +8,16 @@ WebAssembly by us** (Emscripten 6.0.13). Read in this order:
    (independent review).
 4. `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
 
+## Chats and prompts (`prompts/README.md`)
+The repository is the project's memory; a chat is only where one piece of work happens.
+- Every chat is named `FDM <number> <kind>: <topic>`, e.g. `FDM 04 Work: integrator decision`. The number is the
+  session number (same as `REPORT-04.md`, `prompts/04-*.md`, `results/04-*`). Kinds: `Work` (Claude Code on the
+  repository), `Review` (independent review, Codex), `Plan` (regular Claude chat; cannot see the repository).
+- At the start of a session, rename the chat to the name in its prompt (or ask the user to, in the first line).
+- Every work session ends by writing the prompt for the next chat, with its chat name at the top and "Name this
+  chat ..." as the first instruction, and by adding a row to the table in `prompts/README.md`.
+- Next: `prompts/04-integrator-decision.md`.
+
 ## Rule: label every finding by strength of evidence
 The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
 - **Verified**: checked against an answer we did not produce (native JSBSim, NASA data, JSBSim source or
@@ -180,5 +190,6 @@ PATCHSET=unpatched scripts/build-wasm.sh   # without patches -> build/wasm-bin-u
   it from `main` to https://135crewdog.github.io/FDM/.
 - `results/03-*` session 03 summaries (`03-gates-*` are the gate reports); `results/02-*` session 02's;
   `results/session01/` session 01's.
-- `prompts/`: prompts for other agents (e.g. `codex-review-02.md`, independent review of session 02). An independent
+- `prompts/`: one prompt per chat, and `README.md` with the chat naming convention and the list of sessions
+  (e.g. `04-integrator-decision.md`; `codex-review-02.md`, independent review of session 02). An independent
   review should be repeated after phase 2's integrator decision, before the hybrid wing-strip work builds on it.
