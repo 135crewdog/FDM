@@ -58,6 +58,8 @@ sim.reset(); sim.setDebugLevel(0); sim.loadModel("c172x");
 sim.setProperty("review/a", 12); sim.setProperty("review/b", 34);
 mustWork("the same instance still flies after the errors", () => { sim.runIC(); return sim.runSteps(10); }, (r) => r === 10);
 
+mustThrow("loadIC(missing file)", () => sim.loadIC("no_such_reset_file"));
+mustWork("loadIC(reset00) then runIC", () => { sim.loadIC("reset00"); sim.runIC(); return sim.getProperty("ic/h-agl-ft"); }, (r) => Number.isFinite(r));
 console.log("## 2. Writes to read-only properties fail");
 mustThrow("setProperty(read-only simulation/sim-time-sec)", () => sim.setProperty("simulation/sim-time-sec", 1234), /sim-time-sec/);
 mustWork("read-only value unchanged", () => sim.getProperty("simulation/sim-time-sec"), (r) => r !== 1234);

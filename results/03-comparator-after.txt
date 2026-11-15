@@ -1,3 +1,4 @@
+PASS  missing files: exit 2, expected 2
 PASS  identical logs (ref,cand): exit 0, expected 0
 PASS  identical logs (cand,ref): exit 0, expected 0
 PASS  identical logs, --gate (ref,cand): exit 0, expected 0

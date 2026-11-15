@@ -1,0 +1,18 @@
+{
+  "_comment": "Integrator configurations run through the gates. A configuration is a list of JSBSim properties set after the initial conditions are loaded and before RunIC, plus which source it runs on (unpatched = JSBSim v1.3.3 as released; patched = plus wasm/patches/*.patch). New candidates may be ADDED here; the gates themselves (gates.json) may not change.",
+  "ref-default": {
+    "role": "reference (harness check only, known answer from REVIEW-codex-02): JSBSim's defaults",
+    "source": "unpatched",
+    "properties": {"simulation/integrator/rate/rotational": 1}
+  },
+  "ref-ab4": {
+    "role": "reference (harness check only, known answer from REVIEW-codex-02): AB4 body rates, known to fail on the ground",
+    "source": "unpatched",
+    "properties": {"simulation/integrator/rate/rotational": 5}
+  },
+  "floor": {
+    "role": "FLOOR: JSBSim's default body rates (Euler) plus Buss 2 attitude. No patch. The fallback if nothing else passes.",
+    "source": "unpatched",
+    "properties": {"simulation/integrator/rate/rotational": 1, "simulation/integrator/position/rotational": 7}
+  }
+}

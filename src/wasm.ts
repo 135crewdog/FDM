@@ -2,15 +2,15 @@
 // its in-memory file system. The browser-safe wrapper is src/jsbsim.ts.
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { JSBSim, JSBSimError, type ModuleFactory } from "./jsbsim.ts";
 
 export { JSBSim, JSBSimError };
 export const ROOT_DIR = new URL("../", import.meta.url).pathname;
 /** JSBSim data root; JSBSIM_DATA overrides it (e.g. a modified copy under out/). */
-export const DATA = process.env.JSBSIM_DATA ? process.env.JSBSIM_DATA.replace(/\/?$/, "/") : new URL("../jsbsim-data/", import.meta.url).pathname;
+export const DATA = process.env.JSBSIM_DATA ? resolve(process.env.JSBSIM_DATA) + "/" : new URL("../jsbsim-data/", import.meta.url).pathname;
 /** Directory of the built files; JSBSIM_BIN overrides it (e.g. build/wasm-bin-unpatched/). */
-export const BIN = process.env.JSBSIM_BIN ? process.env.JSBSIM_BIN.replace(/\/?$/, "/") : new URL("../wasm/bin/", import.meta.url).pathname;
+export const BIN = process.env.JSBSIM_BIN ? resolve(process.env.JSBSIM_BIN) + "/" : new URL("../wasm/bin/", import.meta.url).pathname;
 
 export type Variant = "jsbsim" | "jsbsim-weh";
 const DATA_DIRS = ["aircraft", "engine", "systems", "scripts"];

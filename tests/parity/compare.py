@@ -48,6 +48,13 @@ def tolerance(name, scale):
 
 
 def load(p):
+    try:
+        return _load(p)
+    except OSError as e:
+        raise LogError(f"{p}: cannot read ({e.strerror})")
+
+
+def _load(p):
     with open(p) as f:
         r = csv.reader(f)
         try:

@@ -30,6 +30,7 @@
 
 #include "FGFDMExec.h"
 #include "FGJSBBase.h"
+#include "initialization/FGInitialCondition.h"
 #include "input_output/FGPropertyManager.h"
 #include "models/FGInput.h"
 #include "simgear/misc/sg_path.hxx"
@@ -92,6 +93,11 @@ class Sim {
       if (!(dt >= 0.0) || !std::isfinite(dt)) throw JSBSim::BaseException("invalid dt " + num(dt) + " (must be finite and positive, or 0 for the script's own dt)");
       return fdm()->LoadScript(SGPath(script), dt, SGPath(initfile)) ? 1 : 0;
     });
+  }
+  // Load an initial-conditions file, like the Python module's load_ic(): with useAircraftPath the name
+  // is looked up in the loaded aircraft's folder ("reset00" -> aircraft/<model>/reset00.xml).
+  int loadIC(const std::string& name, bool useAircraftPath) {
+    return guard([&] { return fdm()->GetIC()->Load(SGPath(name), useAircraftPath) ? 1 : 0; });
   }
   int runIC() {
     return guard([&] { return fdm()->RunIC() ? 1 : 0; });
@@ -303,6 +309,7 @@ EMSCRIPTEN_BINDINGS(fdm_jsbsim) {
       .function("init", &Sim::init)
       .function("loadModel", &Sim::loadModel)
       .function("loadScript", &Sim::loadScript)
+      .function("loadIC", &Sim::loadIC)
       .function("runIC", &Sim::runIC)
       .function("run", &Sim::run)
       .function("runSteps", &Sim::runSteps)

@@ -45,6 +45,9 @@ CASES = [
 ]
 
 failed = 0
+p = subprocess.run([sys.executable, str(CMP), "/nonexistent/a.csv", "/nonexistent/b.csv", "--gate"], text=True, capture_output=True)
+failed += p.returncode != 2
+print(f"{'PASS' if p.returncode == 2 else 'FAIL'}  missing files: exit {p.returncode}, expected 2")
 with tempfile.TemporaryDirectory(prefix="fdm-compare-selftest-") as d:
     ref = Path(d) / "ref.csv"
     ref.write_text(text(GOOD))

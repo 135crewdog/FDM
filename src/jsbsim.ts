@@ -24,6 +24,7 @@ interface RawSim {
   init(root: string): number;
   loadModel(model: string, addModelToPath: boolean): number;
   loadScript(script: string, dt: number, initfile: string): number;
+  loadIC(name: string, useAircraftPath: boolean): number;
   runIC(): number;
   run(): number;
   runSteps(n: number): number;
@@ -183,6 +184,15 @@ export class JSBSim {
     const r = this.sim.loadScript(script, dt, initfile);
     this.check(r, `loadScript(${script})`);
     if (r === 0) throw new JSBSimError(`loadScript(${script}) returned false. ${this.log.text()}`.trim());
+  }
+
+  /** Load an initial-conditions file after loadModel, e.g. loadIC("reset00") for aircraft/<model>/reset00.xml
+   *  (like the Python module's load_ic). Then set any ic/... properties and call runIC(). */
+  loadIC(name: string, useAircraftPath = true): void {
+    this.log.clear();
+    const r = this.sim.loadIC(name, useAircraftPath);
+    this.check(r, `loadIC(${name})`);
+    if (r === 0) throw new JSBSimError(`loadIC(${name}) returned false. ${this.log.text()}`.trim());
   }
 
   runIC(): void {
