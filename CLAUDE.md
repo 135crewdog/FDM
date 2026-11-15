@@ -1,7 +1,8 @@
 # FDM repository: notes for future sessions
 
 Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The core is **JSBSim v1.3.3 compiled to
-WebAssembly by us** (Emscripten 6.0.13). Read `REPORT-02.md` first (our build, tests, recommendation), then
+WebAssembly by us** (Emscripten 6.0.13). Read `REPORT-02.md` first (our build, tests, recommendation; its "Review outcome" section
+withdraws the AB4 plan), then `REVIEW-codex-02.md` (independent review), then
 `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
 
 ## Rule: label every finding by strength of evidence
@@ -37,7 +38,7 @@ NASA check-case reference data is in `reference/nasa-checkcases/`.
 ```ts
 const sim = await createSim();            // Node: loads wasm/bin/jsbsim-weh.mjs (JSBSIM_VARIANT=jsbsim for the other), copies jsbsim-data into MEMFS at /jsbsim
 sim.loadScript("scripts/c1723.xml");      // or sim.loadModel("f16"); errors throw JSBSimError with JSBSim's message
-sim.setIntegrators({ rateRotational: 5 });// AB4: only together with >= 480 Hz (REPORT-02 test 5)
+sim.setIntegrators({ rateRotational: 5 });// AB4: NOT safe on the ground at any rate tested (REVIEW-codex-02); keep default (1) for now
 sim.runIC(); sim.run(); sim.runSteps(n);  // run() returns false when a script ends
 sim.getProperty(name); sim.setProperty(name, v);   // by name: ~1-2 us per call, fine for setup, not per step
 const h = sim.handle(name); sim.get(h); sim.set(h, v);          // cached handle: ~45 ns per write
@@ -55,9 +56,17 @@ crosses into JavaScript). Shared test helpers used by Node and the page: `src/ch
 - JSBSim's noise uses `std::default_random_engine`/`std::normal_distribution` (implementation-defined): models with
   active noise cannot match native Linux (libstdc++) step for step.
 - psi is reported in [0, 2pi): wrap angles before comparing.
-- Default rotational-rate integrator (Euler) is ~100x outside NASA's spread on the brick (10x even at 1000 Hz).
-  AB4 (`simulation/integrator/rate/rotational = 5`) sits on NASA's solutions, but at 120/240 Hz it blows up to NaN
-  on a hard inverted ground impact (f16_test, native too) and makes gear contact chatter. Fine at 480/1000 Hz.
+- **Integrator: undecided. Keep JSBSim's default (Euler body rates) until a candidate passes gates written down
+  before testing** (REPORT-02 "Review outcome"; Codex's "Tests to add").
+  - Euler body rates are robust on the ground but ~100x outside NASA's spread on the brick (10x even at 1000 Hz).
+  - AB4 (`simulation/integrator/rate/rotational = 5`) has body rates within ~1e-5 deg/s of NASA. But it **fails
+    on the ground at every rate tested, including 1000 Hz**:
+    - 5 aircraft never settle at rest;
+    - 737 and AH-1S hard landings run away;
+    - the f16 inverted impact runs away at 120/240 Hz.
+    The earlier "fine at 480/1000 Hz" claim was wrong (one crash, one taxi).
+  - Buss 2 attitude (`simulation/integrator/position/rotational = 7`) plus AB4/AB2 rates matches NASA attitude to
+    about 1e-4 deg (Codex). It does not help the ground.
 - Why AB4 chatters on the ground (REPORT-02, "Why AB4 misbehaves on the ground"):
   - `FGAccelerations::CalculateFrictionForces` sizes friction to cancel slip in one **Euler** step (`v/dt`).
     Under AB4 the 55/24 weight makes it overshoot.
@@ -67,7 +76,29 @@ crosses into JavaScript). Shared test helpers used by Node and the page: `src/ch
     1. Restore the 2010 friction.
     2. Implicit midpoint.
     3. AB4 in the air, Euler on the ground.
-  - The NaN on the inverted f16 impact is not explained yet (stiff STRUCTURE contacts?).
+  - The 2011 loss was a sequence: e67c5e42 moved and disabled the code, 85b3a574 re-enabled friction in the
+    Euler-only form, and 40279c20 deleted it.
+  - Restoring it also changes translation (default AB2), so it is not a no-op under Euler rotation.
+  - f16 inverted-impact runaway: friction on the STRUCTURE contacts contributes (Codex ablation). The first
+    invalid operation is still unknown.
+  - `gear/wow` counts only BOGEY (wheel) contacts. Detect STRUCTURE contact separately.
+- **Known defects, to fix before phase 2 builds on them** (REPORT-02 "Review outcome"):
+  - Binding:
+    - `hasProperty`, `get`, `readOutputs` and `bindList` can throw raw WebAssembly exceptions.
+    - `std::string` throws show as "unknown C++ exception".
+    - Read-only writes report success.
+    - `reset()` keeps stale bulk arrays.
+    - NaN or fractional handles become handle 0.
+    - Bad integrator IDs and dt=0 are accepted.
+  - Harness:
+    - `tests/parity/compare.py` ignores NaN and truncates to the shorter log.
+    - `scripts/run-tests.sh` tests 2-3 compare the default build with itself since the default changed (set
+      `JSBSIM_VARIANT` explicitly).
+    - `tests/ab4/rate_sweep.ts` "first non-finite" really means rates > 1e6.
+  - Build: `scripts/build-wasm.sh` applies patches only on a fresh clone.
+  - Runtime: the 737 needs npm `ws` (missing).
+  - Set dt **before** loading a model (FCS filters cache dt at load).
+- Native runs write output files into the data root. These are git-ignored now; never commit them.
 - Property writes by name are slow (~1.8 us each with -fexceptions); use handles or bulk for per-step traffic.
 - `-fexceptions` costs ~50-100% per step vs no exceptions; `-fwasm-exceptions` costs nothing measurable.
 - iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10.5 us/step, +20 forces by handle/bulk ~3 us;
@@ -93,6 +124,8 @@ scripts/build-wasm.sh                 # both variants -> wasm/bin/ (JSBSim sourc
 - `wasm/`: CMake build, binding, patches, built files. `scripts/build-wasm.sh`: pinned versions (JSBSim tag, Emscripten).
 - `src/jsbsim.ts` wrapper, `src/wasm.ts` Node helpers, `src/checks.ts` shared checks (load matrix, force timing).
 - `tests/loadmatrix/` test 1, `tests/parity/` test 2, `tests/extforce/` test 3, `tests/nasa/` test 4, `tests/ab4/` test 5.
+- `tests/review/` and `results/review-codex-02/`: Codex's review tests and results (e.g. `ground_matrix.py`, a native
+  stress matrix of 6 aircraft × 5 scenarios × 2 rates × 2 integrators).
 - `web/` page source (TypeScript, bundled by esbuild in `scripts/build-site.mjs`); `.github/workflows/pages.yml` deploys
   it from `main` to https://135crewdog.github.io/FDM/.
 - `results/02-*` session 02 summaries; `results/session01/` session 01's.

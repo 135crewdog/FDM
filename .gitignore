@@ -9,3 +9,7 @@ build/
 # generated test aircraft/scripts inside the committed JSBSim data
 jsbsim-data/aircraft/c172p_ext*/
 jsbsim-data/scripts/ext_*.xml
+# output files that native JSBSim runs write into the data root (scripts' <output> and initfile dumps)
+jsbsim-data/*.csv
+jsbsim-data/initfile.*.xml
+jsbsim-data/check_cases/NASA_EOM_2015/*.csv

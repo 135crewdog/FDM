@@ -4,13 +4,20 @@ Date: 2026-11-15. Raw outputs: `results/02-*.txt`. How to rebuild and rerun: `CL
 
 ## Summary
 
-**Recommendation: yes, our build is ready to be the FDM core,** with three settings decided by the tests below.
-How strong each finding is (Verified, Supported or Reasoned) is listed in the **Evidence ledger** after this
-summary:
+> **Correction after independent review (Codex, 2026-11-15; `REVIEW-codex-02.md`).** The AB4 recommendation
+> below was **wrong** and is withdrawn. AB4 also fails at 480 and 1000 Hz on other aircraft (737 and AH-1S hard
+> landings), and resting aircraft never settle with AB4 even at 1000 Hz. Claude re-ran these cases in native JSBSim
+> and got the same numbers. The integrator is **undecided**; see "Review outcome" below. The build itself, the
+> load matrix, native parity in controlled flight and the `-fwasm-exceptions` choice stand.
+
+**Recommendation: our build is ready to be the FDM core.** The integrator choice is still open. How strong each
+finding is (Verified, Supported or Reasoned) is listed in the **Evidence ledger** after the review outcome:
 
 1. Use the `-fwasm-exceptions` build. It is now the default (`wasm/bin/jsbsim-weh.*`).
-2. Run AB4 only at 480 Hz or faster.
+2. ~~Run AB4 only at 480 Hz or faster.~~ **Withdrawn.** Keep JSBSim's default (Euler) body-rate integrator until a
+   candidate passes the gates in "Review outcome".
 3. Use cached handles or the bulk array for the wing-strip forces.
+4. Fix the binding and test-harness defects found in review before phase 2 builds on them.
 
 On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13 µs per step and the f16 at about
 10.5 µs. 20 forces by handle or bulk add about 3 µs. At 1000 Hz that is about 1% of one core.
@@ -25,7 +32,9 @@ On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13
   - Bit-identical on the NASA brick, and on forces and moments set from JavaScript.
   - Rounding-level on c1721 and T38.
   - c1723 and f16_test drift further apart. Native drifts the same way against itself when its starting altitude
-    is moved by 1e-8 ft, so the cause is the scripts' sensitivity, not our build.
+    is moved by 1e-8 ft. That shows the scripts are sensitive, but it does **not prove** our build has no small
+    error (corrected after review). Codex's new controlled-flight comparisons (c172x and f16, Euler and AB4) agree
+    with native to 4e-9 ft.
 - **Fast property access works.** Writing 140 values (20 forces × 7) per step costs:
 
   | Method | Cost per step |
@@ -35,11 +44,15 @@ On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13
   | one bulk array | 4.8 µs |
 
   End states are identical with all three methods.
-- **AB4 lands on NASA's spread** (ratio 1.00–1.01 at 100 Hz). It is within 1e-6 deg/s of two NASA sims at
-  480–1000 Hz. The default integrator is about 100× outside the spread at 100 Hz, and still 10× outside at 1000 Hz.
-- **AB4 has a side effect at low rates.** At 120 and 240 Hz it blows up to NaN when the f16 hits the ground
-  inverted. At 120 Hz it makes the f16's body rates jitter 36× more while taxiing. At 480 and 1000 Hz both
-  problems go away. Native JSBSim does exactly the same, so this is JSBSim's AB4, not our build.
+- **AB4's body rates are very close to NASA's** (within 2–6e-5 deg/s of three NASA sims at 100 Hz, about 1e-6 at
+  480–1000 Hz). The default integrator is about 100× outside NASA's spread at 100 Hz, and still 10× outside at
+  1000 Hz. Corrected after review: the ratio used below is a distance, not a "within the spread" test, and
+  attitude errors remain about 0.01–0.1° because attitude still uses Euler.
+- **AB4 fails on the ground.** At 120 and 240 Hz it runs away (rates above 1e6 rad/s, then NaN) when the f16
+  hits the ground inverted. At 120 Hz it makes the f16's body rates jitter 36× more while taxiing. Native JSBSim
+  does exactly the same, so this is JSBSim's AB4, not our build. **Withdrawn after review:** the original claim
+  "at 480 and 1000 Hz both problems go away" was based on one crash and one taxi and is wrong (see "Review
+  outcome").
   - The taxi chatter has a known cause. JSBSim's friction solver assumes Euler. It was made integrator-aware in
     2010, and that code was lost in a 2011 refactor.
   - Options for phase 2 are listed in the section "Why AB4 misbehaves on the ground".
@@ -50,6 +63,97 @@ On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13
   - Aircraft load about 3× faster.
   - No failures on any platform. End states are identical.
   - `-fexceptions` is kept in `wasm/bin/` for comparison.
+
+## Review outcome (Codex, 2026-11-15)
+
+An independent review by Codex is in `REVIEW-codex-02.md`. Its tests are in `tests/review/` and its raw results
+in `results/review-codex-02/`. Its verdict: **keep the build; do not adopt the integrator plan.**
+
+Claude re-ran the decisive cases in native JSBSim 1.3.3 and checked the binding defects. Every one reproduced
+exactly:
+
+| Case (native JSBSim 1.3.3) | AB4 | Euler (default) |
+|---|---|---|
+| c172x resting on its gear, 1000 Hz, peak body rate in the last 10 of 60 s | 0.008 rad/s (never settles) | 4.4e-9 rad/s |
+| 737 hard landing (40 ft, 30 ft/s down), 480 Hz | runaway at 7.18 s, NaN at 7.19 s | not run here (Codex: finite) |
+| 737 hard landing, 1000 Hz | runaway at 5.41 s, NaN at 5.42 s | finite for 15 s |
+| AH-1S hard landing, 1000 Hz | runaway at 5.85 s, NaN at 5.86 s | finite for 15 s |
+
+**Corrections to this report** (each also marked where it occurs):
+
+1. "AB4 is fine at 480 Hz or faster" is **wrong**. It rested on one crash (f16) and one taxi. Five aircraft never
+   settle at rest with AB4, even at 1000 Hz, and the 737 and AH-1S hard landings blow up at 480 and 1000 Hz.
+2. The "first non-finite" times in Test 5 were the times the rates passed 1e6 rad/s. The first actual NaN comes
+   a few steps later.
+3. The 1e-8 ft nudge test shows the scripts are sensitive. It is **not proof** that our build is free of small
+   errors.
+4. "Restoring the 2010 friction fix changes nothing under Euler" is **wrong**. The fix also covers translation,
+   whose default integrator is AB2.
+5. The 2011 history is more detailed:
+   - `e67c5e42` (17 July 2011) moved the integrator-aware code and disabled it.
+   - `85b3a574` (24 July) re-enabled friction with the Euler-only form.
+   - `40279c20` (14 August) deleted the already-disabled code.
+   The conclusion stands: the fix was lost, not replaced.
+6. The NASA ratio is a distance measure, not a "within the spread" test. AB4 rates fall outside NASA's pointwise
+   min/max envelope at about half the samples, by tiny amounts.
+7. `gear/wow` counts only wheel (BOGEY) contacts, so the ground/air split in Test 5 can label wingtip or tail
+   contact as airborne.
+8. The f16 crash NaN is not "stiff springs". In Codex's test, removing only the friction on the STRUCTURE contact
+   points (from just before impact) kept both the 120 and 240 Hz runs finite. Friction contributes to the
+   runaway. The exact first invalid operation is still unknown.
+
+**Defects found in our code (to fix at the start of phase 2):**
+
+- Binding:
+  - `hasProperty` (and the unguarded `get`, `readOutputs` and `bindList` paths) can throw a raw WebAssembly
+    exception instead of a `JSBSimError`.
+  - Bad property paths give "unknown C++ exception": JSBSim throws `std::string`, which our guard does not decode.
+  - Writes to read-only properties report success.
+  - `reset()` leaves the old bulk-array lengths and values.
+  - Handles given as `NaN`, fractions or values ≥ 2³² silently become handle 0.
+  - Invalid integrator IDs and a zero dt are accepted silently.
+- Test harness:
+  - `tests/parity/compare.py` truncates to the shorter log and ignores NaN. It reported zero difference for a NaN
+    log.
+  - Since the default build changed, `scripts/run-tests.sh` compares the default build with itself in Tests 2
+    and 3. The saved results predate that change and are valid; **re-runs are not**.
+  - Benchmarks compare different states, and the "no external forces" case actually has one force.
+- Build and runtime:
+  - `scripts/build-wasm.sh` applies patches only on a fresh clone, so a new patch could be silently skipped.
+  - The 737 needs the npm package `ws` (socket input), which is not in `package.json`.
+  - Changing dt after loading a model does not re-time its control-system filters. Set dt before loading.
+- Data hygiene (found by Claude afterwards): native runs wrote output files into `jsbsim-data/`, and four were
+  committed (`JSBout172B.csv`, two `initfile.*.xml`, `check_cases/NASA_EOM_2015/Atmos_02_JSBSim.csv`). They have
+  been removed and git-ignored. All of JSBSim's v1.3.3 data files were compared byte for byte with upstream and
+  are unchanged.
+
+**New candidate from the review:** JSBSim's built-in Buss 2 quaternion attitude integrator
+(`simulation/integrator/position/rotational = 7`), combined with AB4 or AB2 body rates, cut the NASA attitude
+error from about 0.02° to 2e-5–9e-5° at 480 Hz. It does nothing for the ground problem, and AB2 rates still
+mismatch the friction solver.
+
+**The integrator decision is open.**
+
+- Euler body rates are robust on the ground, but far from NASA's answers in the air.
+- AB4 is accurate in the air, but fails on the ground.
+
+Candidates for phase 2:
+
+1. Restore the 2010 integrator-aware friction.
+2. Implicit-midpoint body rates (PteroLabs fork).
+3. Switch integrators on contact. This must detect every contact type, not `gear/wow`.
+4. Add Buss 2 attitude to whichever survives.
+
+Every candidate must pass gates written down **before** testing. Codex proposes these in its "Tests to add":
+
+- 60 s at rest on c172x, f16, c310, AH-1S and 737, with body rates below 1e-6 rad/s in the last 10 s;
+- hard landings and attitude sweeps with every state finite;
+- NASA full state, with rate error below 2e-6 deg/s and attitude error below 1e-3° at 480 Hz or faster;
+- rigid-body energy and momentum checks;
+- a ground energy balance.
+
+**What the next reviewer should check first:** the phase 2 integrator decision against the gates above, and the
+binding and harness fixes.
 
 ## Evidence ledger
 
@@ -66,23 +170,26 @@ Every finding carries one of three labels (rule in `CLAUDE.md`):
 | 2 | Errors arrive as `JSBSimError` with JSBSim's message; the instance survives | Verified | Test 1 and page section 2, on 3 platforms including the user's iPhone and Mac |
 | 3 | Bit-identical to native on the NASA brick and on external forces | Verified | Tests 3 and 4, step-by-step comparison with native |
 | 4 | c1721 and T38 match native at rounding level | Verified | Test 2 |
-| 5 | c1723 and f16_test differences come from script sensitivity, not our build | Supported | Native against itself with +1e-8 ft diverges the same way (Test 2). Same onset and pattern, but the size differs (c1723 about 5× smaller), so this is strong but not proof. |
+| 5 | c1723 and f16_test differences come from script sensitivity, not our build | Supported (sensitivity); not proven (no build error) | Native against itself with +1e-8 ft diverges the same way (Test 2). Review: a small systematic error could also grow smoothly. Codex's controlled flights agree with native to 4e-9 ft (Verified), which strengthens confidence in the build, but the c1723 divergence is not located. |
 | 6 | The 1-ulp seed comes from ECEF-to-geodetic in a different maths library | Reasoned | Not traced to a specific function |
 | 7 | Noisy models cannot match native Linux step for step (`std::default_random_engine`) | Reasoned | From the C++ standard and JSBSim's source; no model tested where noise matters |
 | 8 | Handle and bulk writes are about 40–50× cheaper than by name | Verified | Test 3 and page timing on the user's iPhone and Mac |
 | 9 | `-fwasm-exceptions` gives bit-identical results and is about 2× faster on the iPhone | Verified | Test 2 logs and the user's iPhone runs |
 | 10 | `-fwasm-exceptions` costs "nothing measurable" against a build without exceptions | Reasoned | Compared with session 01's package, which used a different JSBSim version and model. Not a like-for-like test. |
-| 11 | AB4 sits on NASA's solutions; the default integrator is ~100× outside the spread (10× at 1000 Hz) | Verified | Test 4, against NASA's data. Note: the "inside spread" yardstick was changed to a ratio **after** the first version said "NO" on borderline cases (worst/spread 1.00–1.01). The raw distances to each NASA sim are in the results file. |
-| 12 | AB4 blows up to NaN on f16_test's inverted impact at 120/240 Hz, not at 480/1000 Hz | Verified for these runs | Test 5; native JSBSim gives the same NaN. Only **one** crash scenario was tested, so "480 Hz is enough" is **Supported**, not general. |
-| 13 | AB4 makes gear contact chatter (f16 taxi 36× at 120 Hz) | Supported | Test 5, one aircraft (f16), one script |
+| 11 | AB4 body **rates** are within 2–6e-5 deg/s of NASA sims (100 Hz); the default is ~100× outside the spread (10× at 1000 Hz) | Verified (re-checked by Codex against a fresh NASA download) | Test 4. The "inside spread" yardstick was changed to a ratio **after** the first version said "NO". Review: the ratio is a distance, not containment; AB4 rates leave NASA's pointwise envelope at about half the samples (by tiny amounts). Attitude stays 0.01–0.1° off (Euler attitude). |
+| 12 | ~~AB4 is safe on the ground at 480/1000 Hz~~ **Wrong** | Verified wrong | f16_test runaway at 120/240 Hz is real (native too), but 737 and AH-1S hard landings run away with AB4 at 480 and 1000 Hz; Euler survives (Codex matrix; re-run by Claude). |
+| 13 | AB4 makes gear contact chatter, and it does not go away at 1000 Hz | Verified (native) | Codex: 5 aircraft at rest 60 s never settle with AB4 (c172x 0.008 rad/s at 1000 Hz vs 4e-9 Euler; re-run by Claude). |
 | 14 | Chatter is caused by the friction solver assuming an Euler step | Supported | JSBSim source read (verified); the 2010 upstream fix and the fork's independent test agree. Not tested by us. |
-| 15 | Chatter size scales with step because the friction limit caps it | Reasoned | Fits our 4 data points; no source or dedicated test |
+| 15 | Chatter size scales with step because the friction limit caps it | Reasoned | Rest amplitudes roughly halve from 480 to 1000 Hz in Codex's matrix, consistent but not tested as a mechanism |
 | 16 | AB2 (default for translation) may explain creep at rest | Reasoned | Linearized calculation only |
-| 17 | The crash NaN comes from stiff STRUCTURE contact springs | Reasoned | Not isolated |
-| 18 | The 2010 fix existed and was removed in 2011 | Verified | Upstream commits 53709ba8 and 40279c20 read directly |
+| 17 | ~~The crash NaN comes from stiff STRUCTURE contact springs~~ | Weakened | Codex: zeroing only STRUCTURE friction before impact keeps the f16 finite at 120/240 Hz, so friction contributes; first invalid operation not located |
+| 18 | The 2010 fix existed and was lost in 2011 | Verified | Commits 53709ba8 (2010), e67c5e42 (moved and disabled), 85b3a574 (Euler form re-enabled), 40279c20 (deleted); Codex `source-history.txt` |
 | 19 | PteroLabs fork results (implicit midpoint, NASA within 0.0012 deg/s) | Reported by others | One unreviewed author; not run by us |
 | 20 | The gap to session 01's 5 µs per step is mainly the autopilot and guidance systems | Reasoned | Not measured (no c172x_noap run with the new build) |
-| 21 | The 0.67 ft ECEF X offset on the brick comes from the planet radius in `brick.xml` | Reasoned | Inherited from session 01; not re-checked |
+| 21 | The 0.67 ft ECEF X offset on the brick comes from the planet radius in `brick.xml` | Verified | Codex: the offset is already in the initial geometry (20955646.9951 vs NASA 20955646.3253 ft) |
+| 22 | Binding: every error becomes a `JSBSimError`; writes and resets behave | **Wrong** | Codex binding probes, re-run by Claude: raw exception from `hasProperty`, silent read-only writes, stale bulk arrays after `reset()`, `NaN` handle → handle 0 |
+| 23 | The parity comparator would catch a broken run | **Wrong** | `compare.py` reported zero difference and exit 0 for a one-row NaN log (Codex probe, re-run by Claude) |
+| 24 | Buss 2 attitude integrator with AB4/AB2 rates matches NASA attitude to 2e-5–9e-5° at 480 Hz | Verified (Codex, against NASA data); not re-run by Claude | `results/review-codex-02/nasa-integrators.txt` |
 
 ## Build
 
@@ -139,7 +246,9 @@ different maths library. The scripts then amplify that difference:
 - **f16_test** takes off, rolls inverted, and **hits the ground upside down at 128 s and again at 180 s**. Both
   runs end at rest in the same place.
 - **c1723**'s ground roll with the wing-leveler autopilot is sensitive from about 3 s.
-- **Proof:** native JSBSim against itself, with the starting altitude moved by 1e-8 ft, diverges the same way.
+- **Evidence (called "proof" originally; corrected after review: it shows sensitivity, not the absence of a
+  small error in our build):** native JSBSim against itself, with the starting altitude moved by 1e-8 ft,
+  diverges the same way.
   - f16_test: altitude 117.7 ft (ours: 119.3 ft), from the same times.
   - c1723: same onset at t ≈ 3.3 s, same growth pattern, about 5× smaller peak.
 
@@ -207,6 +316,10 @@ mass fix is needed.
   radius in `brick.xml`. Altitude and longitude agree.
 
 ## Test 5: AB4 side effects (`results/02-test5-ab4.txt`)
+
+> **Superseded after review.** The conclusion of this test ("AB4 only together with ≥ 480 Hz") is wrong; see
+> "Review outcome". The measurements below are correct for the cases run. "First non-finite" in the sweep means
+> "rates passed 1e6 rad/s"; the first actual NaN comes a few steps later.
 
 AB4 (`simulation/integrator/rate/rotational = 5`) against the default (1), in our build, with native checked
 too:
@@ -311,8 +424,8 @@ contact springs may be the cause, possibly together with the friction overshoot.
 
 ### Options for phase 2 (to test in this order)
 
-1. **Restore the 2010 integrator-aware friction.** It is a small patch from JSBSim's own history and changes
-   nothing when Euler is used.
+1. **Restore the 2010 integrator-aware friction.** It is a small patch from JSBSim's own history. (Corrected after
+   review: it is not a no-op under Euler, because it also covers translation, whose default integrator is AB2.)
 2. **Implicit-midpoint body rates** (PteroLabs #13). It is a larger patch, but it addresses NASA accuracy, energy
    and the ground together.
 3. **AB4 in the air, Euler while any contact point touches the ground** (the integrator can be switched at run
