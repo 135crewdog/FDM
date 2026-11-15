@@ -4,7 +4,9 @@ Date: 2026-11-15. Raw outputs: `results/02-*.txt`. How to rebuild and rerun: `CL
 
 ## Summary
 
-**Recommendation: yes, our build is ready to be the FDM core,** with three settings decided by the tests below:
+**Recommendation: yes, our build is ready to be the FDM core,** with three settings decided by the tests below.
+How strong each finding is (Verified, Supported or Reasoned) is listed in the **Evidence ledger** after this
+summary:
 
 1. Use the `-fwasm-exceptions` build. It is now the default (`wasm/bin/jsbsim-weh.*`).
 2. Run AB4 only at 480 Hz or faster.
@@ -48,6 +50,39 @@ On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13
   - Aircraft load about 3× faster.
   - No failures on any platform. End states are identical.
   - `-fexceptions` is kept in `wasm/bin/` for comparison.
+
+## Evidence ledger
+
+Every finding carries one of three labels (rule in `CLAUDE.md`):
+
+- **Verified:** checked against an answer we did not produce, such as native JSBSim, NASA's data, JSBSim's
+  source or history, or the user's own devices.
+- **Supported:** our own test shows it, but there is no outside answer key.
+- **Reasoned:** an explanation or inference that has not been tested. Treat it as a guess until a test exists.
+
+| # | Finding | Label | Evidence |
+|---|---|---|---|
+| 1 | 59/61 aircraft load, the same set as native | Verified | Test 1, against native jsbsim 1.3.3 |
+| 2 | Errors arrive as `JSBSimError` with JSBSim's message; the instance survives | Verified | Test 1 and page section 2, on 3 platforms including the user's iPhone and Mac |
+| 3 | Bit-identical to native on the NASA brick and on external forces | Verified | Tests 3 and 4, step-by-step comparison with native |
+| 4 | c1721 and T38 match native at rounding level | Verified | Test 2 |
+| 5 | c1723 and f16_test differences come from script sensitivity, not our build | Supported | Native against itself with +1e-8 ft diverges the same way (Test 2). Same onset and pattern, but the size differs (c1723 about 5× smaller), so this is strong but not proof. |
+| 6 | The 1-ulp seed comes from ECEF-to-geodetic in a different maths library | Reasoned | Not traced to a specific function |
+| 7 | Noisy models cannot match native Linux step for step (`std::default_random_engine`) | Reasoned | From the C++ standard and JSBSim's source; no model tested where noise matters |
+| 8 | Handle and bulk writes are about 40–50× cheaper than by name | Verified | Test 3 and page timing on the user's iPhone and Mac |
+| 9 | `-fwasm-exceptions` gives bit-identical results and is about 2× faster on the iPhone | Verified | Test 2 logs and the user's iPhone runs |
+| 10 | `-fwasm-exceptions` costs "nothing measurable" against a build without exceptions | Reasoned | Compared with session 01's package, which used a different JSBSim version and model. Not a like-for-like test. |
+| 11 | AB4 sits on NASA's solutions; the default integrator is ~100× outside the spread (10× at 1000 Hz) | Verified | Test 4, against NASA's data. Note: the "inside spread" yardstick was changed to a ratio **after** the first version said "NO" on borderline cases (worst/spread 1.00–1.01). The raw distances to each NASA sim are in the results file. |
+| 12 | AB4 blows up to NaN on f16_test's inverted impact at 120/240 Hz, not at 480/1000 Hz | Verified for these runs | Test 5; native JSBSim gives the same NaN. Only **one** crash scenario was tested, so "480 Hz is enough" is **Supported**, not general. |
+| 13 | AB4 makes gear contact chatter (f16 taxi 36× at 120 Hz) | Supported | Test 5, one aircraft (f16), one script |
+| 14 | Chatter is caused by the friction solver assuming an Euler step | Supported | JSBSim source read (verified); the 2010 upstream fix and the fork's independent test agree. Not tested by us. |
+| 15 | Chatter size scales with step because the friction limit caps it | Reasoned | Fits our 4 data points; no source or dedicated test |
+| 16 | AB2 (default for translation) may explain creep at rest | Reasoned | Linearized calculation only |
+| 17 | The crash NaN comes from stiff STRUCTURE contact springs | Reasoned | Not isolated |
+| 18 | The 2010 fix existed and was removed in 2011 | Verified | Upstream commits 53709ba8 and 40279c20 read directly |
+| 19 | PteroLabs fork results (implicit midpoint, NASA within 0.0012 deg/s) | Reported by others | One unreviewed author; not run by us |
+| 20 | The gap to session 01's 5 µs per step is mainly the autopilot and guidance systems | Reasoned | Not measured (no c172x_noap run with the new build) |
+| 21 | The 0.67 ft ECEF X offset on the brick comes from the planet radius in `brick.xml` | Reasoned | Inherited from session 01; not re-checked |
 
 ## Build
 
@@ -304,7 +339,8 @@ Page: **https://135crewdog.github.io/FDM/** (deployed from `main` by `.github/wo
 
 - The top line shows `Build fdm-wasm-20261115.1447 · built 2026-11-15T14:47:47Z`. If you see anything else, the
   page is a stale cached copy. Asset URLs carry `?v=<build>`.
-- The page auto-runs the default `-fexceptions` build. A second button runs the `-fwasm-exceptions` build.
+- The page auto-runs the default build: `-fexceptions` when these tests were run, `-fwasm-exceptions` since the
+  decision below. A second button runs the other build.
 - What it shows:
   - Environment details.
   - The full load matrix, with pass or fail and the message for each aircraft.
@@ -378,8 +414,8 @@ was the agreed condition.
 - Changed: `createSim()` in Node, and the page now auto-runs `jsbsim-weh`.
 - At 1000 Hz, the c172x with 20 strip forces by bulk array needs about 11 ms per simulated second on the iPhone,
   about 1% of one core.
-- Most of the gap to session 01's 5 µs per step is now explained: that model had no autopilot or guidance
-  systems.
+- The rest of the gap to session 01's 5 µs per step is probably the autopilot and guidance systems, which that
+  model lacked. This is Reasoned, not measured (ledger #20).
 - Requirement: WebAssembly exception handling, which Safari has had since 15.2.
 
 ## Not done / limits

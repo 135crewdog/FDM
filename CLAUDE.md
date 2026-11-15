@@ -4,6 +4,19 @@ Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The co
 WebAssembly by us** (Emscripten 6.0.13). Read `REPORT-02.md` first (our build, tests, recommendation), then
 `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
 
+## Rule: label every finding by strength of evidence
+The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
+- **Verified**: checked against an answer we did not produce (native JSBSim, NASA data, JSBSim source or
+  history, published references, the user's own devices).
+- **Supported**: our own test shows it, but there is no outside answer key.
+- **Reasoned**: explanation or inference, not tested. Say what test would confirm or refute it.
+
+Keep an "Evidence ledger" table near the top of each report. Rules that go with it:
+- Never upgrade a label without new evidence.
+- If a pass/fail yardstick or tolerance is changed after seeing results, say so in the ledger.
+- When an explanation turns out wrong, say so plainly.
+- Name, in each report, which claims an independent reviewer should check first.
+
 ## JSBSim data
 JSBSim v1.3.3's `aircraft/`, `engine/`, `systems/`, `scripts/` and `check_cases/NASA_EOM_2015/` are committed in
 `jsbsim-data/` (private, non-commercial project; the user's decision, 2026-11-15). Refresh with
@@ -83,3 +96,5 @@ scripts/build-wasm.sh                 # both variants -> wasm/bin/ (JSBSim sourc
 - `web/` page source (TypeScript, bundled by esbuild in `scripts/build-site.mjs`); `.github/workflows/pages.yml` deploys
   it from `main` to https://135crewdog.github.io/FDM/.
 - `results/02-*` session 02 summaries; `results/session01/` session 01's.
+- `prompts/`: prompts for other agents (e.g. `codex-review-02.md`, independent review of session 02). An independent
+  review should be repeated after phase 2's integrator decision, before the hybrid wing-strip work builds on it.
