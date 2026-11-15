@@ -38,6 +38,9 @@ On the iPhone, the `-fwasm-exceptions` build runs the unmodified c172x at 8–13
 - **AB4 has a side effect at low rates.** At 120 and 240 Hz it blows up to NaN when the f16 hits the ground
   inverted. At 120 Hz it makes the f16's body rates jitter 36× more while taxiing. At 480 and 1000 Hz both
   problems go away. Native JSBSim does exactly the same, so this is JSBSim's AB4, not our build.
+  - The taxi chatter has a known cause. JSBSim's friction solver assumes Euler. It was made integrator-aware in
+    2010, and that code was lost in a 2011 refactor.
+  - Options for phase 2 are listed in the section "Why AB4 misbehaves on the ground".
 - **`-fwasm-exceptions` is the default now.** Results are bit-identical to `-fexceptions`, and the file is smaller
   (1.69 MB against 2.15 MB).
   - Speed: **about 2× faster on the iPhone** (c172x 7.7 µs per step at 1000 Hz, against 16.3), and 1.2–1.8× in
@@ -195,6 +198,105 @@ all) at a large step goes outside it. At 120 Hz on the ground it makes the gear 
 rates). At 480 Hz and above, the crash stays finite and the chatter falls to 2–5× the default. **So: AB4 only
 together with ≥ 480 Hz.** At 120 Hz the default integrator is the safer choice. The iPhone cost of 480–1000 Hz is
 small (session 01: about 5 µs per step).
+
+## Why AB4 misbehaves on the ground: cause, history and options
+
+Added after the tests, following the user's question about JSBSim's known weaknesses on the ground.
+
+### Cause, from JSBSim v1.3.3's source
+
+`FGAccelerations::CalculateFrictionForces` computes wheel friction with Lagrange multipliers (Catto's method). It
+picks the force that brings the sliding velocity to zero in exactly one step:
+
+```
+vdot += v / dt
+wdot += pqr / dt
+```
+
+That assumes the next velocity update is an Euler step, `v + dt * vdot`. With AB4, the integrator weights the new
+derivative by 55/24 and adds history terms, so the correction overshoots. A linearized check shows how a small
+slip evolves from step to step, without the friction limit:
+
+| Integrator | Largest root (growth of a small slip per step) |
+|---|---|
+| Euler | 0: cancelled in one step |
+| AB2 | 1.0: never dies out |
+| AB3 | 1.8 |
+| AB4 | 2.5 |
+
+- Euler is JSBSim's default for rotation, which hides the problem.
+- AB2 is the default for translation. It is only just stable in this sense, which may explain the slow creep at
+  rest that JSBSim users report. This is an inference, not tested.
+- The friction limit (friction coefficient × normal load) caps the oscillation. Our reading is that this turns it
+  into a bounded chatter whose size scales with the step. This matches our f16 taxi peaks of 0.28, 0.09, 0.04 and
+  0.017 rad/s at 120, 240, 480 and 1000 Hz, but no source reports it.
+
+### JSBSim history (checked in the upstream repository)
+
+- **2010:** commit `53709ba8` (Bertrand Coconnier): *"Friction forces computation is now taking the integration
+  schemes into account for more stable forces while at rest."*
+  - It divided the correction by the scheme's leading weight: 24/55 for AB4, 12/23 for AB3, 2/3 for AB2.
+  - It also subtracted the history terms.
+  - Its comment said Catto's method "only supports Euler integration scheme", and that handling the multistep
+    schemes "significantly helps stabilizing the friction forces".
+- **2011:** commit `40279c20` (Jon Berndt): *"Removed most external dependencies from ground reactions"* deleted
+  this code (`EvaluateRateToResistTo`).
+  - The message does not mention it, and nothing in that commit replaces it.
+  - v1.3.3 has the Euler-only form.
+  - **The problem was solved upstream and then apparently lost in a refactor.**
+
+### Independent confirmation (PteroLabsAI fork of JSBSim, October 2026; one author, unreviewed, not upstream)
+
+- **PR #12** (closed):
+  - **Diagnosis:** same as ours. A c172x on its gear at 240 Hz never settles. After 50 s it still turns at 4e-4,
+    2e-2 and 3e-2 rad/s with AB2, AB3 and AB4.
+  - **Fix:** restoring the 2010 weights; all schemes then settle below 1e-6 rad/s.
+- **PR #13** (merged in the fork), which replaced #12:
+  - An implicit midpoint integrator, made the default for body rates.
+  - It conserves rotational energy and angular momentum for a free body.
+  - It keeps NASA's brick within 0.0012 deg/s at 240 Hz; NASA's own spread is 0.004.
+  - The authors report the c172x, F450, ah1s and c310 rest and land as they do under Euler.
+  - It falls back to Euler if a step diverges.
+- We have not tested either change.
+
+### FlightGear and older JSBSim documentation
+
+- Jitter and drift at rest were addressed long ago by:
+  - reorganizing the gear code;
+  - ramping wind and turbulence in with speed;
+  - a steering filter tuned for 120 Hz.
+- FlightGear uses the default Euler rotation, so it would not meet this AB4 interaction. We found no FlightGear
+  documentation of it.
+
+### Not explained by any source
+
+The NaN on the f16's inverted ground impact at 120 and 240 Hz. The f16 has stiff STRUCTURE contact points on its
+wingtips and fin top (spring 10,000 lbs/ft), and AB4 tolerates far less stiffness per step than Euler. The
+contact springs may be the cause, possibly together with the friction overshoot. This is not isolated yet.
+
+### Options for phase 2 (to test in this order)
+
+1. **Restore the 2010 integrator-aware friction.** It is a small patch from JSBSim's own history and changes
+   nothing when Euler is used.
+2. **Implicit-midpoint body rates** (PteroLabs #13). It is a larger patch, but it addresses NASA accuracy, energy
+   and the ground together.
+3. **AB4 in the air, Euler while any contact point touches the ground** (the integrator can be switched at run
+   time). No patch, but multistep history makes the switch itself a transient.
+
+Each option is to be judged on:
+
+- f16_runway_test chatter and f16_test impact at 120–1000 Hz;
+- a c172x resting on its gear for 60 s;
+- NASA case 02;
+- an energy check (engine off, total energy must not increase).
+
+Sources:
+
+- JSBSim commits 53709ba8 and 40279c20 (github.com/JSBSim-Team/jsbsim).
+- github.com/PteroLabsAI/jsbsim pull requests 12 and 13.
+- JSBSim Newsletter 2.4 (jsbsim.sourceforge.net/Newsletter_2_4.pdf).
+- FlightGear wiki "JSBSim GroundReactions".
+- Berndt & De Marco, AIAA 2009-5699.
 
 ## Test 6: iPhone page
 

@@ -45,6 +45,16 @@ crosses into JavaScript). Shared test helpers used by Node and the page: `src/ch
 - Default rotational-rate integrator (Euler) is ~100x outside NASA's spread on the brick (10x even at 1000 Hz).
   AB4 (`simulation/integrator/rate/rotational = 5`) sits on NASA's solutions, but at 120/240 Hz it blows up to NaN
   on a hard inverted ground impact (f16_test, native too) and makes gear contact chatter. Fine at 480/1000 Hz.
+- Why AB4 chatters on the ground (REPORT-02, "Why AB4 misbehaves on the ground"):
+  - `FGAccelerations::CalculateFrictionForces` sizes friction to cancel slip in one **Euler** step (`v/dt`).
+    Under AB4 the 55/24 weight makes it overshoot.
+  - JSBSim fixed this in 2010 (commit 53709ba8, integrator-aware friction). The 2011 refactor 40279c20 removed it.
+  - PteroLabsAI/jsbsim PRs 12-13 (unreviewed fork) re-found it. They chose implicit-midpoint body rates instead.
+  - Phase 2 options, in order:
+    1. Restore the 2010 friction.
+    2. Implicit midpoint.
+    3. AB4 in the air, Euler on the ground.
+  - The NaN on the inverted f16 impact is not explained yet (stiff STRUCTURE contacts?).
 - Property writes by name are slow (~1.8 us each with -fexceptions); use handles or bulk for per-step traffic.
 - `-fexceptions` costs ~50-100% per step vs no exceptions; `-fwasm-exceptions` costs nothing measurable.
 - iPhone (Safari 27.2), weh build: unmodified c172x 8-13 us/step, f16 ~10.5 us/step, +20 forces by handle/bulk ~3 us;
