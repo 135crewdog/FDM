@@ -67,7 +67,7 @@ Yardsticks, and what was chosen after seeing something:
 ## The new fixtures and gates
 
 Commit: **`888654f5b41fd0090c751542d5eb8da5f12cfd90`**, before the floor, `c3-ab4` or `c2-mid` had been run through
-any of them and before patch 0004 was built. What had been seen before it: `GATES-05.md`, "What had been seen".
+any of them and before patch 0004 was built or run (its source had been drafted; see "Earlier explanations", 6). What had been seen before it: `GATES-05.md`, "What had been seen".
 
 | gate | what it runs | judged on |
 |---|---|---|
@@ -246,7 +246,11 @@ is not the state before the step; the wrapper does not pretend it is. Findings 1
    know").
 5. **Patch 0004's header says the limits never act in landings and that those runs are bit-identical.** I wrote
    that sentence before I had checked it. It is true (finding 14), and the header is unchanged.
-6. **JSBSim's hold-down cannot hold a moving aircraft while its engines settle**: it sets the velocity to zero.
+6. **`GATES-05.md` says "Patch 0004 did not exist" when the gates were written.** Not exact, and the file is frozen,
+   so it is corrected here: I drafted the patch's source, with its three default numbers, while the harness
+   check was running, before the gates commit. It had not been compiled or run, and no result of it existed.
+   It was built and first run after the commit.
+7. **JSBSim's hold-down cannot hold a moving aircraft while its engines settle**: it sets the velocity to zero.
    Tried and dropped in favour of the second `run_ic`.
 
 ## What an independent reviewer should check first
