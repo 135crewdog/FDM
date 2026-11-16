@@ -1,0 +1,110 @@
+native JSBSim 1.3.3 [pip] module sha256 f31264dac37fa79e patches: none
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+
+ERROR: unable to open the file /tmp/fdm-native-out-mxockhqb/JSBout172B.csv
+       => Output to this file is disabled.
+
+{"model": "c172x", "before": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 9.062587283170096, "velocities/v-down-fps": 5.966550127044194, "velocities/p-rad_sec": 0.07866019202266224, "propulsion/engine/thrust-lbs": 54.30099720435716, "propulsion/engine/engine-rpm": 1102.3971810615715, "fcs/elevator-pos-rad": -0.027987044000000044, "fcs/flap-pos-deg": 30.0, "simulation/integrator/rate/rotational": 1.0}, "after": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 10.558866434439738, "velocities/v-down-fps": 6.000000000000004, "velocities/p-rad_sec": 0.0, "propulsion/engine/thrust-lbs": 54.283136092187206, "propulsion/engine/engine-rpm": 1102.3971810615715, "fcs/elevator-pos-rad": -0.027987044000000044, "fcs/flap-pos-deg": 30.0, "simulation/integrator/rate/rotational": 1.0}}
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+Could not create TCP socket for input, error = 1
+Could not create UDP socket for input, error = 9
+{"model": "737", "before": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 8.767494237617655, "velocities/v-down-fps": 5.96444050444873, "velocities/p-rad_sec": -5.0973455544227586e-06, "propulsion/engine/thrust-lbs": 4557.080796300782, "propulsion/engine/n2": 78.372, "fcs/elevator-pos-rad": -0.168618, "fcs/flap-pos-deg": 0.0, "simulation/integrator/rate/rotational": 1.0}, "after": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 10.264144125962527, "velocities/v-down-fps": 6.000000000000037, "velocities/p-rad_sec": 0.0, "propulsion/engine/thrust-lbs": 4556.8997270851405, "propulsion/engine/n2": 78.372, "fcs/elevator-pos-rad": -0.168618, "fcs/flap-pos-deg": 0.0, "simulation/integrator/rate/rotational": 1.0}}
+{"model": "f16", "before": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 10.579890559220463, "velocities/v-down-fps": 5.941782416893368, "velocities/p-rad_sec": -3.325215740788749e-05, "propulsion/engine/thrust-lbs": 3126.8540447349005, "propulsion/engine/n2": 71.0668, "fcs/elevator-pos-rad": -0.03836062367675821, "fcs/flap-pos-deg": 0.0, "simulation/integrator/rate/rotational": 1.0}, "after": {"simulation/sim-time-sec": 4.250000000000258, "position/h-agl-ft": 12.075635804873926, "velocities/v-down-fps": 6.000000000000071, "velocities/p-rad_sec": 0.0, "propulsion/engine/thrust-lbs": 3126.6820065609095, "propulsion/engine/n2": 71.0668, "fcs/elevator-pos-rad": -0.0380788409594532, "fcs/flap-pos-deg": 0.0, "simulation/integrator/rate/rotational": 1.0}}
