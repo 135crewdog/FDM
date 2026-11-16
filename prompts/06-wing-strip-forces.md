@@ -5,8 +5,9 @@
 
 Paste everything below the line into a new Claude Code chat on the repository `135crewdog/FDM`.
 
-**Do not start this session before `REVIEW-codex-05.md` exists** (run `prompts/codex-review-05.md` first). If the
-review says the default is not sound, this session's first job is to answer it, and the wing-strip work waits.
+**Do not start this session before `REVIEW-codex-05.md` is in the repository** (on `main`, or on a branch you name
+in the chat). The review's verdict is "no, as shipped"; when this prompt was last edited only its three-sentence
+summary was known. This session's first job is to answer the review. The wing-strip work waits for that.
 
 ---
 
@@ -18,10 +19,17 @@ Read `CLAUDE.md`, then `REVIEW-codex-05.md` in full, then `REPORT-05.md` and `GA
 
 Where we are:
 
-- The wrapper's default is implicit-midpoint body rates, Buss 2 attitude, strut limits (patch 0004), 1200 Hz
-  (`c2-mid-g`). It passed every gate in session 05. `c3-ab4-g` at 960 or 1000 Hz passed as well and is the
-  fallback.
-- Crash containment exists in the wrapper (off until switched on).
+- Session 05 made midpoint body rates, Buss 2 attitude, strut limits (patch 0004), 1200 Hz the wrapper's default
+  (`c2-mid-g`). It passed every gate. `c3-ab4-g` at 960 and 1000 Hz passed as well.
+- **The independent review said "no, as shipped."** Its summary: "NASA passes at 1200 Hz, but scripts and resets
+  can silently leave the tested configuration. Output protection has gaps, and damping headroom does not
+  establish spring stability." `REPORT-05.md` "Review outcome" answers the summary only; the full review had not
+  been read.
+- Already checked (`results/05-diag-spring-headroom.txt`): the third point is right. Midpoint treats applied
+  moments explicitly and adds energy on lightly damped springs; `c3-ab4` does not when the moment is computed
+  inside JSBSim; written from JavaScript both do. Session 05's reason for preferring midpoint covered dampers
+  only. **The choice between the two configurations is open again.**
+- The default is unchanged in the code and is not cleared to build on.
 - The iPhone has timed the default: 10 to 14 microseconds per step, 12 to 16 ms per second of flight
   (`results/05-page-iphone-fwasm-exceptions.txt`).
 
@@ -43,12 +51,27 @@ can pass for the wrong reason; a write that is silently ignored; an association 
 
 ## Step 1: answer the review (checkpoint)
 
-- For each finding of `REVIEW-codex-05.md`: agree or disagree in writing, reproduce what you can, and fix what
-  needs fixing, each fix with a test that fails before and passes after.
-- If the review rejects the default or a gate: do what it asks first. A gate that was wrong is kept, said to be
-  wrong, and replaced by a new gate with a new name, committed before anything is re-run.
-- If the owner pastes new iPhone results: save them as `results/06-page-iphone-fwasm-exceptions.txt` and compare
-  with session 05's.
+- Read `REVIEW-codex-05.md` in full. For each finding: agree or disagree in writing, reproduce what you can
+  (its scripts are in `tests/review/review05_*`), and fix what needs fixing, each fix with a test that fails before
+  and passes after. Correct `REPORT-05.md` "Review outcome" where it guessed wrong.
+- **The default must not be left silently.** A script with its own time step, `simulation/reset`, a second
+  `run_ic`, a re-initialisation inside JSBSim, a property written by a script event: for each, the wrapper either
+  keeps the configuration (re-applies it and verifies it) or refuses to step and says why. Decide which, test
+  every route the review names and any you find.
+- **Close the gaps in the output protection** that the review names. Known before reading it: after a halt,
+  `readOutputs()` and `getProperty` read the refused state; the bulk outputs are zeros until first read.
+- **A gate for lightly damped springs, before deciding again.** New name (G7b), new file, committed before either
+  configuration runs through it; `GATES-05.md` and its files stay as they are. First establish what the game can
+  contain: the damping ratios and frequencies of the test aircraft's own modes over their envelope (extend
+  `tests/gates/envelope05.py`), and say what margin the wing-strip work needs. Then gate on that, with the moment
+  computed inside JSBSim and written from JavaScript, on both platforms. `results/05-diag-spring-headroom.txt`
+  has been seen: list it.
+- **Decide again between `c2-mid-g` (1200 Hz) and `c3-ab4-g` (960 or 1000 Hz)** with the new gate and the
+  review in hand. The rule is unchanged: a configuration is the default only if it passes every gate at its
+  rate on both platforms. If the default changes, update `src/jsbsim.ts`, the binding tests, the page and
+  `CLAUDE.md`, and say so at the top of the report.
+- If the one-step delay of forces written from JavaScript is what limits both configurations (it adds energy to
+  springs with either), say so plainly: it then belongs to step 2, not to the choice of integrator.
 
 ## Step 2: how wing-strip forces enter JSBSim (checkpoint)
 

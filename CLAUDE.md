@@ -2,9 +2,12 @@
 
 Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The core is **JSBSim v1.3.3 compiled to
 WebAssembly by us** (Emscripten 6.0.13). Read in this order:
-1. `REPORT-05.md`: the new landing, repeated-contact, crash and forced-flight gates, patch 0004 (strut limits),
-   crash containment, and **the decision: the wrapper's default is now midpoint body rates, Buss 2, strut limits,
-   1200 Hz**. Not yet independently reviewed (`prompts/codex-review-05.md`).
+1. `REPORT-05.md`, **its "Review outcome" section first**: the independent review said **"no, as shipped"**. The
+   report covers the new landing, repeated-contact, crash and forced-flight gates, patch 0004 (strut limits),
+   crash containment, and the decision that made midpoint body rates, Buss 2, strut limits, 1200 Hz the wrapper's
+   default. That default is still in the code and is **not cleared to build on**.
+   `REVIEW-codex-05.md` is the review itself; when "Review outcome" was written it was not in the repository
+   (only its three-sentence summary was known). If it is still missing, ask the owner for it before anything else.
 2. `GATES-05.md` (this session's gates and what had been seen before them), then `GATES.md`, `GATES-04.md`,
    `GATES-04b.md`: the rule that gates are never changed after a result.
 3. `REPORT-04.md` with its "Review outcome", and `REVIEW-codex-04.md` (the review that said "not yet").
@@ -20,8 +23,8 @@ The repository is the project's memory; a chat is only where one piece of work h
 - At the start of a session, rename the chat to the name in its prompt (or ask the user to, in the first line).
 - Every work session ends by writing the prompt for the next chat, with its chat name at the top and "Name this
   chat ..." as the first instruction, and by adding a row to the table in `prompts/README.md`.
-- Next: `prompts/codex-review-05.md` (the independent review of session 05; the default changed, so it comes
-  first), then `prompts/06-wing-strip-forces.md`.
+- Next: `prompts/06-wing-strip-forces.md`: answer the review of session 05 (verdict "no, as shipped") before any
+  wing-strip work. It needs `REVIEW-codex-05.md` in the repository.
 
 ## Rule: label every finding by strength of evidence
 The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
@@ -184,7 +187,19 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
 - JSBSim's noise uses `std::default_random_engine`/`std::normal_distribution` (implementation-defined): models with
   active noise cannot match native Linux (libstdc++) step for step.
 - psi is reported in [0, 2pi): wrap angles before comparing.
-- **Integrator: decided in session 05, not yet independently reviewed** (REPORT-05 "The decision").
+- **Integrator: the session 05 decision was reviewed and the verdict is "no, as shipped"** (REPORT-05 "Review
+  outcome"). The gate results stand; the default is not cleared. Three points, from the review's summary:
+  - **The default can be left silently**: a script without an explicit dt keeps its own; `simulation/reset` or
+    any re-initialisation inside JSBSim returns integrators and strut limits to JSBSim's defaults. Not fixed yet.
+  - **Crash containment's output protection has gaps** (details in the review). Known to us: after a halt,
+    `readOutputs()` and `getProperty` read the refused state; the outputs are zeros until first read.
+  - **Damper headroom is not spring stability** (`results/05-diag-spring-headroom.txt`). Midpoint keeps applied
+    moments explicit, so on a spring it behaves like Euler and adds energy: computed inside JSBSim it needs a
+    damping ratio of about `frequency x step / 2` (1200 Hz: 0.008 at 20 rad/s; with none, 20 rad/s grows 2.3 times
+    in 10 s and 40 rad/s blows up). `c3-ab4` is neutral to 160 rad/s. Written from JavaScript (one step late)
+    both add energy equally (20 rad/s at damping ratio 0.03: 6 to 9 times too large after 10 s). At damping
+    ratio 0.3 (what G7 judged) everything is fine. **The "seven times" below is for dampers only, and the choice
+    between `c2-mid-g` and `c3-ab4-g` is open again.** A gate for lightly damped springs is missing.
   - **The default is `c2-mid-g` at 1200 Hz**: implicit-midpoint body rates (patch 0002), Buss 2 attitude, strut
     limits (patch 0004). It passed every gate, old and new, on both platforms.
   - **`c3-ab4-g`** (AB4 in the air, Euler on contact, Buss 2, strut limits) **also passes, at 960 and at 1000 Hz**,

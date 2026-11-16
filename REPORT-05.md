@@ -3,7 +3,73 @@
 Date: 2026-11-16. Raw outputs: `results/05-*`. Gates of this session: `GATES-05.md`. How to rebuild and rerun:
 "How to reproduce" at the end, and `CLAUDE.md`.
 
-## Summary
+**Read "Review outcome" first.** The independent review's verdict is "no, as shipped". The rest of the report is
+kept as written, with the changes marked there.
+
+## Review outcome (2026-11-16): no, as shipped
+
+**What I have.** The owner pasted the review's three-sentence summary into the work chat: "NASA passes at
+1200 Hz, but scripts and resets can silently leave the tested configuration. Output protection has gaps, and
+damping headroom does not establish spring stability." When this section was written `REVIEW-codex-05.md` was
+not in the repository (not on `main`, not on any branch), so **I have not read the review**. What follows
+answers the summary only. Session 06 must read the full text first.
+
+| The review's point | What I can say now | Where it stands |
+|---|---|---|
+| **Scripts and resets can silently leave the tested configuration** | True, and I knew it: "Things a reader should know" says a script without an explicit time step keeps its own, and that a re-initialisation inside JSBSim returns the integrators and the strut limits to JSBSim's defaults. I listed it as a caveat instead of fixing it. That was the wrong call: a default that can be left without a word is not a default. | **Agreed. Not fixed yet.** The wrapper must either keep the configuration (re-apply and verify it) or refuse to step when it has been left. Session 06, with the review's cases. |
+| **Output protection has gaps** | I cannot assess this without the text. Two gaps I can name myself, not checked against the review: after a halt, `readOutputs()` and `getProperty` read the refused state, not the last accepted one; and the bulk outputs are zeros until something has read them once. | **Open.** Session 06. |
+| **Damping headroom does not establish spring stability** | **Correct; I tested it** (`tests/gates/diag/spring_headroom.py`, `results/05-diag-spring-headroom.txt`, native). Finding 17 measured dampers only, and I used it as if it covered all stiff moments. For lightly damped springs the picture is the opposite. Numbers below. | **Finding 17 is narrowed to dampers. My reason for preferring midpoint is weakened**, and the choice between the two passing configurations is open again. |
+
+**The spring test.** A roll spring on a body of unit inertia, 10 s, exact answer known. Size of the oscillation in
+the last second relative to the exact answer (1.00 is right; more means the scheme adds energy):
+
+| moment computed | damping ratio | scheme | 10 rad/s | 20 rad/s | 40 rad/s | 80 rad/s | 160 rad/s |
+|---|---|---|---|---|---|---|---|
+| inside JSBSim | 0.3 (G7's) or 0.1 | both | dies away | dies away | dies away | dies away | dies away |
+| inside JSBSim | 0.03 | midpoint, 1200 Hz | 1.17 | dies away | dies away | dies away | **blows up** |
+| | | `c3-ab4`, 960 Hz | 0.97 | dies away | dies away | dies away | dies away |
+| inside JSBSim | 0 (no damping) | midpoint, 1200 Hz | 1.22 | 2.28 | **blows up** | **blows up** | **blows up** |
+| | | `c3-ab4`, 960 Hz | 1.00 | 1.00 | 1.00 | 1.01 | 1.09 |
+| written from JavaScript | 0.1 | midpoint, 1200 Hz | dies away | dies away | dies away | dies away | **does not die away** |
+| | | `c3-ab4`, 960 Hz | dies away | dies away | dies away | dies away | dies away |
+| written from JavaScript | 0.03 | midpoint, 1200 Hz | 1.71 | 9.1 | **does not die away** | **blows up** | **blows up** |
+| | | `c3-ab4`, 960 Hz | 1.55 | 6.2 | **does not die away** | **blows up** | **blows up** |
+| written from JavaScript | 0 | midpoint, 1200 Hz | 1.84 | 11.9 | **blows up** | **blows up** | **blows up** |
+| | | `c3-ab4`, 960 Hz | 1.66 | 7.9 | **blows up** | **blows up** | **blows up** |
+
+In plain words:
+
+- **Midpoint keeps applied moments explicit, so on a spring it behaves like Euler: it adds a little energy every
+  step.** A spring computed inside JSBSim needs a damping ratio of about `frequency x step / 2` or it grows (at
+  1200 Hz: 0.008 for 20 rad/s, 0.03 for 80 rad/s). The floor's integrators give the same numbers to three
+  digits. `c3-ab4` (AB4 in the air) is neutral up to 160 rad/s.
+- **Written from JavaScript, one step late, both schemes add energy**, about equally. A 20 rad/s spring with a
+  damping ratio of 0.03 ends 6 to 9 times too large after 10 s with either.
+- **With the damping ratio G7 judged (0.3), everything dies away as it should.** That is why G7 passed. G7 did not
+  test lightly damped springs; that is a gap in my gate, not a failure of it as frozen.
+- Whether the game has such modes is not known. Rigid-aircraft short-period and Dutch-roll modes are well damped
+  at these frequencies; wing-strip forces written from JavaScript are the open case.
+
+**Labels changed** (downgrades and narrowings; nothing is upgraded):
+
+- Finding 17: **dampers only.** It says nothing about springs.
+- Finding 9 ("one step late costs accuracy, not stability, at these rates"): true for the cases G7 ran (damping
+  ratio 0.3). For lightly damped springs the delay costs stability.
+- "The decision", the row "stiffest damper it tolerates" and the sentence "that is the reason for the choice":
+  the reason covers dampers. For springs computed inside JSBSim `c3-ab4` is the better scheme; through
+  JavaScript they are equal. **I no longer claim that midpoint is the better choice for the wing-strip work.**
+- The summary's "it tolerates about seven times stiffer moments": dampers only.
+
+**What stands:** every gate result. Both `c2-mid-g` at 1200 Hz and `c3-ab4-g` at 960 and 1000 Hz passed every
+gate as frozen; the review's summary confirms the NASA reading at 1200 Hz.
+
+**Where the default stands.** The code is unchanged: `JSBSim.create()` still gives midpoint, Buss 2, strut limits,
+1200 Hz. I did not switch it back, because the summary does not say the scheme is wrong at 1200 Hz and I cannot
+read the details. **But it is not cleared: do not build on it.** Session 06 must first read the review, close the
+two wrapper defects, add a gate for lightly damped springs (a new name, committed before anything runs through
+it), and then decide again between the two configurations.
+
+## Summary (as written before the review)
 
 - **The wrapper's default has changed.** A simulation created by the game now runs **implicit-midpoint body rates,
   Buss 2 attitude, the new strut limits (patch 0004), at 1200 steps per second** (`c2-mid-g`). It is the
