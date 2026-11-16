@@ -165,6 +165,80 @@ mustWork("737: load, runIC, 200 steps, finite", () => {
   return { n, h: sim.getProperty("position/h-sl-ft") };
 }, (r) => r.n === 200 && Number.isFinite(r.h));
 
+console.log("## 8. Gaps found by the review of session 04 (REVIEW-codex-04.md)");
+// 8a. A script's own time step is validated before anything is loaded.
+const scriptWithDt = (dt: string) => `<runscript name="dt test"><use aircraft="c172x" initialize="reset00"/><run start="0" end="1" dt="${dt}"/></runscript>`;
+for (const dt of ["-0.01", "0", "-0", "inf", "nan", ""]) {
+  sim.reset(); sim.setDebugLevel(0);
+  sim.writeFile("scripts/regress-dt.xml", scriptWithDt(dt));
+  mustThrow(`loadScript: the script's own dt="${dt}" is rejected`, () => sim.loadScript("scripts/regress-dt.xml"), dt === "nan" || dt === "inf" || dt === "" ? undefined : /time step/);
+  mustWork(`  ... and the simulation is not left with that step (dt="${dt}")`, () => sim.dt, (r) => r > 0 && Number.isFinite(r));
+}
+sim.reset(); sim.setDebugLevel(0);
+sim.writeFile("scripts/regress-dt.xml", scriptWithDt("0.005"));
+mustWork("loadScript: a script with a valid dt of its own still loads", () => { sim.loadScript("scripts/regress-dt.xml"); return sim.dt; }, (r) => r === 0.005);
+sim.reset(); sim.setDebugLevel(0);
+sim.writeFile("scripts/regress-dt.xml", scriptWithDt("-0.01"));
+mustWork("loadScript: an explicit dt overrides a bad dt in the script", () => { sim.loadScript("scripts/regress-dt.xml", 1 / 240); return sim.dt; }, (r) => r === 1 / 240);
+
+// 8b. setIntegrators reads each setting once, and applies everything or nothing.
+sim.reset(); sim.setDebugLevel(0); sim.loadModel("c172x");
+sim.setIntegrators({ rateRotational: 1, rateTranslational: 3 });
+{
+  let reads = 0;
+  const changing = { rateRotational: 5, get rateTranslational() { reads++; return reads <= 3 ? 3 : 999; } };
+  mustWork("setIntegrators: a setting is read exactly once (an object whose value changes between reads cannot half-apply)", () => {
+    let threw = "";
+    try { sim.setIntegrators(changing); } catch (e) { threw = String(e); }
+    return { reads, threw, rate: sim.getProperty("simulation/integrator/rate/rotational"), trans: sim.getProperty("simulation/integrator/rate/translational") };
+  }, (r) => r.reads === 1 && r.threw === "" && r.rate === 5 && r.trans === 3);
+}
+{
+  // A failure injected at the second write: the first write must be undone.
+  sim.setIntegrators({ rateRotational: 1, rateTranslational: 3, positionRotational: 1 });
+  const real = sim.setProperty.bind(sim);
+  let writes = 0;
+  (sim as unknown as { setProperty: (n: string, v: number) => void }).setProperty = (n, v) => {
+    if (++writes === 2) throw new JSBSimError("injected failure of the second write");
+    real(n, v);
+  };
+  let threw = false;
+  try { sim.setIntegrators({ rateRotational: 5, rateTranslational: 4, positionRotational: 7 }); } catch (e) { threw = e instanceof JSBSimError; }
+  delete (sim as unknown as { setProperty?: unknown }).setProperty;
+  mustWork("setIntegrators: when a later write fails, the earlier ones are undone (all or nothing)", () => ({
+    threw, rate: sim.getProperty("simulation/integrator/rate/rotational"), trans: sim.getProperty("simulation/integrator/rate/translational"),
+    att: sim.getProperty("simulation/integrator/position/rotational"),
+  }), (r) => r.threw && r.rate === 1 && r.trans === 3 && r.att === 1);
+}
+
+// 8c. Status values of patch 0003 and the counters of patch 0002 are read-only; the switch's settings are validated.
+if (sim.hasProperty("simulation/integrator/rate/rotational-on-contact")) {
+  const R = "simulation/integrator/rate/", M = "simulation/integrator/midpoint/";
+  const status = [R + "contact-active", R + "contact-switches", ...["steps", "newton-iterations", "max-newton-iterations", "split-steps",
+    "rounding-exits", "euler-fallbacks", "not-converged", "singular-jacobian"].map((c) => M + c)];
+  for (const p of status) {
+    mustThrow(`setProperty(${p}) is refused (read-only)`, () => sim.setProperty(p, 77), /read-only/);
+    mustWork(`  ... and its value is unchanged`, () => sim.getProperty(p), (r) => r === 0);
+  }
+  mustThrow("set(handle of contact-active) is refused", () => sim.set(sim.handle(R + "contact-active"), 1), /read-only/);
+  mustThrow("bindInputs([contact-active]) is refused", () => sim.bindInputs([R + "contact-active"]), /read-only/);
+  for (const [label, v] of [["-1", -1], ["NaN", NaN], ["Infinity", Infinity]] as const)
+    mustThrow(`contact-hold-sec = ${label} is refused`, () => sim.setProperty(R + "contact-hold-sec", v), /contact-hold-sec/);
+  mustWork("contact-hold-sec unchanged by the refused values", () => sim.getProperty(R + "contact-hold-sec"), (r) => r === 0);
+  mustWork("contact-hold-sec = 0.1 is accepted", () => { sim.setProperty(R + "contact-hold-sec", 0.1); return sim.getProperty(R + "contact-hold-sec"); }, (r) => r === 0.1);
+  for (const v of [99, -1, 2])
+    mustThrow(`contact-release-mode = ${v} is refused`, () => sim.setProperty(R + "contact-release-mode", v), /contact-release-mode/);
+  mustWork("contact-release-mode unchanged by the refused values", () => sim.getProperty(R + "contact-release-mode"), (r) => r === 1);
+  mustWork("contact-release-mode = 0 and 1 are accepted", () => { sim.setProperty(R + "contact-release-mode", 0); const a0 = sim.getProperty(R + "contact-release-mode"); sim.setProperty(R + "contact-release-mode", 1); return [a0, sim.getProperty(R + "contact-release-mode")]; }, (r) => r[0] === 0 && r[1] === 1);
+  mustWork("the status values still count: a c172x dropped onto its gear with Euler on contact switches scheme", () => {
+    sim.reset(); sim.setDebugLevel(0); sim.dt = 1 / 480; sim.loadModel("c172x"); sim.loadIC("reset00");
+    sim.setProperty("ic/h-agl-ft", 6);
+    sim.setIntegrators({ rateRotational: 5, positionRotational: 7, rateRotationalOnContact: 1 });
+    sim.runIC(); sim.runSteps(960);
+    return { active: sim.getProperty(R + "contact-active"), switches: sim.getProperty(R + "contact-switches") };
+  }, (r) => r.active === 1 && r.switches >= 1);
+}
+
 try { sim.delete(); } catch { /* the instance may be unusable after a raw exception in the old binding */ }
 console.log(`# ${passed} passed, ${failed} failed (variant ${variant})`);
 process.exit(failed ? 1 : 0);

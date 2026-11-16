@@ -1,0 +1,22 @@
+# Patched WebAssembly build with patches off against the unpatched build
+- wasm/bin: "patchSet": "patched", jsbsim-weh.wasm sha256 f81eb21b3db9ce40, patches "patches":[{"file":"0001-integrator-aware-friction.patch","sha256":"c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"},{"fil
+- build/wasm-bin-unpatched: "patchSet": "unpatched", jsbsim-weh.wasm sha256 2f93068e67d80bc9, patches "patches":[],"bindingSha256":"357bd0f779f8c306a3c8143d30dd2231af8b73673a67bb190a8337e196721f09","emscripten":"6.0.13",
+PASS  jsbsim-weh c1721: bit-identical (1202 rows)
+PASS  jsbsim-weh T38: bit-identical (12001 rows)
+PASS  jsbsim-weh c1723: bit-identical (24001 rows)
+PASS  jsbsim-weh f16_test: bit-identical (84002 rows)
+PASS  jsbsim-weh ext: bit-identical (3601 rows)
+PASS  jsbsim-weh nasa: bit-identical (301 rows)
+PASS  jsbsim-weh nasa5: bit-identical (301 rows)
+PASS  jsbsim-weh flight-c172x: bit-identical (4801 rows)
+PASS  jsbsim-weh flight-f16: bit-identical (4801 rows)
+PASS  jsbsim c1721: bit-identical (1202 rows)
+PASS  jsbsim T38: bit-identical (12001 rows)
+PASS  jsbsim c1723: bit-identical (24001 rows)
+PASS  jsbsim f16_test: bit-identical (84002 rows)
+PASS  jsbsim ext: bit-identical (3601 rows)
+PASS  jsbsim nasa: bit-identical (301 rows)
+PASS  jsbsim nasa5: bit-identical (301 rows)
+PASS  jsbsim flight-c172x: bit-identical (4801 rows)
+PASS  jsbsim flight-f16: bit-identical (4801 rows)
+# RESULT: PASS

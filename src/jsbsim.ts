@@ -290,13 +290,31 @@ export class JSBSim {
   /** Recent JSBSim console output (ANSI colours stripped). */
   get recentLog(): string { return this.log.text(); }
 
-  /** Select integrators. Unknown ids throw (JSBSim itself would silently freeze the state); nothing is changed unless all are valid. */
+  /** Select integrators. Unknown ids throw (JSBSim itself would silently freeze the state).
+   *  All or nothing: each setting is read from `s` exactly once, everything is validated before anything is written,
+   *  and if a write still fails (the C++ side has the last word) the writes already made are undone. */
   setIntegrators(s: IntegratorSettings): void {
-    for (const [k, prop] of INTEGRATOR_PROPS)
-      if (s[k] !== undefined && !validIntegrator(k, s[k]!)) throw new JSBSimError(`setIntegrators: invalid integrator id ${s[k]} for ${prop}`);
-    for (const [k, prop] of INTEGRATOR_PROPS)
-      if (s[k] !== undefined && !this.hasProperty(prop)) throw new JSBSimError(`setIntegrators: ${prop} does not exist in this build`);
-    for (const [k, prop] of INTEGRATOR_PROPS) if (s[k] !== undefined) this.setProperty(prop, s[k]!);
+    const want: [string, number][] = [];
+    for (const [k, prop] of INTEGRATOR_PROPS) {
+      const v = s[k]; // the only read of this setting
+      if (v === undefined) continue;
+      if (!validIntegrator(k, v)) throw new JSBSimError(`setIntegrators: invalid integrator id ${v} for ${prop}`);
+      want.push([prop, v]);
+    }
+    for (const [prop] of want)
+      if (!this.hasProperty(prop)) throw new JSBSimError(`setIntegrators: ${prop} does not exist in this build`);
+    const before = want.map(([prop]) => this.getProperty(prop));
+    let done = 0;
+    try {
+      for (const [prop, v] of want) { this.setProperty(prop, v); done++; }
+    } catch (e) {
+      let undone = true;
+      for (let i = done - 1; i >= 0; i--) {
+        try { this.setProperty(want[i]![0], before[i]!); } catch { undone = false; }
+      }
+      if (!undone && e instanceof Error) e.message += " (and an earlier setting could not be restored)";
+      throw e;
+    }
   }
 
   delete(): void { this.sim.delete(); }

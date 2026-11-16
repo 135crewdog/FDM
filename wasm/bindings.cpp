@@ -32,6 +32,8 @@
 #include "FGJSBBase.h"
 #include "initialization/FGInitialCondition.h"
 #include "input_output/FGPropertyManager.h"
+#include "input_output/FGXMLElement.h"
+#include "input_output/FGXMLFileRead.h"
 #include "models/FGInput.h"
 #include "simgear/misc/sg_path.hxx"
 
@@ -92,10 +94,18 @@ class Sim {
     return guard([&] { return fdm()->LoadModel(model, addModelToPath) ? 1 : 0; });
   }
   // dt = 0 means "the script's own dt".
+  // The script's own dt (<run dt="...">) is checked BEFORE JSBSim loads anything: a negative or zero
+  // step would otherwise be accepted, and rate-dependent components would be built with it.
   int loadScript(const std::string& script, double dt, const std::string& initfile) {
     return guard([&] {
       if (!(dt >= 0.0) || !std::isfinite(dt)) throw JSBSim::BaseException("invalid dt " + num(dt) + " (must be finite and positive, or 0 for the script's own dt)");
-      return fdm()->LoadScript(SGPath(script), dt, SGPath(initfile)) ? 1 : 0;
+      if (dt == 0.0) checkScriptDt(script);
+      int ok = fdm()->LoadScript(SGPath(script), dt, SGPath(initfile)) ? 1 : 0;
+      // The last word: whatever was parsed, the simulation must not be left with an unusable step.
+      double used = fdm()->GetDeltaT();
+      if (ok && (!(used > 0.0) || !std::isfinite(used)))
+        throw JSBSim::BaseException("the script set an invalid time step " + num(used) + " (must be finite and positive); call reset() before loading anything else");
+      return ok;
     });
   }
   // Load an initial-conditions file, like the Python module's load_ic(): with useAircraftPath the name
@@ -252,6 +262,22 @@ class Sim {
     }
     if (!node->setDoubleValue(v))
       throw JSBSim::BaseException("cannot write " + JSBSim::GetFullyQualifiedName(node) + ": the property is read-only");
+  }
+
+  // Read the script's <run dt="..."> the way FGScript does, and refuse a step that is not finite and
+  // positive. A file that cannot be read or has no <run> element is left to JSBSim, which reports it.
+  void checkScriptDt(const std::string& script) {
+    SGPath path(script);
+    if (path.isRelative()) path = fdm()->GetRootDir() / path.utf8Str();
+    JSBSim::FGXMLFileRead reader;
+    JSBSim::Element* doc = reader.LoadXMLDocument(path, false);
+    if (!doc || doc->GetName() != "runscript") return;
+    JSBSim::Element* run = doc->FindElement("run");
+    if (!run) return;
+    double sdt = run->GetAttributeValueAsNumber("dt");  // throws for a missing or non-numeric value
+    if (!(sdt > 0.0) || !std::isfinite(sdt))
+      throw JSBSim::BaseException("the script's own time step (<run dt=\"" + run->GetAttributeValue("dt") +
+                                  "\">) is invalid: it must be finite and positive. Nothing was loaded.");
   }
 
   static int stepCount(double n) {

@@ -1,0 +1,97 @@
+# Later gates (session 04): configuration `floor`
+
+- Role: FLOOR: JSBSim's default body rates (Euler) plus Buss 2 attitude. No patch. The fallback if nothing else passes.
+- Source: JSBSim v1.3.3 unpatched; properties: `simulation/integrator/rate/rotational` = 1, `simulation/integrator/position/rotational` = 7
+- native: native JSBSim 1.3.3 [unpatched] module sha256 9fcccf7f190f3735; patches: none
+- wasm-jsbsim-weh: wasm jsbsim-weh sha256 2f93068e67d80bc9 (fdm-wasm-20261116.0727, patches: none); patches: none
+- Later-gate definitions: gates-04.json sha256 6b465f622661d2b5; last commit touching the later-gate files: e5bcd1d 2026-11-15T20:42:03+00:00
+- Judged at 480 and 1000 Hz; 120 and 240 Hz are reported only.
+
+## G5b Rigid body after start-up: 480 Hz FAIL, 1000 Hz FAIL
+G5's bodies and spins, 60 s. Each cell: worst of native and WebAssembly, relative drift of rotational kinetic energy / of the magnitude of angular momentum, measured against their values at 1 s (gate: both < 1e-06).
+
+| body | spin (deg/s) | 120 Hz | 240 Hz | 480 Hz | 1000 Hz |
+|---|---|---|---|---|---|
+| brick | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 1.7e-02 / 7.1e-03 | **FAIL** 8.3e-03 / 3.5e-03 | **FAIL** 4.1e-03 / 1.7e-03 | **FAIL** 2.0e-03 / 8.2e-04 |
+| brick | B_x_60 [60, 0, 0] | ok 0.0e+00 / 0.0e+00 | ok 0.0e+00 / 0.0e+00 | ok 0.0e+00 / 0.0e+00 | ok 0.0e+00 / 0.0e+00 |
+| brick | C_y_60 [0, 60, 0] | **FAIL** 2.0e-02 / 9.8e-03 | **FAIL** 9.8e-03 / 4.9e-03 | **FAIL** 4.9e-03 / 2.4e-03 | **FAIL** 2.3e-03 / 1.2e-03 |
+| brick | D_z_60 [0, 0, 60] | ok 1.1e-09 / 4.3e-10 | ok 5.2e-10 / 2.0e-10 | ok 2.5e-10 / 9.7e-11 | ok 1.2e-10 / 4.6e-11 |
+| brick | E_intermediate_120 [2, 120, 2] | **FAIL** 1.2e-01 / 5.6e-02 | **FAIL** 5.6e-02 / 2.8e-02 | **FAIL** 2.8e-02 / 1.4e-02 | **FAIL** 1.3e-02 / 6.5e-03 |
+| brick | F_fast_229 [200, 100, -50] | **FAIL** 2.0e+01 / 4.5e+00 | **FAIL** 2.1e+00 / 1.0e+00 | **FAIL** 6.2e-01 / 4.0e-01 | **FAIL** 2.3e-01 / 1.7e-01 |
+| brick | G_fast_356 [300, -150, 120] | **FAIL** blew up (non-finite) | **FAIL** 8.7e+01 / 9.7e+00 | **FAIL** 3.0e+00 / 1.3e+00 | **FAIL** 7.8e-01 / 4.5e-01 |
+| brick | H_extreme_712 (not gated) [600, -300, 240] | blew up (non-finite) | blew up (non-finite) | blew up (non-finite) | 4.9e+01 / 7.1e+00 |
+| brick_poi | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 4.3e-02 / 1.7e-02 | **FAIL** 2.1e-02 / 8.6e-03 | **FAIL** 1.0e-02 / 4.2e-03 | **FAIL** 5.0e-03 / 2.0e-03 |
+| brick_poi | B_x_60 [60, 0, 0] | **FAIL** 1.0e-01 / 7.2e-02 | **FAIL** 4.9e-02 / 3.5e-02 | **FAIL** 2.4e-02 / 1.7e-02 | **FAIL** 1.1e-02 / 8.2e-03 |
+| brick_poi | C_y_60 [0, 60, 0] | **FAIL** 1.1e-01 / 4.8e-02 | **FAIL** 5.2e-02 / 2.3e-02 | **FAIL** 2.5e-02 / 1.1e-02 | **FAIL** 1.2e-02 / 5.3e-03 |
+| brick_poi | D_z_60 [0, 0, 60] | **FAIL** 8.7e-02 / 3.0e-02 | **FAIL** 3.9e-02 / 1.3e-02 | **FAIL** 1.9e-02 / 6.4e-03 | **FAIL** 8.7e-03 / 3.0e-03 |
+| brick_poi | E_intermediate_120 [2, 120, 2] | **FAIL** 5.6e-01 / 2.3e-01 | **FAIL** 2.3e-01 / 9.9e-02 | **FAIL** 1.0e-01 / 4.6e-02 | **FAIL** 4.8e-02 / 2.1e-02 |
+| brick_poi | F_fast_229 [200, 100, -50] | **FAIL** 5.4e-01 / 6.2e-01 | **FAIL** 7.2e-02 / 1.0e-01 | **FAIL** 2.0e-02 / 3.1e-02 | **FAIL** 7.4e-03 / 1.1e-02 |
+| brick_poi | G_fast_356 [300, -150, 120] | **FAIL** blew up (non-finite) | **FAIL** blew up (non-finite) | **FAIL** 5.4e+00 / 1.3e+00 | **FAIL** 7.2e-01 / 2.4e-01 |
+| brick_poi | H_extreme_712 (not gated) [600, -300, 240] | blew up (non-finite) | blew up (non-finite) | blew up (non-finite) | blew up (non-finite) |
+- brick A_nasa_10_20_30 120 Hz: energy 1.70e-02, |H| 7.08e-03
+- brick A_nasa_10_20_30 240 Hz: energy 8.33e-03, |H| 3.48e-03
+- brick A_nasa_10_20_30 480 Hz: energy 4.13e-03, |H| 1.73e-03
+- brick A_nasa_10_20_30 1000 Hz: energy 1.97e-03, |H| 8.24e-04
+- brick C_y_60 120 Hz: energy 1.97e-02, |H| 9.82e-03
+- brick C_y_60 240 Hz: energy 9.80e-03, |H| 4.89e-03
+- brick C_y_60 480 Hz: energy 4.88e-03, |H| 2.44e-03
+- brick C_y_60 1000 Hz: energy 2.34e-03, |H| 1.17e-03
+- ... and 40 more (every trial is in out/gates/<config>/*.jsonl)
+
+## G2b Hard landing, repeated: 480 Hz FAIL, 1000 Hz FAIL
+G2's hard landing, 21 runs per case (1 unperturbed, 20 with the start moved by up to 1e-6 ft, 1e-6 ft/s, 1e-6 deg). Each cell: runs that stay finite, without runaway, native / WebAssembly, of 21. Gate: every run, on both.
+
+| aircraft | 120 Hz | 240 Hz | 480 Hz | 1000 Hz |
+|---|---|---|---|---|
+| c172x | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| f16 | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| c310 | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| ah1s | **0 / 0** | **0 / 0** | **1 / 2** | 21 / 21 |
+| 737 | **2 / 3** | **5 / 3** | **13 / 11** | **19 / 21** |
+| **all five (of 105)** | 65 / 66 | 68 / 66 | 77 / 76 | 103 / 105 |
+
+## G3b Extreme impacts, repeated: REFERENCE (this is the floor)
+G3's impacts, 21 runs per case. Runaway runs (rates > 1e6 rad/s, non-finite or exception) are counted per step rate and compared with the floor's count plus an allowance of 5% of the runs.
+
+| rate | platform | runaway runs (of 315) | floor | allowed (floor + 15) | verdict |
+|---|---|---|---|---|---|
+| 120 Hz | native | 87 | (this is the floor) | - | reference |
+| 120 Hz | wasm-jsbsim-weh | 90 | (this is the floor) | - | reference |
+| 240 Hz | native | 56 | (this is the floor) | - | reference |
+| 240 Hz | wasm-jsbsim-weh | 58 | (this is the floor) | - | reference |
+| 480 Hz | native | 42 | (this is the floor) | - | reference |
+| 480 Hz | wasm-jsbsim-weh | 42 | (this is the floor) | - | reference |
+| 1000 Hz | native | 21 | (this is the floor) | - | reference |
+| 1000 Hz | wasm-jsbsim-weh | 21 | (this is the floor) | - | reference |
+
+Runaway runs per case, native / WebAssembly, of 21:
+
+| aircraft, impact | 120 Hz | 240 Hz | 480 Hz | 1000 Hz |
+|---|---|---|---|---|
+| c172x, inverted | 2 / 3 | 0 / 0 | 0 / 0 | 0 / 0 |
+| c172x, banked | 2 / 3 | 0 / 0 | 0 / 0 | 0 / 0 |
+| c172x, nose | 2 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| f16, inverted | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| f16, banked | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| f16, nose | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| c310, inverted | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| c310, banked | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| c310, nose | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| ah1s, inverted | 21 / 21 | 21 / 21 | 21 / 21 | 0 / 0 |
+| ah1s, banked | 21 / 21 | 0 / 0 | 0 / 0 | 0 / 0 |
+| ah1s, nose | 18 / 21 | 14 / 16 | 0 / 0 | 0 / 0 |
+| 737, inverted | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| 737, banked | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| 737, nose | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+
+## Verdict per step rate
+G1 and G4 are the frozen gates read at one step rate (same measurements, same limits). G6 is measured at 480 Hz and applies to the configuration. G3b for the floor is the reference and counts as passed.
+
+| step rate | G1 Rest | G2b Hard landing x21 | G3b Impacts x21 | G4 NASA | G5b Rigid body | G6 Parity | all |
+|---|---|---|---|---|---|---|---|
+| 120 Hz | PASS | FAIL | reference | not measured | FAIL | PASS | reported only |
+| 240 Hz | PASS | FAIL | reference | not measured | FAIL | PASS | reported only |
+| **480 Hz (judged)** | PASS | FAIL | reference | FAIL | FAIL | PASS | **FAIL** |
+| **1000 Hz (judged)** | PASS | FAIL | reference | FAIL | FAIL | PASS | **FAIL** |
+
+Numbers behind G1 and G4 at the judged rates: 480 Hz: rest rate 8.8e-09 rad/s, NASA rate error 9.2e-02 deg/s, attitude error 5.2e-01 deg; 1000 Hz: rest rate 6.6e-09 rad/s, NASA rate error 4.4e-02 deg/s, attitude error 2.5e-01 deg
