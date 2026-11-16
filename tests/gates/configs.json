@@ -20,7 +20,15 @@
     "properties": {
       "simulation/integrator/rate/rotational": 1,
       "simulation/integrator/position/rotational": 7
-    }
+    },
+    "rates_05": [
+      480,
+      960,
+      1000,
+      1200
+    ],
+    "ref_ground": "ref05-ground-unpatched",
+    "ref_flight": "ref05-flight-unpatched"
   },
   "c1-ab4": {
     "role": "CANDIDATE 1: integrator-aware friction (patch 0001, mode 1) with AB4 body rates and Buss 2 attitude",
@@ -73,7 +81,13 @@
     "properties": {
       "simulation/integrator/rate/rotational": 10,
       "simulation/integrator/position/rotational": 7
-    }
+    },
+    "rates_05": [
+      960,
+      1200
+    ],
+    "ref_ground": "ref05-ground-patched",
+    "ref_flight": "ref05-flight-patched"
   },
   "c2-mid-fa": {
     "role": "CANDIDATE 2 with integrator-aware friction (patch 0001, mode 1): implicit-midpoint body rates, Buss 2 attitude",
@@ -91,7 +105,14 @@
       "simulation/integrator/rate/rotational": 5,
       "simulation/integrator/position/rotational": 7,
       "simulation/integrator/rate/rotational-on-contact": 1
-    }
+    },
+    "rates_05": [
+      480,
+      960,
+      1000
+    ],
+    "ref_ground": "ref05-ground-patched",
+    "ref_flight": "ref05-flight-patched"
   },
   "c3-ab4-fa": {
     "role": "CANDIDATE 3 with integrator-aware friction (patch 0001, mode 1): AB4 in the air, Euler on contact, Buss 2 attitude",
@@ -143,5 +164,49 @@
       "simulation/integrator/friction-aware": 1,
       "simulation/integrator/rate/contact-release-mode": 0
     }
+  },
+  "ref05-ground-unpatched": {
+    "role": "SESSION 05 REFERENCE for ground cases (9600 Hz): JSBSim's Euler body rates with Buss 2 attitude, unpatched source",
+    "source": "unpatched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "ref05-ground-patched": {
+    "role": "SESSION 05 REFERENCE for ground cases (9600 Hz): the same on the patched source, every patch switched off",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "ref05-flight-unpatched": {
+    "role": "SESSION 05 REFERENCE for flight cases (9600 Hz): AB4 body rates with Buss 2 attitude, unpatched source",
+    "source": "unpatched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "ref05-flight-patched": {
+    "role": "SESSION 05 REFERENCE for flight cases (9600 Hz): the same on the patched source",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7
+    }
+  },
+  "ref-default-05": {
+    "role": "reference (harness check only): JSBSim's defaults on the patched source, through the session 05 gates at 1000 Hz",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1
+    },
+    "rates_05": [
+      1000
+    ],
+    "ref_ground": "ref05-ground-patched",
+    "ref_flight": "ref05-flight-patched"
   }
 }
