@@ -1,0 +1,239 @@
+FDM patch 0004: limits on the wheel (BOGEY) strut model, so that a tipped-over, inverted or buried
+aircraft cannot be pushed with unbounded force (session 05)
+
+What is wrong in JSBSim (FGLGear.cpp, unchanged since long before v1.3.3)
+  For a wheel, JSBSim treats the leg as a telescoping strut. With p = LGearProj, the cosine of the
+  angle between the leg and the ground normal:
+    compression       = depth of the wheel point below the ground / p
+    compression speed = normal speed of the contact point / p
+    normal force      = strut force (spring x compression + damper x speed) / p
+  Nothing limits any of the three. As the aircraft tips over, p goes to zero and the force grows like
+  1/p^2; an aircraft that has sunk into the ground (the 737 model has no airframe contact points)
+  reports compressions of tens to millions of feet. REPORT-04 found forces of 5 million times the
+  weight; REVIEW-codex-04 showed that limiting the compression alone makes things worse, because the
+  force is still divided by p.
+
+What this patch does, when it is switched on
+  1. Projection floor. p is not allowed below min-projection in any of the three formulas. Up to that
+     tilt the leg's formula is JSBSim's; beyond it the wheel keeps pushing as it did at that tilt, like
+     a solid point of the airframe. (p <= 0, the leg pointing away from the ground, gives no force,
+     as in JSBSim.)
+  2. Travel. If the compression the geometry asks for exceeds max-travel-leg-fraction times the height
+     of the centre of gravity above the wheel (both from the aircraft's own file: the wheel's location
+     and the CG), the strut has failed or the airframe is in the ground: the wheel gives no force and
+     reports no contact. This is what stops an aircraft that sank deep from being thrown when a wheel
+     "finds" the ground again.
+  3. Force cap. One strut cannot push with more than max-force-weights times the aircraft's weight.
+  STRUCTURE (airframe) contact points are not changed.
+
+Properties (all under gear/strut-limits/)
+    enabled                    0 = JSBSim unchanged (default), 1 = the limits act. Other values are refused.
+    min-projection             default 0.5 (a tilt of 60 deg; the force is then at most 4 times the
+                               upright formula's). Must be above 0 and at most 1.
+    max-force-weights          default 5. The test aircraft's own dampers ask for up to 3.7 weights per
+                               wheel in a landing at their limit sink rate (f16, c310); real gear fails
+                               well below 5. Must be positive.
+    max-travel-leg-fraction    default 0.5: 1.9 ft (c310) to 2.9 ft (f16) for the test aircraft; their
+                               hardest landings within limits compress 0.7 ft. Must be positive.
+    projection-floored, force-capped, travel-exceeded
+                               read-only counters (wheel-steps in which each limit acted); the
+                               simulation never reads them.
+  A refused setting throws and keeps its old value. Like JSBSim's integrator selections (and patch
+  0003's settings), they return to their defaults when the model is re-initialised.
+
+Where the defaults come from
+  They were fixed before the patch was built or run, from the aircraft files and from the landings of
+  the fixtures on JSBSim's default integrators (GATES-05.md): large enough that no landing within the
+  aircraft's limits touches them (checked: the counters stay at zero in every G2d landing, and those
+  runs are bit-identical with the patch on and off; REPORT-05), small enough to bound the force.
+
+What it does not do
+  It bounds the force of the wheels; it does not make a crash realistic. An aircraft without airframe
+  contact points still sinks into the ground once its wheels are gone, and airframe points keep
+  JSBSim's own (unlimited, but geometrically sound) spring and damper. Stopping the simulation at that
+  point is the wrapper's job (crash containment).
+
+How it is switched off
+  With enabled = 0 (the default) every statement computes what unpatched JSBSim computes. Checked:
+  bit-identical logs (tests/native/verify_key.sh patched unpatched, tests/native/verify_wasm_patch_off.sh).
+
+diff --git a/src/models/FGGroundReactions.cpp b/src/models/FGGroundReactions.cpp
+index 685f0d9..4dd9375 100644
+--- a/src/models/FGGroundReactions.cpp
++++ b/src/models/FGGroundReactions.cpp
+@@ -35,6 +35,7 @@ HISTORY
+ INCLUDES
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+ 
++#include <cmath>
+ #include <iomanip>
+ 
+ #include "FGFDMExec.h"
+@@ -70,6 +71,9 @@ bool FGGroundReactions::InitModel(void)
+   vForces.InitMatrix();
+   vMoments.InitMatrix();
+   DsCmd = 0.0;
++  // FDM patch 0004: off by default; like JSBSim's integrator selections, the settings return to their
++  // defaults when the model is re-initialised.
++  strutLimits = StrutLimits();
+ 
+   multipliers.clear();
+ 
+@@ -79,6 +83,40 @@ bool FGGroundReactions::InitModel(void)
+   return true;
+ }
+ 
++//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
++// FDM patch 0004: settings of the strut limits. A refused value throws and leaves the setting as it was.
++
++[[noreturn]] static void RefuseStrutLimit(const char* name, double v, const char* valid)
++{
++  LogException err;
++  err << "gear/strut-limits/" << name << ": invalid value " << v << " (" << valid << ")";
++  throw err;
++}
++
++void FGGroundReactions::SetStrutLimitsEnabled(int v)
++{
++  if (v != 0 && v != 1) RefuseStrutLimit("enabled", v, "valid: 0 JSBSim unchanged, 1 limits on");
++  strutLimits.enabled = v;
++}
++
++void FGGroundReactions::SetStrutMinProjection(double v)
++{
++  if (!(v > 0.0 && v <= 1.0)) RefuseStrutLimit("min-projection", v, "must be above 0 and at most 1");
++  strutLimits.minProjection = v;
++}
++
++void FGGroundReactions::SetStrutMaxForceWeights(double v)
++{
++  if (!(v > 0.0) || std::isinf(v)) RefuseStrutLimit("max-force-weights", v, "must be finite and above 0");
++  strutLimits.maxForceWeights = v;
++}
++
++void FGGroundReactions::SetStrutMaxTravelLegFraction(double v)
++{
++  if (!(v > 0.0) || std::isinf(v)) RefuseStrutLimit("max-travel-leg-fraction", v, "must be finite and above 0");
++  strutLimits.maxTravelLegFraction = v;
++}
++
+ //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ bool FGGroundReactions::Run(bool Holding)
+@@ -241,6 +279,14 @@ void FGGroundReactions::bind(void)
+   FGSurface::bind(PropertyManager.get());
+ 
+   PropertyManager->Tie("gear/num-units", this, &FGGroundReactions::GetNumGearUnits);
++  // FDM patch 0004: strut limits for BOGEY contacts (settings are validated; the counters are read-only)
++  PropertyManager->Tie("gear/strut-limits/enabled", this, &FGGroundReactions::GetStrutLimitsEnabled, &FGGroundReactions::SetStrutLimitsEnabled);
++  PropertyManager->Tie("gear/strut-limits/min-projection", this, &FGGroundReactions::GetStrutMinProjection, &FGGroundReactions::SetStrutMinProjection);
++  PropertyManager->Tie("gear/strut-limits/max-force-weights", this, &FGGroundReactions::GetStrutMaxForceWeights, &FGGroundReactions::SetStrutMaxForceWeights);
++  PropertyManager->Tie("gear/strut-limits/max-travel-leg-fraction", this, &FGGroundReactions::GetStrutMaxTravelLegFraction, &FGGroundReactions::SetStrutMaxTravelLegFraction);
++  PropertyManager->Tie("gear/strut-limits/projection-floored", this, 0, &FGGroundReactions::GetStrutLimitCounter);
++  PropertyManager->Tie("gear/strut-limits/force-capped", this, 1, &FGGroundReactions::GetStrutLimitCounter);
++  PropertyManager->Tie("gear/strut-limits/travel-exceeded", this, 2, &FGGroundReactions::GetStrutLimitCounter);
+   PropertyManager->Tie("gear/wow", this, &FGGroundReactions::GetWOW);
+   PropertyManager->Tie("fcs/steer-cmd-norm", this, &FGGroundReactions::GetDsCmd,
+                        &FGGroundReactions::SetDsCmd);
+diff --git a/src/models/FGGroundReactions.h b/src/models/FGGroundReactions.h
+index 97d970a..0135f75 100644
+--- a/src/models/FGGroundReactions.h
++++ b/src/models/FGGroundReactions.h
+@@ -121,6 +121,28 @@ public:
+ 
+   FGLGear::Inputs in;
+ 
++  /// FDM patch 0004 (strut limits for BOGEY contacts). Off by default: JSBSim unchanged.
++  struct StrutLimits {
++    int enabled = 0;                    ///< 0 = JSBSim unchanged (default), 1 = the three limits below apply
++    double minProjection = 0.5;         ///< floor of the leg's projection on the ground normal (0.5 = 60 deg of tilt)
++    double maxForceWeights = 5.0;       ///< largest strut force of one wheel, in units of the aircraft's weight
++    double maxTravelLegFraction = 0.5;  ///< largest compression, as a fraction of the height of the CG above the wheel
++    double projectionFloored = 0.0;     ///< counters (steps x wheels in which a limit acted); never read by the simulation
++    double forceCapped = 0.0;
++    double travelExceeded = 0.0;
++  };
++  StrutLimits strutLimits;
++  int GetStrutLimitsEnabled(void) const { return strutLimits.enabled; }
++  void SetStrutLimitsEnabled(int v);
++  double GetStrutMinProjection(void) const { return strutLimits.minProjection; }
++  void SetStrutMinProjection(double v);
++  double GetStrutMaxForceWeights(void) const { return strutLimits.maxForceWeights; }
++  void SetStrutMaxForceWeights(double v);
++  double GetStrutMaxTravelLegFraction(void) const { return strutLimits.maxTravelLegFraction; }
++  void SetStrutMaxTravelLegFraction(double v);
++  double GetStrutLimitCounter(int which) const
++  { return which == 0 ? strutLimits.projectionFloored : which == 1 ? strutLimits.forceCapped : strutLimits.travelExceeded; }
++
+ private:
+   std::vector <std::shared_ptr<FGLGear>> lGear;
+   FGColumnVector3 vForces;
+diff --git a/src/models/FGLGear.cpp b/src/models/FGLGear.cpp
+index 8b509db..f0003a3 100644
+--- a/src/models/FGLGear.cpp
++++ b/src/models/FGLGear.cpp
+@@ -41,6 +41,7 @@ HISTORY
+ INCLUDES
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+ 
++#include "models/FGMassBalance.h"
+ #include "FGLGear.h"
+ #include "FGFDMExec.h"
+ #include "models/FGGroundReactions.h"
+@@ -334,8 +335,26 @@ const FGColumnVector3& FGLGear::GetBodyForces(void)
+       switch(eContactType) {
+       case ctBOGEY:
+         if (isSolid) {
++          // FDM patch 0004 (strut limits; they act only when gear/strut-limits/enabled is 1).
++          // The compression below, its speed and the normal force are each divided by LGearProj, the
++          // cosine of the leg's tilt from the ground normal: unbounded as the leg lies down. The limits
++          // keep the leg's formula up to a tilt, freeze it there, and treat a wheel that would have to be
++          // compressed further than a strut can travel as gone.
++          auto& limits = GroundReactions->strutLimits;
++          if (limits.enabled == 1 && LGearProj > 0.0 && LGearProj < limits.minProjection) {
++            LGearProj = limits.minProjection;
++            limits.projectionFloored++;
++          }
+           compressLength = LGearProj > 0.0 ? height * normalZ / LGearProj : 0.0;
++          if (limits.enabled == 1 && compressLength > limits.maxTravelLegFraction * fabs(vWhlBodyVec(eZ))) {
++            // Deeper than the strut can travel (a fraction of the height of the CG above the wheel): the
++            // strut has failed or the airframe is in the ground. No force, no contact.
++            compressLength = 0.0;
++            WOW = false;
++            limits.travelExceeded++;
++          }
+           vWhlDisplVec = mTGear * FGColumnVector3(0., 0., -compressLength);
++          strutProjection = LGearProj;
+         } else {
+           // Gears don't (or hardly) compress in liquids
+           WOW = false;
+@@ -655,6 +674,17 @@ void FGLGear::ComputeVerticalStrutForce()
+   // The reaction force of the wheel is always normal to the ground
+   switch (eContactType) {
+   case ctBOGEY:
++    if (GroundReactions->strutLimits.enabled == 1) {
++      // FDM patch 0004: one strut cannot push harder than max-force-weights times the aircraft's
++      // weight, and the force is projected with the same (floored) projection as the compression.
++      const double cap = GroundReactions->strutLimits.maxForceWeights * fdmex->GetMassBalance()->GetWeight();
++      if (StrutForce < -cap) {
++        StrutForce = -cap;
++        GroundReactions->strutLimits.forceCapped++;
++      }
++      vFn(eZ) = strutProjection > 0.0 ? -StrutForce / strutProjection : 0.0;
++      break;
++    }
+     // Project back the strut force in the local coordinate frame of the ground
+     vFn(eZ) = StrutForce / (mTGear.Transposed()*vGroundNormal)(eZ);
+     break;
+diff --git a/src/models/FGLGear.h b/src/models/FGLGear.h
+index b35c2c3..892b9b5 100644
+--- a/src/models/FGLGear.h
++++ b/src/models/FGLGear.h
+@@ -335,6 +335,7 @@ private:
+   double bDamp;
+   double bDampRebound;
+   double compressLength;
++  double strutProjection = 1.0; ///< FDM patch 0004: the projection used for this step's compression (floored when the limits are on)
+   double compressSpeed;
+   double staticFCoeff, dynamicFCoeff, rollingFCoeff;
+   double Stiffness, Shape, Peak, Curvature; // Pacejka factors

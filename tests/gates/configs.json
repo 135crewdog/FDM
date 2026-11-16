@@ -208,5 +208,63 @@
     ],
     "ref_ground": "ref05-ground-patched",
     "ref_flight": "ref05-flight-patched"
+  },
+  "ref05-ground-patched-g": {
+    "role": "SESSION 05 REFERENCE for ground cases (9600 Hz) with patch 0004 switched on: Euler body rates, Buss 2 attitude, strut limits",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7,
+      "gear/strut-limits/enabled": 1
+    }
+  },
+  "floor-g": {
+    "role": "The floor's integrators (Euler body rates, Buss 2 attitude) with the strut limits of patch 0004 switched on",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 1,
+      "simulation/integrator/position/rotational": 7,
+      "gear/strut-limits/enabled": 1
+    },
+    "rates_05": [
+      480,
+      960,
+      1000,
+      1200
+    ],
+    "ref_ground": "ref05-ground-patched-g",
+    "ref_flight": "ref05-flight-patched"
+  },
+  "c3-ab4-g": {
+    "role": "CANDIDATE 3 (AB4 in the air, Euler on contact, Buss 2) with the strut limits of patch 0004 switched on",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 5,
+      "simulation/integrator/position/rotational": 7,
+      "simulation/integrator/rate/rotational-on-contact": 1,
+      "gear/strut-limits/enabled": 1
+    },
+    "rates_05": [
+      480,
+      960,
+      1000
+    ],
+    "ref_ground": "ref05-ground-patched-g",
+    "ref_flight": "ref05-flight-patched"
+  },
+  "c2-mid-g": {
+    "role": "CANDIDATE 2 (implicit-midpoint body rates, Buss 2) with the strut limits of patch 0004 switched on",
+    "source": "patched",
+    "properties": {
+      "simulation/integrator/rate/rotational": 10,
+      "simulation/integrator/position/rotational": 7,
+      "gear/strut-limits/enabled": 1
+    },
+    "rates_05": [
+      960,
+      1200
+    ],
+    "ref_ground": "ref05-ground-patched-g",
+    "ref_flight": "ref05-flight-patched"
   }
 }
