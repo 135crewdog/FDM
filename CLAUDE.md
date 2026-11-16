@@ -251,9 +251,11 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
 - `-fexceptions` costs ~50-100% per step vs no exceptions; `-fwasm-exceptions` costs nothing measurable.
 - iPhone (Safari 27.2), weh build, JSBSim's defaults: c172x 8-13 us/step, f16 ~10 us/step, +20 forces by
   handle/bulk ~3 us; timer resolution 1 ms (time batches only) (`results/04-page-iphone-fwasm-exceptions.txt`).
-  **The new default has not been timed on the iPhone yet**; the page's section 5 does it. In Node and headless
-  Chromium it costs the same per step as JSBSim's defaults (`results/05-cost.txt`); at 9 us/step, 1200 Hz would be
-  about 11 ms per second of flight.
+  **The default (midpoint, Buss 2, strut limits, 1200 Hz) on the same iPhone: 10-14 us/step, f16 11.3, with 20
+  forces in bulk 13.0, so 12 to 16 ms of computing per second of flight** (about 1.5% of one core); crash
+  containment costs nothing measurable (`results/05-page-iphone-fwasm-exceptions.txt`, the page's section 5).
+  The first timed run on a freshly created module is slower (13.7 against 10.0 for the same flight); read that as
+  warm-up, not as the scheme's cost (not tested).
 
 ## Parked for later: publishing (user's decision, 2026-11-15)
 Revisit publishing only once we have a viable FDM that others could use for mobile flight sims. Do not post

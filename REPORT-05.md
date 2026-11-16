@@ -18,8 +18,9 @@ Date: 2026-11-16. Raw outputs: `results/05-*`. Gates of this session: `GATES-05.
   test a landing" was wrong, as the review said.
 - **Crash containment is in the wrapper**: a check after every physics step that stops the simulation, keeps the
   last good state for drawing and says why. It is off until the game switches it on.
-- **Still needed from outside:** an independent review of this session (`prompts/codex-review-05.md`), and an
-  iPhone timing of the new default (steps at the end of this report).
+- **The iPhone has timed the new default** (added after the session's last push, when the owner pasted the
+  page's output): 10 to 14 microseconds per step, so 12 to 16 ms of computing per second of flight.
+- **Still needed from outside:** an independent review of this session (`prompts/codex-review-05.md`).
 
 ## Evidence ledger
 
@@ -48,7 +49,9 @@ answer key. **Reasoned** = explanation, not tested.
 | 18 | Crash containment never publishes a state outside its limits and never lets anything but a `JSBSimError` out | Supported | 1,800 crash runs per build variant (20 cases x 5 x 6 configurations x 3 rates) stepped 16 steps per frame: every run ends complete or halted with a reason; no published state breaks a limit. For the default at 1200 Hz: 25 of 100 runs fly their 15 s inside the limits, 50 halt as tipped over, 15 as below the surface, 10 on ground force. `results/05-containment-*.txt`. The first version of the check had a defect that this test found (see "Earlier explanations"). |
 | 19 | A step that throws is not a rollback | Supported | A script event that makes JSBSim throw inside a step: JSBSim's clock has moved on (0.100 s), the published outputs have not (0.098 s). The wrapper halts the simulation; only `reset()` clears it. |
 | 20 | The midpoint scheme's own failure (Newton does not converge) can be forced, and is handled | Supported | Never seen with an aircraft. Forced with a body that cannot exist (an almost singular inertia tensor): it arrives as a `JSBSimError` with the scheme's message and halts the simulation; with containment on, the runaway-rate check stops it first. |
-| 21 | The new default costs about as much per step as the others | Supported (Node; the iPhone has not timed it) | `results/05-cost.txt`. In headless Chromium the test page times the default at 18 microseconds per step for the c172x and the f16 (`results/05-page-chromium-fwasm-exceptions.txt`). |
+| 21 | In Node, the new default costs about as much per step as the others | Supported | `results/05-cost.txt`. In headless Chromium the test page times the default at 18 microseconds per step for the c172x and the f16 (`results/05-page-chromium-fwasm-exceptions.txt`). |
+| 22 | The new default runs on the iPhone at 10 to 14 microseconds per step: 12 to 16 ms of computing per second of flight at 1200 Hz | Verified (the owner's iPhone, Safari 27.2, build `fdm-wasm-20261116.0911`) | Section 5 of the page: c172x 13.7 (first run) and 10.0 (the same flight again, with crash containment on); f16 11.3; c172x with 20 forces written in bulk 13.0. For comparison, JSBSim's defaults at 1000 Hz on the same run: c172x 9.3, f16 11.7. The timer resolves 1 ms, which is 0.3 microseconds per step here. End states (height, speed) equal the headless Chromium run's in every line. 59 of 61 aircraft load. `results/05-page-iphone-fwasm-exceptions.txt`. |
+| 23 | The c172x's 13.7 against 10.0 is a warm-up effect of a freshly created module, not a cost of the scheme | Reasoned | The first timed run on a new module is the slow one in section 3 too (15.3 against 10.0), and the f16 shows no difference between the default (11.3) and JSBSim's own (11.3 to 11.7). Chromium shows the same pattern. Test: time the same flight twice in a row on the page. |
 
 Yardsticks, and what was chosen after seeing something:
 
@@ -124,8 +127,9 @@ Cost per step in Node (median of 7; `results/05-cost.txt`):
 
 - Per step, no configuration costs measurably more than another: the scatter between repetitions (2 to 8
   microseconds) is larger than any difference. The cost of a second of flight follows the step rate.
-- These are this container's Node numbers. The iPhone ran JSBSim's defaults at about 9 microseconds per step in
-  session 04; if the default costs the same there, as it does here, 1200 Hz is about 11 ms per second of flight.
+- These are this container's Node numbers. On the iPhone (finding 22) the default costs 10 to 14 microseconds
+  per step, 12 to 16 ms per second of flight: about 1.5% of one core. Before the measurement I had estimated
+  11 ms from session 04's timing; that was a little low.
 
 ## The decision
 
@@ -172,9 +176,8 @@ Why this one and not `c3-ab4-g` at 960 Hz:
   `c3-ab4-g` at 960 Hz has passed the same gates and is one `setIntegrators` call away.
 - If the game needs to run below 1200 Hz: midpoint fails the NASA limit at 960 Hz (2.5e-6 against 2e-6). That
   limit was set at AB4's level in session 03; whether a game needs it is the owner's call, not mine.
-- If the iPhone timing of the default is bad. In Node the default costs the same per step as JSBSim's defaults;
-  at 9 microseconds per step (session 04's phone timing) 1200 Hz is about 11 ms of computing per second of
-  flight. This is a calculation, not a measurement (Reasoned).
+- The iPhone timing does not change it: 12 to 16 ms per second of flight (finding 22). The 20% of steps that
+  `c3-ab4-g` at 960 Hz would save is about 3 ms per second.
 
 ## What was done
 
@@ -296,7 +299,7 @@ is not the state before the step; the wrapper does not pretend it is. Findings 1
   `loadModel` and `loadScript` only.
 - **Where I chose, not you:** every number in `GATES-05.md`; the strut limits' defaults; the containment
   defaults; 1200 Hz with midpoint rather than 960 Hz with `c3-ab4`; that containment is off until asked for.
-- **Not done:** an iPhone timing of the default; a memory-leak audit; a run-on or autorotation landing of the
+- **Not done:** a memory-leak audit; a run-on or autorotation landing of the
   ah1s; the ah1s in G8; landings with a failed engine, on slopes or on wet runways; a review of patch 0001.
 - **Pushed to `main`** at each checkpoint, as the prompt asked.
 
@@ -327,6 +330,8 @@ JSBSIM_VARIANT=jsbsim-weh npx tsx tests/gates/cost05.ts floor-g c3-ab4-g c2-mid-
 ```
 
 ## Running the default on the iPhone
+
+Done on 2026-11-16 (finding 22, `results/05-page-iphone-fwasm-exceptions.txt`). To repeat it:
 
 1. Wait for the page to deploy from `main` (about two minutes after the push), then open
    https://135crewdog.github.io/FDM/ in Safari on the iPhone. The line under the title must show build

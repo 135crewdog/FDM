@@ -22,8 +22,8 @@ Where we are:
   (`c2-mid-g`). It passed every gate in session 05. `c3-ab4-g` at 960 or 1000 Hz passed as well and is the
   fallback.
 - Crash containment exists in the wrapper (off until switched on).
-- The iPhone has not timed the new default unless `results/` holds a file `06-page-iphone-*.txt` or the owner
-  pastes the page's output at the start of this chat.
+- The iPhone has timed the default: 10 to 14 microseconds per step, 12 to 16 ms per second of flight
+  (`results/05-page-iphone-fwasm-exceptions.txt`).
 
 Keep messages to me short and plain. I am not a flight-dynamics expert. Follow the evidence-label rule and the
 gates rule in `CLAUDE.md`, and its lessons (check what a scenario really does; "finite" is not "sane"; old gates
@@ -47,8 +47,8 @@ can pass for the wrong reason; a write that is silently ignored; an association 
   needs fixing, each fix with a test that fails before and passes after.
 - If the review rejects the default or a gate: do what it asks first. A gate that was wrong is kept, said to be
   wrong, and replaced by a new gate with a new name, committed before anything is re-run.
-- If the owner pasted the iPhone results: save them as `results/06-page-iphone-fwasm-exceptions.txt` and report
-  the cost of the default (section 5 of the page) in milliseconds per second of flight.
+- If the owner pastes new iPhone results: save them as `results/06-page-iphone-fwasm-exceptions.txt` and compare
+  with session 05's.
 
 ## Step 2: how wing-strip forces enter JSBSim (checkpoint)
 
