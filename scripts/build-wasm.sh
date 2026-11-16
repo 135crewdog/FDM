@@ -33,7 +33,10 @@ for v in $VARIANTS; do
   B="$WORK/wasm-$PATCHSET-$v"
   emcmake cmake -S "$ROOT/wasm" -B "$B" -DJSBSIM_SOURCE_DIR="$SRC" -DFDM_EH="$v" \
     -DFDM_OUTPUT_NAME="$name" -DCMAKE_BUILD_TYPE=Release >/dev/null
-  cmake --build "$B" --target fdm_jsbsim --parallel "$(nproc)" | grep -v -E '^\[ *[0-9]+%\] Building' || true
+  # The filter must never hide the build's exit status (REVIEW-codex-04: it used to, so a failed compile
+  # could go on to copy stale files and record the patches as built).
+  cmake --build "$B" --target fdm_jsbsim --parallel "$(nproc)" | { grep -v -E '^\[ *[0-9]+%\] Building' || true; } \
+    || { echo "error: WebAssembly build of $name ($PATCHSET) failed; $OUT not updated" >&2; exit 1; }
   cp "$B/$name.mjs" "$B/$name.wasm" "$OUT/"
 done
 

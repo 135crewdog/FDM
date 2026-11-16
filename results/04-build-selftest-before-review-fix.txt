@@ -1,0 +1,12 @@
+PASS  unpatched tree equals the pinned commit
+PASS  unpatched: recorded patch list is empty
+PASS  a NEW patch reaches an EXISTING source tree (the old script skipped it)
+PASS  the patch name and sha256 are recorded
+PASS  a CHANGED patch replaces the old one in the tree
+PASS  the recorded hash changed with the patch
+PASS  the unpatched set removes the patch again
+PASS  a patch that does not apply stops the build
+PASS  a different Emscripten version stops scripts/build-wasm.sh
+FAIL  a failed compile stops scripts/build-native.sh and leaves no answer key (stale module present)
+FAIL  a failed compile stops scripts/build-wasm.sh and writes no binary or build-info (stale files present)
+# build self-tests FAILED

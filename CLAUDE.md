@@ -2,13 +2,15 @@
 
 Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The core is **JSBSim v1.3.3 compiled to
 WebAssembly by us** (Emscripten 6.0.13). Read in this order:
-1. `REPORT-04.md`: later gates, candidates 2 and 3, the integrator recommendation, and what was found about the
-   ground model. **Start here.**
-2. `GATES.md`, `GATES-04.md`, `GATES-04b.md`: the gates, and the rule that they are never changed after a result.
-3. `REPORT-03.md` (defect fixes, first gates, candidate 1; several of its ground explanations are corrected in
+1. `REPORT-04.md`: later gates, candidates 2 and 3, what was found about the ground model. **Start here, with its
+   "Review outcome" section**: the independent review said "not yet" and the 480 Hz recommendation is withdrawn.
+2. `REVIEW-codex-04.md`: the independent review of sessions 03 and 04 (results in `results/review-codex-04/`,
+   tests in `tests/review/review04_*`).
+3. `GATES.md`, `GATES-04.md`, `GATES-04b.md`: the gates, and the rule that they are never changed after a result.
+4. `REPORT-03.md` (defect fixes, first gates, candidate 1; several of its ground explanations are corrected in
    REPORT-04 "Earlier explanations that turned out wrong").
-4. `REPORT-02.md` (our build and tests) and `REVIEW-codex-02.md` (independent review of session 02).
-5. `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
+5. `REPORT-02.md` (our build and tests) and `REVIEW-codex-02.md` (independent review of session 02).
+6. `REPORT.md` (session 01, the evaluation of the `@0x62/jsbsim-wasm` package, now replaced).
 
 ## Chats and prompts (`prompts/README.md`)
 The repository is the project's memory; a chat is only where one piece of work happens.
@@ -18,8 +20,7 @@ The repository is the project's memory; a chat is only where one piece of work h
 - At the start of a session, rename the chat to the name in its prompt (or ask the user to, in the first line).
 - Every work session ends by writing the prompt for the next chat, with its chat name at the top and "Name this
   chat ..." as the first instruction, and by adding a row to the table in `prompts/README.md`.
-- Next: `prompts/codex-review-04.md` (independent review of sessions 03 and 04), then
-  `prompts/05-ground-model-and-default.md`.
+- Next: `prompts/05-ground-model-and-default.md` (rewritten after the review of 2026-11-16).
 
 ## Rule: label every finding by strength of evidence
 The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
@@ -50,6 +51,14 @@ Keep an "Evidence ledger" table near the top of each report. Rules that go with 
   south). Read the body-axis velocity, the attitude and the height from the simulation, not from the description.
 - **"Finite" is not "sane".** A run can stay finite while the aircraft is 150 ft under the ground or thrown to
   1,000 ft. Gates on the ground need conditions on height, attitude and energy.
+- **A fixture must fly the aircraft the way it flies.** G2c fixed the direction but still flew a 737 at 59 kt with
+  engines off; it tipped over, and session 04 wrongly concluded the 737 cannot test a landing. With 140 kt, flaps
+  and running engines it lands every time (REVIEW-codex-04). Do not drop an aircraft because a bad fixture fails.
+- **A free-body test says nothing about stability under applied moments.** AB4 passes NASA's tumbling brick at
+  480 Hz and blows up at 480 Hz under a stable damping moment with a 5 ms time constant (AB4 needs about
+  `|lambda| * dt < 0.3`; Euler 2). Test integrators with forces applied, not only without.
+- **An association is not a cause.** "60 of 60 failures were preceded by X" did not show that X starts the
+  failure (176 finite runs had X too). Test an explanation by removing the cause, as the review did.
 - Do not change JSBSim's physics except through `wasm/patches/*.patch`: small, explained in its header, switched by a
   property that defaults to "unchanged JSBSim", and proven bit-identical when off (`tests/native/verify_key.sh
   patched unpatched`, `tests/native/verify_wasm_patch_off.sh`).
@@ -69,6 +78,9 @@ NASA check-case reference data is in `reference/nasa-checkcases/`.
   exception handling in the browser (Safari 15.2+).
 - Built files are committed in `wasm/bin/` (`*.mjs`, `*.wasm`, `build-info.json` with the build version, patch hashes
   and binary hashes). Two builds of the same source differ in a few hundred bytes (JSBSim embeds the build time).
+- Both build scripts stop when the compiler fails (they did not until 2026-11-16: `... | grep ... || true` hid the
+  failure and a stale binary was recorded as built; `tests/build/selftest_patches.sh` now tests this). Never put
+  `|| true` after a pipeline whose first command matters.
 - **Patches** live in `wasm/patches/*.patch`. `scripts/lib-jsbsim-src.sh` resets the pinned source and re-applies them on
   every build, the same way for WebAssembly (`scripts/build-wasm.sh`) and for the native answer key
   (`scripts/build-native.sh`). `PATCHSET=unpatched scripts/build-wasm.sh` builds without them into
@@ -94,8 +106,8 @@ NASA check-case reference data is in `reference/nasa-checkcases/`.
 const sim = await createSim();            // Node: loads wasm/bin/jsbsim-weh.mjs (JSBSIM_VARIANT=jsbsim for the other), copies jsbsim-data into MEMFS at /jsbsim
 sim.dt = 1 / 480;                         // BEFORE loading (filters cache dt at load); after load it throws (setDtAfterLoad to force)
 sim.loadScript("scripts/c1723.xml");      // or sim.loadModel("f16"); sim.loadIC("reset00"); errors throw JSBSimError with JSBSim's message
-sim.setIntegrators({ rateRotational: 5, positionRotational: 7, rateRotationalOnContact: 1 });  // the configuration recommended in
-                                          // REPORT-04 (not the default yet). Unknown ids throw. AB4 alone is fragile on the ground.
+sim.setIntegrators({ rateRotational: 5, positionRotational: 7, rateRotationalOnContact: 1 });  // candidate 3 (c3-ab4). NOT the
+                                          // default and not qualified (REPORT-04 "Review outcome"). Unknown ids throw.
 sim.runIC(); sim.run(); sim.runSteps(n);  // run() returns false when a script ends
 sim.getProperty(name); sim.setProperty(name, v);   // by name: ~1-2 us per call, fine for setup, not per step
 const h = sim.handle(name); sim.get(h); sim.set(h, v);          // cached handle: ~45 ns per write
@@ -123,13 +135,18 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
 - JSBSim's noise uses `std::default_random_engine`/`std::normal_distribution` (implementation-defined): models with
   active noise cannot match native Linux (libstdc++) step for step.
 - psi is reported in [0, 2pi): wrap angles before comparing.
-- **Integrator (session 04): recommended, not yet the default.** Gates and results: `GATES*.md`, REPORT-04,
-  `results/04-gates-summary.txt`.
-  - **Recommended to carry forward: `c3-ab4` at 480 Hz** = AB4 body rates in the air, Euler while any contact point
-    touches (patch 0003), Buss 2 attitude (`position/rotational` = 7), friction as in JSBSim. It needs patch 0003 only.
-  - **The shipped default is still JSBSim's** (Euler body rates). By the rule nothing passes every gate: every
-    configuration fails the hard-landing gate, through the 737 and ah1s only. Do not change the default until a
-    landing gate that tests landings exists and `c3-ab4` passes it (session 05).
+- **Integrator: undecided. Two candidates, default unchanged** (REPORT-04 "Review outcome", REVIEW-codex-04).
+  Gates and results: `GATES*.md`, `results/04-gates-summary.txt`.
+  - **The shipped default is still JSBSim's** (Euler body rates). Do not change it until the gates of session 05
+    exist and a candidate passes them.
+  - **Candidate 3, `c3-ab4`** = AB4 body rates in the air, Euler while any contact point touches (patch 0003),
+    Buss 2 attitude. Session 04 recommended it at 480 Hz; **that rate is withdrawn**: AB4 at 480 Hz is unstable
+    under a stiff damping moment (stable at 960 and 1000 Hz for a 5 ms time constant, not for 2.5 ms). Repeated
+    switching also accumulates error (0.087 rad/s after 100 switches in a synthetic test, worse than Euler alone).
+  - **Candidate 2, midpoint at 1200 Hz** (patch 0002): 1.6e-6 deg/s against NASA, inside G4 as frozen (the
+    reviewer's native run; not yet through every gate at 1200 Hz). Tolerates stiff moments as Euler does, conserves
+    energy to rounding, has no switch. Open: it throws if Newton fails (never seen; a shipped version needs a
+    policy), and applied moments stay explicit.
   - At 480 and 1000 Hz (judged rates; 120 and 240 Hz are reported only):
 
     | | G1 Rest | Landings: c172x, f16, c310 | Landings: 737, ah1s | Crash cases against the floor | G4 NASA | G5b Energy | G6 Parity |
@@ -139,33 +156,40 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
     | Candidate 2 (midpoint, patch 0002) | pass | all runs | fail | same at 480, worse at 1000 | fail (1.0e-5, 2.3e-6; gate 2e-6) | pass (1e-14) | pass |
     | Candidate 3 (`c3-ab4`, patch 0003) | pass | all runs | fail | same at 480, worse at 1000 | pass (1.4e-6, 3.2e-7) | pass | pass |
 
+    "Landings" in this table are G2c: every aircraft at 59 kt, engines off. That fixture is unsuitable for the 737
+    and ah1s (see below); the column says they fail **that fixture**, not that they cannot land.
   - AB3 in the air fails G5b (a real, slow drift); AB2 fails G4. Candidate 3 with patch 0001 added is no better.
-  - Candidate 3 is exactly "the floor while touching, AB4 while flying" (bit-identical on both sides, REPORT-04
-    ledger 16). Its switch adds no kick and does not flap in real landings.
-  - Candidate 2 never took a failure path in 3.7 million steps; if Newton ever failed it would throw. It would
-    become the simplest choice if G4's limit were relaxed (the user's decision, REPORT-04 "What would change it").
-  - No configuration costs measurably more per step.
-- **What the ground problem really is** (REPORT-04; this replaces REPORT-03's reading):
-  - **Unlimited wheel compression.** `FGLGear.cpp` computes a BOGEY's strut compression as
-    `height * normalZ / LGearProj` and divides the force by `LGearProj` again; nothing limits either. With the
-    aircraft tipped over, inverted or under the surface, a wheel reports tens to millions of feet and pushes with
-    millions of pounds for one step. 60 of 60 failed runs checked start this way. No integrator survives that.
-    Fix candidates for session 05: a patch that limits it, complete airframe (STRUCTURE) contact points on the
-    aircraft, crash detection in the wrapper.
-  - **Test aircraft matter.** The 737 has three wheels and no airframe contact points: it tips onto its tail and
-    sinks through the ground. The ah1s with its rotor stopped tumbles before it touches. Neither can test a
-    landing. The c172x, f16 and c310 land and stay upright in every run, at every rate, with every configuration
-    (13,104 runs).
+  - Candidate 3 equals the floor in runs that are all contact, and AB4 in runs that are all flight (bit-identical;
+    the reviewer confirmed it and the timing of the contact flag). That says nothing about a mixed flight.
+  - Candidate 2 never threw in 3.7 million steps; its Euler fallback was used 71 times, in diverging crash runs.
+  - No configuration costs measurably more per step (Node).
+- **What the ground problem is** (REPORT-04 as corrected by REVIEW-codex-04; this replaces REPORT-03's reading):
+  - **At least two mechanisms**, not one.
+    - **Wheel geometry.** `FGLGear.cpp` computes a BOGEY's strut compression as `height * normalZ / LGearProj`,
+      divides the compression speed by `LGearProj`, and divides the force by it again; nothing limits any of them.
+      With the aircraft tipped over, inverted or under the surface, a wheel reports tens to millions of feet and
+      pushes with millions of pounds. Capping the compression alone makes it **worse** (172 failures of 550 against
+      60). Capping it and ignoring a wheel whose leg is nearly parallel to the ground (`LGearProj <= 0.1`) removes
+      the floor's 60 failures, but forces still reach 5,700 times the weight (reviewer's scratch builds).
+    - **Friction on airframe (STRUCTURE) contacts with AB4.** The f16 crash with AB4 throughout still runs away
+      with wheel compression bounded; removing STRUCTURE friction prevents it.
+  - **Fixtures, not aircraft, were the problem in the landing gates.** The c172x, f16 and c310 survive G2c in
+    every run. The 737 tips over in G2c (59 kt, no power, and no airframe contact points to stop it) but lands in
+    24 of 24 trials in a proper approach. The ah1s has not been flown with its rotor turning.
   - **Gear dampers and stability at rest.** A stiff damper needs a small enough step: the c310 at 120 Hz tolerates
     0.71 (AB4), 1.20 (AB3), 1.81 (AB2), 2.58 (Euler) times its own damping; the limit doubles with the step rate.
-    This explains session 03's one G1 failure. It does **not** explain the landing failures (softer dampers make
-    them worse). `tests/gates/diag/gear_damper.py`.
+    This explains session 03's one G1 failure. It is not the simple cause of the landing failures (softer dampers
+    make them worse), though that test cannot rule out every stiffness effect. `tests/gates/diag/gear_damper.py`.
   - Friction: `FGAccelerations::CalculateFrictionForces` assumes an Euler step. JSBSim fixed this in 2010 (53709ba8)
     and lost it in 2011. Patch 0001 restores it, adapted. Not needed with Euler on contact.
   - `gear/wow` counts only BOGEY contacts. Read every point: `gear/unit[k]/WOW` and `contact/unit[k]/WOW`.
   - G5 with AB4 fails only through JSBSim's multistep start-up (first 4 steps); G5b (from 1 s) passes.
 - Defects from the review of session 02 are fixed (REPORT-03 step 1). Still open: no memory-leak audit; `setProperty`
-  by name creates missing properties; patch 0001's mathematics is unreviewed.
+  by name creates missing properties. Patch 0001's algebra was checked by the reviewer for frozen geometry.
+- Binding gaps found by REVIEW-codex-04, not fixed yet: a script's own negative dt is accepted; patch 0003's
+  "read-only" properties (`contact-active`, `contact-switches`) and patch 0002's counters can be written, and
+  `contact-active` is read by the switch; a negative hold time and an unknown release mode are accepted;
+  `setIntegrators` reads its argument twice and has no rollback.
 - `.gitignore` used to ignore every directory named `build`, so `tests/build/selftest_patches.sh` was never
   committed in session 03. It now ignores only `/build/`. After adding a file, check `git status` shows it.
 - Set dt **before** loading a model (FCS filters cache dt at load). The binding now enforces it.
@@ -224,12 +248,14 @@ PATCHSET=unpatched scripts/build-wasm.sh   # without patches -> build/wasm-bin-u
   `run-later.sh`, `run-forward.sh`, `summary.py`, `summary_04.py`), candidate list (`configs.json`), diagnostics
   (`diag/`: `gear_damper.py`, `landing_anatomy.py`, `blowup_cause.py`, `midpoint_counters.py`, `contact_switch.py`,
   `confirm_rate.py`). `wasm/patches/`: JSBSim patches.
-- `tests/review/` and `results/review-codex-02/`: Codex's review tests and results (e.g. `ground_matrix.py`, a native
-  stress matrix of 6 aircraft × 5 scenarios × 2 rates × 2 integrators).
+- `tests/review/` and `results/review-codex-02/`, `results/review-codex-04/`: Codex's review tests and results
+  (e.g. `ground_matrix.py`; `review04_powered_landing.py`, a proper 737 approach; `review04_airborne.ts`, forced
+  damping; `review04_release.py`, repeated switching; `review04_build_scratch.py`, scratch builds with a
+  compression cap and projection guard).
 - `web/` page source (TypeScript, bundled by esbuild in `scripts/build-site.mjs`); `.github/workflows/pages.yml` deploys
   it from `main` to https://135crewdog.github.io/FDM/.
 - `results/04-*` session 04 (`04-gates-*`, `04-later-*`, `04-forward-*` are the gate reports, `04-diag-*` the
   diagnostics); `results/03-*` session 03; `results/02-*` session 02; `results/session01/` session 01.
 - `prompts/`: one prompt per chat, and `README.md` with the chat naming convention and the list of sessions
-  (e.g. `05-ground-model-and-default.md`; `codex-review-04.md`, independent review of sessions 03 and 04). The
-  review should be done before session 05, and before the hybrid wing-strip work builds on the integrator choice.
+  (e.g. `05-ground-model-and-default.md`; `codex-review-04.md`, the prompt of the review of sessions 03 and 04).
+  Another independent review should follow the session that finally chooses the integrator.

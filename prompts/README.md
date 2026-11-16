@@ -28,8 +28,8 @@ wing-strip physics work.
 | FDM 02 Review: build and integrator plan | `codex-review-02.md` | `REVIEW-codex-02.md` |
 | FDM 03 Work: fixes, gates, candidate 1 | `03-fixes-and-integrator.md` | `REPORT-03.md` |
 | FDM 04 Work: integrator decision | `04-integrator-decision.md` | `REPORT-04.md` |
-| **FDM 04 Review: integrator decision** (next) | `codex-review-04.md` | `REVIEW-codex-04.md` |
-| FDM 05 Work: ground model and default integrator (after the review) | `05-ground-model-and-default.md` | `REPORT-05.md` |
+| FDM 04 Review: integrator decision | `codex-review-04.md` | `REVIEW-codex-04.md` (verdict: not yet) |
+| **FDM 05 Work: ground model and default integrator** (next; prompt rewritten after the review) | `05-ground-model-and-default.md` | `REPORT-05.md` |
 
 ## How to use a prompt
 

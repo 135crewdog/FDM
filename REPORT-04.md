@@ -3,7 +3,67 @@
 Date: 2026-11-15. Raw outputs: `results/04-*.txt`. How to rebuild and rerun: `CLAUDE.md`, `GATES-04.md`,
 `GATES-04b.md`.
 
-## Summary
+**Read "Review outcome" first.** The independent review (`REVIEW-codex-04.md`, 2026-11-16) says "not yet", and I
+agree. The recommendation of 480 Hz is withdrawn, and three of this report's conclusions are narrowed. The rest
+of the report is kept as written, with the changes marked.
+
+## Review outcome (2026-11-16): not yet
+
+The review's verdict: `c3-ab4` is a reasonable candidate, but 480 Hz is not qualified, and the shipped default
+should stay as it is. I agree with its findings. I re-ran three of its tests here (the build failure, the forced
+damping and the repeated switching); all three reproduce. The others I read but did not re-run.
+
+What is withdrawn or narrowed:
+
+| What this report said | What the review showed | Where it stands now |
+|---|---|---|
+| **Recommend `c3-ab4` at 480 Hz** | AB4 at 480 Hz blows up under a plain, stable damping moment with a 5 ms time constant: body rates pass 1e6 rad/s in 0.17 s, where Euler and midpoint simply decay. At 960 and 1000 Hz AB4 survives that case, and fails a 2.5 ms one. NASA's free-tumbling case cannot show this, because nothing pushes on the brick. | **480 Hz is withdrawn.** `c3-ab4` stays a candidate. Its step rate has to be chosen against the fastest moments the game will apply (aerodynamics, wing-strip forces), and those are not known yet. |
+| **The switch adds no kick, so it is harmless** (finding 18) | True for a single step. But switching back and forth accumulates error. With 100 switches in 10 s under a smooth periodic moment, the rate error is 0.087 rad/s, against 1.7e-5 for AB4 alone and 0.021 for Euler alone. In that test switching is worse than either scheme by itself. Also, my switch diagnostic ran the variants with patch 0001 on, not `c3-ab4` itself; the review added those. | Finding 18 holds for what it measured. Whether repeated contact (touch-and-go, a wheel skipping) hurts in practice needs its own gate. |
+| **The crash blow-ups have one cause** (summary, finding 8, "mistake 5") | Too broad. The review built two scratch versions. Capping wheel compression at 2 ft alone makes it worse (172 failures of 550, against 60), because the force is still divided by the same projection. Adding "no wheel contact when the leg is nearly parallel to the ground" removes all 60, but forces still reach 5,700 times the weight. And the f16 crash with AB4 throughout still runs away with compression bounded; removing friction on airframe contacts prevents it. | There are **at least two** mechanisms: wheel geometry (behind the floor's failures here) and friction on airframe contacts with AB4. My "60 of 60" is an association, not proof of what starts a failure: 176 runs that stayed finite had the same impossible compression. Finding 9 as I wrote it (limit the compression) is refuted in that simple form. |
+| **The 737 and ah1s cannot test a landing** (summary, findings 6 and 7) | A 737 flown like a 737 (140 kt, full flaps, gear down, engines at idle, a pitch controller) lands in 24 of 24 trials, upright and above the ground, with the floor, `c3-ab4` and midpoint. My G2c fixed the direction but still flew every aircraft at 59 kt with engines off. | **The fixture was unsuitable, not the aircraft.** The 737 stays in scope. The ah1s is open: nobody has flown it with the rotor turning. Judging on three aircraft remains a selection made after the results, not a qualification. |
+| **Candidate 2 needs the NASA limit relaxed** ("What would change it") | Midpoint at 1200 Hz is inside the frozen limit (1.6e-6 deg/s; 1.1e-6 at 1440 Hz). Both rates are whole multiples of 60 and 120 frames per second. | **The question I put to you (relax G4?) is withdrawn.** Midpoint at 1200 Hz is a candidate with no yardstick changed. On the iPhone that is about 11 ms of computing per second of flight. |
+| **The build scripts record what was compiled** | A failed compile was hidden: both scripts ended with "ok", copied the old binary and recorded the new patches as built. | **Fixed with this commit** (below). |
+| **G3b's 5% allowance catches a new systematic failure** | It passes a configuration that loses one case 21 of 21 if it wins another one back. | Agreed. Session 05 should judge crash cases one by one. |
+
+What the review confirmed: patch 0003 reads the contact flag for the right instant; candidate 3 equals the floor at
+rest and AB4 in free flight (in single-phase runs); patch 0002 is the pull request's solver plus counters; the
+gate files were committed before the candidates' patches and are unchanged; patch 0001's algebra is consistent
+(for frozen geometry); the c310 damper explanation; the G2 heading error.
+
+Labels changed by the review (the rule is never to upgrade without evidence; these are downgrades):
+
+- Findings 1 and 16: **Verified → Supported.** Agreeing with my own earlier results is not an outside answer key.
+- Finding 9: Reasoned, and now **contradicted** in the form "limit the compression".
+- Finding 11: Supported for the sweep; only **Reasoned** for "dampers play no part in landing failures".
+- Finding 15: the wording "failure paths were never taken" was wrong. No Newton exception occurred, but the
+  Euler fallback, which is one of those paths, was used 71 times.
+- Findings 5 and 6: Supported only for what was measured ("finite and touched" on all 13 configurations; "upright
+  and above ground" for three configurations, native only), and for that fixture.
+- Finding 19: a hypothesis. A case that newly fails stays relevant until crashes are contained.
+
+Fixed now, because it protects every later result:
+
+- `scripts/build-native.sh` and `scripts/build-wasm.sh` now stop when the compiler fails. Two new checks in
+  `tests/build/selftest_patches.sh` fail on the old scripts and pass on the new ones
+  (`results/04-build-selftest-before-review-fix.txt`, `-after-`), and the review's own fault injection now ends
+  with an error.
+- Were session 04's builds stale? I see no sign of it (Supported): the session's build logs contain no compiler
+  error; the candidates' properties exist in both patched builds (the gates refuse to run otherwise); candidate
+  2's energy result can only come from the midpoint code; and the reviewer's fresh builds reproduce the numbers.
+  A native rebuild with the fixed script gives the same module, byte for byte.
+
+Not fixed here, left for session 05: the binding gaps the review found (a script's own negative time step is
+accepted; the "read-only" switch and counter properties can be written, and one of them is read by the switch;
+`setIntegrators` can be half-applied by an object whose values change while it is read).
+
+**Where the decision stands.** The default is unchanged. There are two candidates: `c3-ab4` with its rate open,
+and midpoint at 1200 Hz. My own reading, not tested (Reasoned): the review strengthens midpoint. It tolerates
+stiff moments as Euler does, conserves energy exactly, has no switch and so no switching error, and meets the NASA
+limit at 1200 Hz. What it still lacks is a policy for the step where Newton's method fails, and the same landing
+and forced-flight tests as candidate 3. `prompts/05-ground-model-and-default.md` has been rewritten to follow
+the review.
+
+## Summary (as written before the review)
 
 - **By the rule we set, nothing passes, so the shipped default is unchanged.** Every configuration fails the
   hard-landing gate.
@@ -48,7 +108,7 @@ answer key. **Reasoned** = explanation, not tested.
 
 | # | Finding | Label | Evidence |
 |---|---|---|---|
-| 1 | Session 03 reproduces in a fresh container | Verified (against session 03's committed results) | Everything rebuilt. Tests 0 to 5: every line equals session 03's except timings and build hashes. The G1 to G6 reports of the floor and of candidate 1 (AB4, AB3, AB2, and the floor with the patch) equal session 03's line for line, including every hard-landing and crash cell. No cell differed by luck. `results/04-test*.txt`, `results/04-gates-*.txt`. |
+| 1 | Session 03 reproduces in a fresh container | Supported (lowered from Verified by the review: it reproduces our own results) | Everything rebuilt. Tests 0 to 5: every line equals session 03's except timings and build hashes. The G1 to G6 reports of the floor and of candidate 1 (AB4, AB3, AB2, and the floor with the patch) equal session 03's line for line, including every hard-landing and crash cell. No cell differed by luck. `results/04-test*.txt`, `results/04-gates-*.txt`. |
 | 2 | With patches 0001, 0002 and 0003 switched off, the patched builds equal unpatched JSBSim | Verified (against the unpatched builds) | Bit-identical: 11 native logs, 18 WebAssembly logs. The source build also still equals pip's `jsbsim==1.3.3` (11 logs). `results/04-native-key-*.txt`, `results/04-wasm-patched-off-vs-unpatched.txt`. |
 | 3 | `tests/build/selftest_patches.sh` (session 03) was never committed | Verified (git history) | `.gitignore`'s `build/` also matched `tests/build/`. Test 0 failed on a fresh clone. Rewritten from the nine checks recorded in `results/03-build-selftest.txt`; all nine pass. |
 | 4 | G2 and G2b are a forward landing for the c172x only | Verified (the aircraft's own start files, and the body velocity read from JSBSim) | The scenario sets 100 ft/s **north**. Headings in the start files: c172x 0, f16 180, ah1s 180, c310 200, 737 225 deg. Body velocity at the start: f16 and ah1s 100 ft/s backward, c310 94 backward and 34 sideways, 737 71 backward and 71 sideways. `GATES-04b.md`. |
@@ -56,14 +116,14 @@ answer key. **Reasoned** = explanation, not tested.
 | 6 | The 737 and the ah1s never land in these runs, in any configuration checked | Supported | Floor, `c1-ab4`, `c3-ab4`, forward and backward, 480 and 1000 Hz: 0 of 504 runs stay above the ground and upright. Every failed run but one (222 of 223) went below the ground first. Many "finite" runs are thrown more than 100 ft into the air afterwards (20 of the floor's 21 forward 737 runs at 1000 Hz). Same files. |
 | 7 | Why those two: the 737 model has no airframe contact points; the ah1s with its rotor stopped tumbles before it touches | Verified for the 737's contact list (its file: three wheels, nothing else). Supported for the rest | Trace of the 737, forward, floor, 480 Hz: the touchdown pitches it up, it rotates onto its tail over 9 s, nothing stops it, the body sinks to 157 ft below the surface, then a wheel throws it to 1,300 ft. The ah1s has body rates above 0.5 rad/s before the first touch in 21 of 21 runs. |
 | 8 | Every blow-up starts with an impossible wheel compression | Formula: Verified (JSBSim source, `FGLGear.cpp`: `compressLength = height * normalZ / LGearProj`, and the force is divided by the same projection again; nothing limits either). That it precedes every failure: Supported | Floor, hard landings and impacts, 480 and 1000 Hz: **60 of 60** failed runs had a wheel "compression" above 10 ft first. Largest seen: 630 million ft; largest ground force: 5 million times the aircraft's weight. In the real landings the largest compression is 1.2 to 1.9 ft. `results/04-diag-blowup-cause-floor.txt`. |
-| 9 | Limiting the wheel compression would remove these blow-ups | Reasoned | Follows from 8. Not tested: it needs a patch, and that patch must go through gates written first. Test: patch `FGLGear`, rerun G2c, G2b, G3b. |
+| 9 | Limiting the wheel compression would remove these blow-ups | Reasoned; **contradicted by the review** in this simple form (see "Review outcome") | Follows from 8. Not tested: it needs a patch, and that patch must go through gates written first. Test: patch `FGLGear`, rerun G2c, G2b, G3b. |
 | 10 | Session 03's explanation (ledger 15 there) is right for the c310 at rest | Supported (a damping sweep, and a linear model that shares no code with JSBSim) | The c310's gear damping was scaled until it stops settling. Largest damping tolerated at 120 Hz, as a multiple of the aircraft's own: AB4 0.71, AB3 1.20, AB2 1.81, Euler 2.58. The c310's own damping (1.0) lies between AB4's and AB3's limit, which is exactly session 03's result. Doubling the step rate doubles the limit (AB4: 0.71, 1.44, 2.64 at 120, 240, 480 Hz). The model predicts all seven numbers 6 to 26% low. `results/04-diag-gear-damper.txt`. |
 | 11 | The same explanation is **wrong** for the hard-landing failures | Supported | If stiff dampers caused them, softer dampers would cure them. The opposite happens: 737 with dampers at one eighth, 0 of 11 survive at every rate; at double or four times, 11 of 11 at every rate. The c310 survives at every damping and rate. Same file. The real cause is finding 8. |
 | 12 | The floor fails accuracy and energy conservation | Verified for G4 (NASA data). Supported for G5b | G4: body rates 0.092 deg/s (480 Hz) and 0.044 deg/s (1000 Hz) from NASA; gate 2e-6. G5b: energy drifts by a factor 5.4 (480 Hz) and 0.78 (1000 Hz) in 60 s of fast tumbling; gate 1e-6. |
 | 13 | Candidate 1 with AB4 passes rest, NASA, energy and parity at 480 and 1000 Hz, and is worse than the floor in the crash cases | Verified for G4. Supported for the rest | G4 1.4e-6 and 3.2e-7 deg/s. G5b 2.4e-8 and 9.4e-10 (its G5 failures were start-up only, as session 03 said). Crash cases: G2b good runs 69 of 105 against the floor's 77 (480 Hz), 73 against 103 (1000 Hz); G3b runaway runs 84 against 42, 63 against 21. AB3 fails G5b (5.3e-5, 5.8e-6: a real drift). AB2 fails G4 and G5b. |
 | 14 | Candidate 2 (implicit midpoint) conserves energy to rounding and settles at rest, but misses the NASA gate | Verified for G4. Supported for the rest | G5b 2.9e-14 (480 Hz) and 5.1e-14 (1000 Hz), and below 6e-14 at 120 and 240 Hz too. G1 pass. G4 body rates 1.0e-5 deg/s at 480 Hz (5 times the gate) and 2.3e-6 at 1000 Hz (15% over the gate). That is 9,000 times closer to NASA than the floor. Patch 0001 makes no difference to it. |
-| 15 | Candidate 2's failure paths were never taken | Supported | 3.7 million midpoint steps over the gates' workloads: 0 exceptions (Newton not converged or singular Jacobian), 0 rounding exits. Newton needs 2.0 to 3.7 iterations per step, at most 5. The Euler fallback was used in 71 steps, all in the landing and impact workloads where runs went non-finite. `results/04-diag-midpoint-counters.txt`. |
-| 16 | Candidate 3 does exactly what it says | Verified (by identity with configurations already measured) | In the air it is AB4: its 64 torque-free runs, 4 NASA logs and both flight logs are bit-identical to `c1-ab4`'s. On the ground it is the floor: the 12 rest runs that start in contact equal the floor's, on both platforms. (The other 8 start with a short drop.) |
+| 15 | Candidate 2 never threw (no Newton failure). Its Euler fallback was used 71 times. (Reworded after the review: "failure paths were never taken" was wrong.) | Supported | 3.7 million midpoint steps over the gates' workloads: 0 exceptions (Newton not converged or singular Jacobian), 0 rounding exits. Newton needs 2.0 to 3.7 iterations per step, at most 5. The Euler fallback was used in 71 steps, all in the landing and impact workloads where runs went non-finite. `results/04-diag-midpoint-counters.txt`. |
+| 16 | Candidate 3 does exactly what it says, in runs that are all contact or all flight | Supported (lowered from Verified by the review: identity with our own configurations; it says nothing about a mixed flight) | In the air it is AB4: its 64 torque-free runs, 4 NASA logs and both flight logs are bit-identical to `c1-ab4`'s. On the ground it is the floor: the 12 rest runs that start in contact equal the floor's, on both platforms. (The other 8 start with a short drop.) |
 | 17 | Candidate 3 with AB4 passes rest, NASA, energy and parity at 480 and 1000 Hz; in the crash cases it is no worse than the floor at 480 Hz and worse by the rule at 1000 Hz | Verified for G4. Supported for the rest | Same G4 and G5b numbers as finding 13. G2b good runs 96 / 94 against the floor's 77 / 76 (480 Hz), 94 / 96 against 103 / 105 (1000 Hz). G3b runaway runs 43 / 42 against 42 / 42 (480 Hz), 52 / 49 against 21 / 21 (1000 Hz). With AB3 in the air it fails G5b like AB3 does. |
 | 18 | The switch adds no kick and does not flap in real landings | Supported | Touch-down steps and first steps back in the air differ from an Euler step by 1e-17 rad/s (rounding). A bouncing c172x changes scheme 3 times, never closer than 33 steps apart. Only the 737, while passing through the ground, switches every step; a 0.1 s hold stops that. `results/04-diag-contact-switch.txt`. |
 | 19 | "Worse than the floor" in the crash cases does not rank integrators | Reasoned, from 8 and one traced case | At 1000 Hz every configuration except the floor loses the same case, the inverted ah1s (21 of 21), which the floor itself loses at 120, 240 and 480 Hz (21 of 21 each). Trace: at first contact a wheel reports 31,000 ft of compression and the ground pushes with 50 to 300 million pounds; a difference in the third digit of the state decides whether that step is survived. Test: finding 9's patch. |
@@ -122,7 +182,7 @@ G1 and G5b. At 120 Hz AB4 fails G5b, and `c1-ab4` does not settle with the c310.
 all four rates. The c172x, f16 and c310 land in every run at these rates too. I see no reason to revisit the
 judged rates.
 
-## Recommendation
+## Recommendation (as written before the review; the 480 Hz recommendation is withdrawn, see "Review outcome")
 
 **By the rule: no change.** Nothing passes every gate at the judged rates, so the shipped default stays JSBSim's
 (Euler body rates). The binaries contain all three patches, switched off.
@@ -264,6 +324,9 @@ with a 0.1 s hold, and with the history kept. Results: findings 16 to 18.
   the same as the defaults, finding 20); a memory-leak audit; a test of finding 9.
 
 ## What remains for session 05
+
+(Superseded by the review: the current plan is `prompts/05-ground-model-and-default.md`. The list below is the plan
+as written before the review.)
 
 1. Read the independent review of sessions 03 and 04 first, and answer it.
 2. Before running anything: a landing gate that tests landings (aircraft that can land, forward, several descent

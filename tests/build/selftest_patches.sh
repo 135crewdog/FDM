@@ -57,5 +57,27 @@ out="$(env -u ALLOW_EMCC_MISMATCH PATH="$T/fakebin:$PATH" WORK="$T/work" OUT="$T
 [ $rc != 0 ] && echo "$out" | grep -q "pinned is" && [ ! -e "$T/out" ] && [ ! -e "$T/work" ]
 check "a different Emscripten version stops scripts/build-wasm.sh" $?
 
+# A failed compile must stop the build scripts, even when an older, valid build output is lying in the build
+# directory (REVIEW-codex-04: both scripts used to exit 0, copy the stale output and record the patches as built).
+# A fake cmake succeeds at configuring and fails at building.
+mkdir -p "$T/failbin"
+printf '#!/bin/sh\nif [ "$1" = --build ]; then echo "INJECTED compile failure" >&2; exit 42; fi\nexit 0\n' > "$T/failbin/cmake"
+printf '#!/bin/sh\nexec "$@"\n' > "$T/failbin/emcmake"
+printf '#!/bin/sh\necho "emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13 (fake)"\n' > "$T/failbin/emcc"
+chmod +x "$T/failbin/cmake" "$T/failbin/emcmake" "$T/failbin/emcc"
+: > "$PATCH_DIR/9999-selftest.patch"; rm -f "$PATCH_DIR/9999-selftest.patch"
+
+W="$T/work-native"; mkdir -p "$W/native-build-patched/tests/jsbsim" "$W/native/patched"
+echo stale > "$W/native-build-patched/tests/jsbsim/_jsbsim.stale.so"; echo old > "$W/native/patched/native-info.json"
+out="$(PATH="$T/failbin:$PATH" WORK="$W" "$ROOT/scripts/build-native.sh" patched 2>&1)"; rc=$?
+[ $rc != 0 ] && echo "$out" | grep -q "native build of 'patched' failed" && [ ! -e "$W/native/patched/native-info.json" ] && [ ! -d "$W/native/patched/jsbsim" ]
+check "a failed compile stops scripts/build-native.sh and leaves no answer key (stale module present)" $?
+
+W="$T/work-wasm"; mkdir -p "$W/wasm-patched-wasm" "$T/out-wasm"
+echo stale > "$W/wasm-patched-wasm/jsbsim-weh.wasm"; echo stale > "$W/wasm-patched-wasm/jsbsim-weh.mjs"
+out="$(env -u ALLOW_EMCC_MISMATCH PATH="$T/failbin:$PATH" WORK="$W" OUT="$T/out-wasm" "$ROOT/scripts/build-wasm.sh" wasm 2>&1)"; rc=$?
+[ $rc != 0 ] && echo "$out" | grep -q "WebAssembly build of jsbsim-weh (patched) failed" && [ ! -e "$T/out-wasm/jsbsim-weh.wasm" ] && [ ! -e "$T/out-wasm/build-info.json" ]
+check "a failed compile stops scripts/build-wasm.sh and writes no binary or build-info (stale files present)" $?
+
 [ $fail = 0 ] && echo "# all build self-tests passed" || echo "# build self-tests FAILED"
 exit $fail

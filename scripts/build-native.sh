@@ -21,8 +21,13 @@ for set in $SETS; do
   cmake -S "$SRC" -B "$B" -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_MODULE=ON -DBUILD_DOCS=OFF \
     -DBUILD_SHARED_LIBS=OFF -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DPython3_EXECUTABLE="$PY" -DPython3_FIND_VIRTUALENV=ONLY >/dev/null
-  cmake --build "$B" --target _jsbsim --parallel "$(nproc)" | grep -v -E '^\[ *[0-9]+%\] Building' || true
-  rm -rf "$OUT"; mkdir -p "$OUT"
+  # The filter must never hide the build's exit status (it used to: "... | grep ... || true" let a failed
+  # compile go on to copy a stale module and record the patches as built; REVIEW-codex-04). With pipefail the
+  # pipeline fails when cmake fails; the braces keep grep's "no lines left" from counting as a failure.
+  rm -rf "$OUT"
+  cmake --build "$B" --target _jsbsim --parallel "$(nproc)" | { grep -v -E '^\[ *[0-9]+%\] Building' || true; } \
+    || { echo "error: native build of '$set' failed; no answer key written to $OUT" >&2; exit 1; }
+  mkdir -p "$OUT"
   cp -r "$B/tests/jsbsim" "$OUT/jsbsim"
   SO="$(ls "$OUT"/jsbsim/_jsbsim*.so)"
   cat > "$OUT/native-info.json" <<JSON
