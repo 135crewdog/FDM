@@ -2,12 +2,11 @@
 
 Flight dynamics model for a flight-sim game that runs as a PWA on iPhone. The core is **JSBSim v1.3.3 compiled to
 WebAssembly by us** (Emscripten 6.0.13). Read in this order:
-1. `REPORT-05.md`, **its "Review outcome" section first**: the independent review said **"no, as shipped"**. The
-   report covers the new landing, repeated-contact, crash and forced-flight gates, patch 0004 (strut limits),
-   crash containment, and the decision that made midpoint body rates, Buss 2, strut limits, 1200 Hz the wrapper's
-   default. That default is still in the code and is **not cleared to build on**.
-   `REVIEW-codex-05.md` is the review itself; when "Review outcome" was written it was not in the repository
-   (only its three-sentence summary was known). If it is still missing, ask the owner for it before anything else.
+1. `REPORT-05.md`, **its "Review outcome" section first**, and `REVIEW-codex-05.md` (the review itself): the
+   verdict is **"no, as a game default to build on without further fixes"**. The report covers the new landing,
+   repeated-contact, crash and forced-flight gates, patch 0004 (strut limits), crash containment, and the decision
+   that made midpoint body rates, Buss 2, strut limits, 1200 Hz the wrapper's default. That default is still in
+   the code, the review keeps it as "a reasonable candidate", and it is **not cleared to build on**.
 2. `GATES-05.md` (this session's gates and what had been seen before them), then `GATES.md`, `GATES-04.md`,
    `GATES-04b.md`: the rule that gates are never changed after a result.
 3. `REPORT-04.md` with its "Review outcome", and `REVIEW-codex-04.md` (the review that said "not yet").
@@ -24,7 +23,8 @@ The repository is the project's memory; a chat is only where one piece of work h
 - Every work session ends by writing the prompt for the next chat, with its chat name at the top and "Name this
   chat ..." as the first instruction, and by adding a row to the table in `prompts/README.md`.
 - Next: `prompts/06-wing-strip-forces.md`: answer the review of session 05 (verdict "no, as shipped") before any
-  wing-strip work. It needs `REVIEW-codex-05.md` in the repository.
+  wing-strip work. The review and its tests (`tests/review/review05_*`, `results/review-codex-05/`) are in the
+  repository; three of its tests were re-run here and reproduce (`results/05-review-repro-*.txt`).
 
 ## Rule: label every finding by strength of evidence
 The user cannot check the physics themselves, so every report (REPORT-*.md) labels each finding:
@@ -78,7 +78,9 @@ Keep an "Evidence ledger" table near the top of each report. Rules that go with 
   friction (`FGAccelerations::GetGroundForces()`).
 - **Fixture facts about JSBSim** (session 05): a kinematic component (flaps, gear) reads its state back from its
   output property, so preset that property or it starts at zero and travels; a second `run_ic` resets position,
-  velocity, attitude and rates and KEEPS engine, rotor and control-system states (used to settle engines);
+  velocity, attitude and rates and keeps engine, rotor and control-system states (used to settle engines), but
+  **not exactly**: time is kept, models run twice, filters can update (the f16's elevator moves in the 4th
+  digit; REVIEW-codex-05), so check the residuals at the release;
   `forces/hold-down` zeroes the velocity (useless for a moving aircraft); the aircraft models have ground effect,
   so trim at the height you start from; JSBSim's trim fails for the c310; `ic/vw-north-fps` and `-east-fps` are
   read-only (set wind with `ic/vw-mag-fps` and `ic/vw-dir-deg`).
@@ -127,8 +129,11 @@ NASA check-case reference data is in `reference/nasa-checkcases/`.
     (BOGEY) strut model: `min-projection` 0.5 (the leg's cosine is not allowed below it), `max-travel-leg-fraction`
     0.5 (a wheel that would be compressed beyond that share of the CG's height above it is gone: no force, no
     contact), `max-force-weights` 5 (cap of one strut). Read-only counters `projection-floored`, `force-capped`,
-    `travel-exceeded`. Airframe (STRUCTURE) points are unchanged. **On in the default.** It never acts in a
-    landing within the aircraft's limits (REPORT-05 ledger 14).
+    `travel-exceeded`. Airframe (STRUCTURE) points are unchanged. **On in the default.** It did not act in
+    the 23 landing fixtures at 480 and 1200 Hz (REPORT-05 ledger 14). The review: the cosine floor is sound;
+    the travel rule and the cap are numerical safeguards, not gear physics; the cap is on the strut's axial force
+    (the normal force can reach 10 weights per wheel); a "gone" wheel comes back when the geometry does, with no
+    failure state. A fractional `enabled` (0.9) silently becomes 0 (as does `contact-release-mode`): a defect.
   - A patch's header text is part of its hash, and the hashes are in every result file: do not edit a patch
     (even its comments) without rebuilding and re-running what depends on it. Add a new patch file instead (as
     0003b did).
@@ -188,11 +193,22 @@ Shared test helpers used by Node and the page: `src/checks.ts`. Node helpers: `s
   active noise cannot match native Linux (libstdc++) step for step.
 - psi is reported in [0, 2pi): wrap angles before comparing.
 - **Integrator: the session 05 decision was reviewed and the verdict is "no, as shipped"** (REPORT-05 "Review
-  outcome"). The gate results stand; the default is not cleared. Three points, from the review's summary:
-  - **The default can be left silently**: a script without an explicit dt keeps its own; `simulation/reset` or
-    any re-initialisation inside JSBSim returns integrators and strut limits to JSBSim's defaults. Not fixed yet.
-  - **Crash containment's output protection has gaps** (details in the review). Known to us: after a halt,
-    `readOutputs()` and `getProperty` read the refused state; the outputs are zeros until first read.
+  outcome", `REVIEW-codex-05.md`). The gate results stand; the default is not cleared. The review's points:
+  - **The default can be left silently**: a script without an explicit dt keeps its own (`c1723.xml`: 120 Hz);
+    `simulation/reset` or any re-initialisation inside JSBSim returns integrators and strut limits to JSBSim's
+    defaults while `sim.profile` still says `fdm`. Not fixed yet.
+  - **Crash containment's output protection has gaps.** After a halt, `readOutputs()` publishes the refused
+    state and `getProperty` reads it; with containment off, a throw inside `step(100)` leaves the outputs at the
+    state before the batch; the output buffer is not initialised before a first-step halt. Not fixed yet.
+  - **A force held across `step(n)` is not what G7 tested.** G7 writes a fresh moment before every physics step.
+    A 180 per second damper recomputed once per `step(16)` at 1200 Hz grows from 0.5 to 2,070 rad/s in a second
+    (`tests/review/review05_force_batch.ts`). The game's real force loop must be specified and tested.
+  - **G3d does not see height or judge energy closure**: it passes 737s 4,700 ft underground. Say "wheel-force
+    blow-up suppressed in these cases", not "contained". A new gate is needed (height or a deliberate halt).
+  - Also: the envelope table mixes in control-system reaction (f16 pitch damping 44 per second is 3.1 for a
+    small nudge); G7's factor 2 is provisional; G8's wave is one flat ground height, not a rough runway, and its
+    synthetic switching case must be judged if `c3-ab4` stays on offer; the c172x limit landing is
+    nose-wheel-first (add a flared, mains-first one).
   - **Damper headroom is not spring stability** (`results/05-diag-spring-headroom.txt`). Midpoint keeps applied
     moments explicit, so on a spring it behaves like Euler and adds energy: computed inside JSBSim it needs a
     damping ratio of about `frequency x step / 2` (1200 Hz: 0.008 at 20 rad/s; with none, 20 rad/s grows 2.3 times

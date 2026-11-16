@@ -31,7 +31,7 @@ wing-strip physics work.
 | FDM 04 Review: integrator decision | `codex-review-04.md` | `REVIEW-codex-04.md` (verdict: not yet) |
 | FDM 05 Work: ground model and default integrator | `05-ground-model-and-default.md` | `REPORT-05.md` (the default changed: midpoint, strut limits, 1200 Hz) |
 | FDM 05 Review: ground model and default integrator | `codex-review-05.md` | `REVIEW-codex-05.md` (verdict: no, as shipped) |
-| **FDM 06 Work: answer the review, first step of wing-strip forces** (next; needs `REVIEW-codex-05.md` in the repository) | `06-wing-strip-forces.md` | `REPORT-06.md` |
+| **FDM 06 Work: answer the review, first step of wing-strip forces** (next) | `06-wing-strip-forces.md` | `REPORT-06.md` |
 
 ## How to use a prompt
 

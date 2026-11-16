@@ -3,25 +3,51 @@
 Date: 2026-11-16. Raw outputs: `results/05-*`. Gates of this session: `GATES-05.md`. How to rebuild and rerun:
 "How to reproduce" at the end, and `CLAUDE.md`.
 
-**Read "Review outcome" first.** The independent review's verdict is "no, as shipped". The rest of the report is
-kept as written, with the changes marked there.
+**Read "Review outcome" first.** The independent review (`REVIEW-codex-05.md`) says "no, as a game default to build
+on without further fixes", and I agree. The rest of the report is kept as written, with the changes marked there.
 
-## Review outcome (2026-11-16): no, as shipped
+## Review outcome (2026-11-16): no, not yet as the game's foundation
 
-**What I have.** The owner pasted the review's three-sentence summary into the work chat: "NASA passes at
-1200 Hz, but scripts and resets can silently leave the tested configuration. Output protection has gaps, and
-damping headroom does not establish spring stability." When this section was written `REVIEW-codex-05.md` was
-not in the repository (not on `main`, not on any branch), so **I have not read the review**. What follows
-answers the summary only. Session 06 must read the full text first.
+The review's verdict: `c2-mid-g` at 1200 Hz "remains a reasonable candidate" (its NASA pass reproduces, the
+landing fixtures are useful), but the wrapper can silently leave that configuration, the accepted-state promise
+of crash containment has holes, and my main argument for choosing it over AB4 overstates what it protects
+against. It is not a recommendation to go back to 480 Hz. I agree with its findings. I re-ran three of its tests
+here (`results/05-review-repro-*.txt`); all three reproduce to the digit. The others I read but did not re-run.
 
-| The review's point | What I can say now | Where it stands |
+(An earlier version of this section was written from the review's three-sentence summary, before its text was in
+the repository. It is replaced by this one; the spring test I ran then is kept below.)
+
+What is withdrawn or narrowed:
+
+| What this report said | What the review showed | Where it stands now |
 |---|---|---|
-| **Scripts and resets can silently leave the tested configuration** | True, and I knew it: "Things a reader should know" says a script without an explicit time step keeps its own, and that a re-initialisation inside JSBSim returns the integrators and the strut limits to JSBSim's defaults. I listed it as a caveat instead of fixing it. That was the wrong call: a default that can be left without a word is not a default. | **Agreed. Not fixed yet.** The wrapper must either keep the configuration (re-apply and verify it) or refuse to step when it has been left. Session 06, with the review's cases. |
-| **Output protection has gaps** | I cannot assess this without the text. Two gaps I can name myself, not checked against the review: after a halt, `readOutputs()` and `getProperty` read the refused state, not the last accepted one; and the bulk outputs are zeros until something has read them once. | **Open.** Session 06. |
-| **Damping headroom does not establish spring stability** | **Correct; I tested it** (`tests/gates/diag/spring_headroom.py`, `results/05-diag-spring-headroom.txt`, native). Finding 17 measured dampers only, and I used it as if it covered all stiff moments. For lightly damped springs the picture is the opposite. Numbers below. | **Finding 17 is narrowed to dampers. My reason for preferring midpoint is weakened**, and the choice between the two passing configurations is open again. |
+| **The wrapper's default is the configuration that passed** | It can be left without a word. Loading `scripts/c1723.xml` without a time step runs at 120 Hz, not 1200. Writing `simulation/reset` turns midpoint, Buss 2 and the strut limits into Euler, Euler and limits off. `sim.profile` still says `fdm`. I had listed both under "Things a reader should know" instead of fixing them. | **A defect, and my misjudgement.** Reproduced. Not fixed yet: the wrapper must keep the configuration or refuse to step when it has been left, also when a script resets JSBSim from inside. |
+| **Midpoint tolerates about seven times stiffer moments, and that is the reason for the choice** (finding 17, "The decision") | Patch 0002 is implicit only in the gyroscopic term; applied moments stay explicit, so on a damper or a spring it steps like Euler. A 100 rad/s spring with a damping ratio of 0.01 grows under midpoint at 1200 Hz (0.001 to 0.0029 rad in 1 s) and stays bounded under AB4 at 960 Hz. "Seven times" is a pure damper computed inside JSBSim; through JavaScript the ratio is 2. | **Finding 17 is "pure-damper headroom" and nothing more. The reason I gave for the choice does not hold for springs.** Reproduced, and my own wider test below agrees. The choice between the two configurations is open again. |
+| **Forces written from JavaScript are qualified at 1200 Hz** (G7, finding 9) | Only if they are recomputed before **every physics step**. A game that computes a moment once per frame and calls `step(16)` holds it for 16 steps: the 180 per second damper then grows from 0.5 to 2,070 rad/s in one second. | **G7 qualifies an update every step, not every frame.** Reproduced. The game's real force loop has to be specified and tested before headroom means anything. Finding 9's "costs accuracy, not stability" holds only for those laws, rates and that cadence. |
+| **"The bulk outputs keep the last accepted state"** (step 5, findings 18 to 20) | Not always. After a refused step, `readOutputs()` publishes the refused state, and `getProperty` reads it. With containment off, a step that throws in the middle of `step(100)` leaves the outputs at t = 0, not at the last good step. The outputs are not initialised before a possible first-step halt. | **The promise has holes.** Reproduced. Findings 18 to 20 hold for the stepping paths they tested, not as an absolute. An accepted snapshot needs its own lifetime, separate from live properties. |
+| **All 20 crash cases are contained** (finding 12) | G3d has no height condition and does not judge the energy closure it measures. 18 more attitude variants all pass it, 737s about 4,700 ft underground included, some with closure residuals up to 15 ft. | **Say "wheel-force blow-up suppressed in these cases", not "contained".** The gate stays as frozen; a new gate must require a physically acceptable state or a deliberate halt with a valid retained state, and include height. |
+| **Patch 0004's limits** (step 3) | The projection floor is sound: it removes the singularity. The travel rule and the force cap are numerical safeguards, not gear physics. The cap is on the strut's axial force, so the normal force can reach 10 weights per wheel. "The wheel is gone" is temporary: it reappears when the geometry comes back, with no failure state and no energy accounting. No energy-producing case was found. | **Agreed.** Needs directed bury-and-re-emerge tests. |
+| **"The strut limits never act in a landing within the aircraft's limits"** (finding 14, the patch header, `CLAUDE.md`) | True for these 23 fixtures at the rates tested. | **"Did not act in these 23 fixtures at 480 and 1200 Hz."** |
+| **A second `run_ic` keeps engine and control states and resets the rest** (step 2, `CLAUDE.md`) | Not exactly. Time is kept, models run twice with integration suspended, filters can update: the f16's elevator moves from -0.038361 to -0.038079 rad on the repeated call. | **Usable for preparing a fixture; not an exact partition of the state.** Check the residuals at the release instead of assuming. |
+| **The fastest moments: damping 89 per second, stiffness 9.7 rad/s** (finding 7) | Both headline numbers reproduce. But the f16's pitch damping of 44 per second in my table is the flight-control system moving the elevator for the size of nudge I used; with a small enough nudge it is 3.1 per second. | **Finding 7 is not a clean aerodynamic bound.** Some entries mix in control-system reaction. Reproduced. The c310's 41 per second has not been re-checked. |
+| **G7's margin of 2** | "A useful provisional test point, not a justified reserve": doubling a frequency quadruples the spring, and a generic gain margin says little about a coupled, delayed loop. | **Agreed.** The margin has to come from the measured strip forces. |
+| **G8: the synthetic case reported, not judged; skipping on an undulating runway** | The runway wave moves one flat ground height for all wheels: no slope, no different heights under separated wheels. Not judging the exact-answer case because it is synthetic is not sound: 0.039 rad/s is 2.2 deg/s. It does not count against midpoint, which has no such bias. | **Call it a repeated-contact excitation, not a rough runway. The synthetic case must be judged if `c3-ab4` stays an offered alternative.** |
+| **G2d: strut travel as `2 x weight / spring`; the c172x limit landing** | Not travel data. The c172x case is an unflared nose-wheel-first arrival, not a certification landing. | **Keep it as an abuse test; add a flared, mains-first c172x limit landing** (a new gate). |
+| **The energy budget** | The derivation and the arithmetic check out against an independent case to 2e-17 ft. Two blind spots: a non-zero closure can be ordinary step error (compare across rates), and "largest cumulative ground work" lets earlier losses hide a later gain. | **Stands for what it computes.** Per-contact-episode work would be stronger. |
+| **"Bad values are refused"** (patches 0003b and 0004) | A fractional value slips through: 0.9 written to `contact-release-mode` or to the strut limits' `enabled` silently becomes 0. | **A defect.** Reproduced. |
+| **"How to reproduce"** | `PATHSET=unpatched` is a typo for `PATCHSET=unpatched`; as written it built the patched set. | **Fixed below.** |
 
-**The spring test.** A roll spring on a body of unit inertia, 10 s, exact answer known. Size of the oscillation in
-the last second relative to the exact answer (1.00 is right; more means the scheme adds energy):
+What the review confirmed: the gates were frozen before the candidates ran and are unchanged; the trial logs hold
+317 records ("about 310"); with every patch off the native build equals upstream on all 11 trajectories; NASA at
+1200 Hz is 1.617e-6 deg/s and 960 Hz fails at 2.527e-6; reading a frozen gate at a new rate through the shadow
+copy is fair; the 737 and the rotor-running ah1s land as described; the corrected ground-force check is right;
+halting on a thrown step is the right policy; G8's 9600 Hz reference is fine for the one case it refined;
+136 + 40 binding checks pass on both variants; the default's re-run on the final binary is enough for that
+configuration.
+
+**My own spring test** (`tests/gates/diag/spring_headroom.py`, `results/05-diag-spring-headroom.txt`, native; run
+before I had the review's text). A roll spring on a body of unit inertia, 10 s. Size of the oscillation in the
+last second relative to the exact answer (1.00 is right; more means the scheme adds energy):
 
 | moment computed | damping ratio | scheme | 10 rad/s | 20 rad/s | 40 rad/s | 80 rad/s | 160 rad/s |
 |---|---|---|---|---|---|---|---|
@@ -37,37 +63,43 @@ the last second relative to the exact answer (1.00 is right; more means the sche
 | written from JavaScript | 0 | midpoint, 1200 Hz | 1.84 | 11.9 | **blows up** | **blows up** | **blows up** |
 | | | `c3-ab4`, 960 Hz | 1.66 | 7.9 | **blows up** | **blows up** | **blows up** |
 
-In plain words:
+- Computed inside JSBSim, midpoint (and the floor, to three digits) needs a damping ratio of about
+  `frequency x step / 2` or the spring grows; `c3-ab4` is neutral up to 160 rad/s.
+- Written from JavaScript, one step late, both schemes add energy about equally.
+- At the damping ratio G7 judged (0.3) everything dies away. G7 did not test lightly damped springs: a gap in my
+  gate, not a failure of it as frozen.
 
-- **Midpoint keeps applied moments explicit, so on a spring it behaves like Euler: it adds a little energy every
-  step.** A spring computed inside JSBSim needs a damping ratio of about `frequency x step / 2` or it grows (at
-  1200 Hz: 0.008 for 20 rad/s, 0.03 for 80 rad/s). The floor's integrators give the same numbers to three
-  digits. `c3-ab4` (AB4 in the air) is neutral up to 160 rad/s.
-- **Written from JavaScript, one step late, both schemes add energy**, about equally. A 20 rad/s spring with a
-  damping ratio of 0.03 ends 6 to 9 times too large after 10 s with either.
-- **With the damping ratio G7 judged (0.3), everything dies away as it should.** That is why G7 passed. G7 did not
-  test lightly damped springs; that is a gap in my gate, not a failure of it as frozen.
-- Whether the game has such modes is not known. Rigid-aircraft short-period and Dutch-roll modes are well damped
-  at these frequencies; wing-strip forces written from JavaScript are the open case.
+Labels changed by the review (never upgraded):
 
-**Labels changed** (downgrades and narrowings; nothing is upgraded):
+- Finding 2: Verified for the trajectories compared, not for every aircraft and property.
+- Finding 7: Supported for the two headline numbers; other entries of the table can include control-system
+  reaction.
+- Finding 9: Verified for those probes, at those rates, with a fresh moment every step. Not general advice.
+- Finding 11: the bias is a defect of the switch, whether judged or not.
+- Finding 12: "wheel-force blow-up suppressed in these cases". Finding 13 is why "contained" was the wrong word.
+- Finding 14: "did not act in these 23 fixtures at the tested rates".
+- Finding 16: the NASA part is Verified; "passes every gate" is a regression result under my limits, not a
+  qualification of the physics.
+- Finding 17: Supported, **pure-damper headroom only**.
+- Findings 18 to 20: Supported for the stepping paths tested; the absolute wording has counterexamples.
+- Finding 22: it measures processor time on the owner's phone, not heat, battery or the game's frame time.
 
-- Finding 17: **dampers only.** It says nothing about springs.
-- Finding 9 ("one step late costs accuracy, not stability, at these rates"): true for the cases G7 ran (damping
-  ratio 0.3). For lightly damped springs the delay costs stability.
-- "The decision", the row "stiffest damper it tolerates" and the sentence "that is the reason for the choice":
-  the reason covers dampers. For springs computed inside JSBSim `c3-ab4` is the better scheme; through
-  JavaScript they are equal. **I no longer claim that midpoint is the better choice for the wing-strip work.**
-- The summary's "it tolerates about seven times stiffer moments": dampers only.
+**Where the decision stands.** The code is unchanged: `JSBSim.create()` still gives midpoint, Buss 2, strut limits,
+1200 Hz. The review keeps it as "the next candidate", and I did not switch it back. **It is not cleared to build
+on.** Before anything is built on it, in the review's order:
 
-**What stands:** every gate result. Both `c2-mid-g` at 1200 Hz and `c3-ab4-g` at 960 and 1000 Hz passed every
-gate as frozen; the review's summary confirms the NASA reading at 1200 Hz.
+1. Repair the game-facing contract: the profile cannot be left silently; containment is an explicit choice the
+   game must make; an accepted snapshot that a refresh cannot overwrite.
+2. Specify the real wing-force loop (how often forces are recomputed, whether every step sees a fresh state,
+   which damping ratios and coupled modes it produces) and test delayed and held forces, light damping, energy
+   growth and accuracy. Choose between midpoint and AB4 on that, not on a damper sweep.
+3. New gates with new names, these left frozen: crash height or a deliberate halt, closure across step rates, a
+   strut that disappears and returns, real terrain geometry, a mains-first c172x limit landing, and the
+   synthetic switching case judged if `c3-ab4` stays on offer.
+4. Complete airframe contact points before relying on any motion after a crash.
+5. Claims that say "these fixtures", "pure damping" and "this update cadence".
 
-**Where the default stands.** The code is unchanged: `JSBSim.create()` still gives midpoint, Buss 2, strut limits,
-1200 Hz. I did not switch it back, because the summary does not say the scheme is wrong at 1200 Hz and I cannot
-read the details. **But it is not cleared: do not build on it.** Session 06 must first read the review, close the
-two wrapper defects, add a gate for lightly damped springs (a new name, committed before anything runs through
-it), and then decide again between the two configurations.
+`prompts/06-wing-strip-forces.md` has been rewritten to follow this.
 
 ## Summary (as written before the review)
 
@@ -377,7 +409,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt cmake
 source <emsdk>/emsdk_env.sh                       # Emscripten 6.0.13
 PATH="$PWD/.venv/bin:$PATH" scripts/build-native.sh   # build/native/unpatched and build/native/patched
 scripts/build-wasm.sh                             # wasm/bin (patches 0001 to 0004, all switched off by default)
-PATHSET=unpatched scripts/build-wasm.sh           # build/wasm-bin-unpatched (the floor's)
+PATCHSET=unpatched scripts/build-wasm.sh          # build/wasm-bin-unpatched (the floor's)
 SESSION=05 NATIVE=patched scripts/run-tests.sh    # tests 0-5 -> results/05-test*.txt
 tests/native/verify_key.sh patched unpatched      # every patch off = unpatched JSBSim (native)
 tests/native/verify_wasm_patch_off.sh             # the same for WebAssembly
