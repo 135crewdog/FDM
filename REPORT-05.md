@@ -26,3 +26,14 @@ What was done:
     apart from timings and the patch list (`results/05b-*.txt`).
   - Earlier results it could touch: none numerically (shown above for the two candidates). The diagnostics that
     read the counters only read them.
+
+## Checkpoint 2 (done): fixtures and gates, committed before any candidate ran through them
+
+| what | commit | when |
+|---|---|---|
+| Gates G2d, G8, G3d, G7, their fixtures, runners and judge (`GATES-05.md`, `tests/gates/gates-05.json`, `sim05.py`, `sim05.ts`, `run_native_05.py`, `run_wasm_05.ts`, `evaluate_05.py`) | **`888654f5b41fd0090c751542d5eb8da5f12cfd90`** | before the floor, `c3-ab4` or `c2-mid` had been run through any of them, and before patch 0004 was built |
+
+What had been seen when they were written is listed in `GATES-05.md` ("What had been seen"): everything in
+REPORT-04 and the review, about 310 fixture trials on JSBSim's default integrators (all logged in
+`results/05-fixture-trials*.jsonl`), and one harness check of the whole pipeline on JSBSim's defaults
+(`results/05-new-ref-default-05.txt`).
