@@ -1,0 +1,61 @@
+# NEW READING (session 05): the frozen gates read at 1200 Hz. Frozen code and limits unchanged; only these rate lists differ in the shadow copy: rates_hz: [120, 240, 480, 1000] -> [1200];G4.rates_hz: [480, 1000] -> [1200];G5.rates_hz: [480, 1000] -> [1200];G5.report_only_rates_hz: [120, 240] -> [];G6.hz: 480 -> 1200;gates-04.json judged_rates_hz: [480, 1000] -> [1200];gates-04.json reported_rates_hz: [120, 240] -> [];
+# Later gates (session 04): configuration `floor`
+
+- Role: FLOOR: JSBSim's default body rates (Euler) plus Buss 2 attitude. No patch. The fallback if nothing else passes.
+- Source: JSBSim v1.3.3 unpatched; properties: `simulation/integrator/rate/rotational` = 1, `simulation/integrator/position/rotational` = 7
+- native: native JSBSim 1.3.3 [unpatched] module sha256 9fcccf7f190f3735; patches: none
+- wasm-jsbsim-weh: wasm jsbsim-weh sha256 2f93068e67d80bc9 (fdm-wasm-20261116.0727, patches: none); patches: none
+- Later-gate definitions: gates-04.json sha256 a9459379508084af; last commit touching the later-gate files: NOT COMMITTED
+- Judged at 1200 Hz;  Hz are reported only.
+
+## G5b Rigid body after start-up: 1200 Hz FAIL
+G5's bodies and spins, 60 s. Each cell: worst of native and WebAssembly, relative drift of rotational kinetic energy / of the magnitude of angular momentum, measured against their values at 1 s (gate: both < 1e-06).
+
+| body | spin (deg/s) | 1200 Hz |
+|---|---|---|
+| brick | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 1.6e-03 / 6.9e-04 |
+| brick | B_x_60 [60, 0, 0] | ok 0.0e+00 / 0.0e+00 |
+| brick | C_y_60 [0, 60, 0] | **FAIL** 1.9e-03 / 9.7e-04 |
+| brick | D_z_60 [0, 0, 60] | ok 9.9e-11 / 3.8e-11 |
+| brick | E_intermediate_120 [2, 120, 2] | **FAIL** 1.1e-02 / 5.4e-03 |
+| brick | F_fast_229 [200, 100, -50] | **FAIL** 1.9e-01 / 1.4e-01 |
+| brick | G_fast_356 [300, -150, 120] | **FAIL** 6.0e-01 / 3.6e-01 |
+| brick | H_extreme_712 (not gated) [600, -300, 240] | 1.4e+01 / 3.4e+00 |
+| brick_poi | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 4.1e-03 / 1.7e-03 |
+| brick_poi | B_x_60 [60, 0, 0] | **FAIL** 9.5e-03 / 6.8e-03 |
+| brick_poi | C_y_60 [0, 60, 0] | **FAIL** 1.0e-02 / 4.4e-03 |
+| brick_poi | D_z_60 [0, 0, 60] | **FAIL** 7.2e-03 / 2.5e-03 |
+| brick_poi | E_intermediate_120 [2, 120, 2] | **FAIL** 4.0e-02 / 1.8e-02 |
+| brick_poi | F_fast_229 [200, 100, -50] | **FAIL** 6.0e-03 / 9.1e-03 |
+| brick_poi | G_fast_356 [300, -150, 120] | **FAIL** 5.2e-01 / 1.8e-01 |
+| brick_poi | H_extreme_712 (not gated) [600, -300, 240] | blew up (non-finite) |
+- brick A_nasa_10_20_30 1200 Hz: energy 1.64e-03, |H| 6.86e-04
+- brick C_y_60 1200 Hz: energy 1.95e-03, |H| 9.74e-04
+- brick E_intermediate_120 1200 Hz: energy 1.09e-02, |H| 5.43e-03
+- brick F_fast_229 1200 Hz: energy 1.88e-01, |H| 1.37e-01
+- brick G_fast_356 1200 Hz: energy 5.99e-01, |H| 3.56e-01
+- brick_poi A_nasa_10_20_30 1200 Hz: energy 4.13e-03, |H| 1.68e-03
+- brick_poi B_x_60 1200 Hz: energy 9.52e-03, |H| 6.84e-03
+- brick_poi C_y_60 1200 Hz: energy 1.01e-02, |H| 4.45e-03
+- ... and 4 more (every trial is in out/gates/<config>/*.jsonl)
+
+## G2b Hard landing, repeated: 1200 Hz INCOMPLETE
+G2's hard landing, 21 runs per case (1 unperturbed, 20 with the start moved by up to 1e-6 ft, 1e-6 ft/s, 1e-6 deg). Each cell: runs that stay finite, without runaway, native / WebAssembly, of 21. Gate: every run, on both.
+
+not measured
+
+## G3b Extreme impacts, repeated: 1200 Hz INCOMPLETE
+G3's impacts, 21 runs per case. Runaway runs (rates > 1e6 rad/s, non-finite or exception) are counted per step rate and compared with the floor's count plus an allowance of 5% of the runs.
+
+not measured
+
+## Verdict per step rate
+G1 and G4 are the frozen gates read at one step rate (same measurements, same limits). G6 is measured at 480 Hz and applies to the configuration. G3b for the floor is the reference and counts as passed.
+
+| step rate | G1 Rest | G2b Hard landing x21 | G3b Impacts x21 | G4 NASA | G5b Rigid body | G6 Parity | all |
+|---|---|---|---|---|---|---|---|
+| **1200 Hz (judged)** | PASS | INCOMPLETE | INCOMPLETE | FAIL | FAIL | PASS | **INCOMPLETE** |
+
+Numbers behind G1 and G4 at the judged rates: 1200 Hz: rest rate 1.4e-08 rad/s, NASA rate error 3.7e-02 deg/s, attitude error 2.1e-01 deg
+
+Missing measurements: out/gates/floor/repeat.native.c172x.jsonl

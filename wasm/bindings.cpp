@@ -17,11 +17,20 @@
 // - Socket input (<input port=...> in aircraft files, e.g. the 737 and c172x) is disabled: a phone
 //   game has no use for it, and in Node it needs the npm package "ws". It never affects the physics
 //   unless something connects to the port.
+// - Crash containment (optional, off by default; setContainment()): after EVERY physics step the state is
+//   inspected: non-finite values, runaway body rates, centre of gravity below the surface, tipped over while
+//   touching the ground, ground force beyond a multiple of the weight. On a hit the simulation is HALTED:
+//   the step that produced the bad state is not published (the bulk outputs keep the last accepted state),
+//   no further step runs, and haltReason()/haltDetail() say why. A C++ exception thrown by a step halts the
+//   simulation in the same way, with or without containment: JSBSim has already advanced time and may have
+//   updated the attitude when it throws, so the state is not a rollback and must not be stepped again.
+//   Only init() (the wrapper's reset()) clears a halt.
 // - Physics is untouched: this file only calls FGFDMExec's public API.
 
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -34,7 +43,13 @@
 #include "input_output/FGPropertyManager.h"
 #include "input_output/FGXMLElement.h"
 #include "input_output/FGXMLFileRead.h"
+#include "models/FGAccelerations.h"
+#include "models/FGAuxiliary.h"
+#include "models/FGGroundReactions.h"
 #include "models/FGInput.h"
+#include "models/FGLGear.h"
+#include "models/FGMassBalance.h"
+#include "models/FGPropagate.h"
 #include "simgear/misc/sg_path.hxx"
 
 using namespace emscripten;
@@ -67,6 +82,7 @@ class Sim {
       std::vector<int>().swap(in_); std::vector<int>().swap(out_);
       std::vector<double>().swap(inBuf_); std::vector<double>().swap(outBuf_);
       for (auto& n : integ_) n = nullptr;
+      halt_ = 0; haltDetail_.clear(); haltTime_ = 0.0;
       fdm_.reset();
       fdm_ = std::make_unique<FGFDMExec>(nullptr, nullptr);
       // Same set-up as the Python package's FGFDMExec(root_dir).
@@ -116,17 +132,29 @@ class Sim {
   int runIC() {
     return guard([&] { return fdm()->RunIC() ? 1 : 0; });
   }
-  // 1 = continue, 0 = script finished (Run returned false), -1 = exception.
+  // 1 = continue, 0 = script finished (Run returned false), -1 = exception or halted, 2 = this step halted
+  // the simulation (containment; see haltReason()).
   int run() {
-    return guard([&] { return fdm()->Run() ? 1 : 0; });
+    return guardStep([&] {
+      bool more = fdm()->Run();
+      if (inspect()) return 2;
+      if (contain_.on) readOut();
+      return more ? 1 : 0;
+    });
   }
-  // Run up to n steps. Returns steps completed (stops early when Run() returns false), or -1.
+  // Run up to n steps. Returns steps completed and accepted (stops early when Run() returns false or the
+  // simulation is halted by containment: then haltReason() != 0), or -1.
   int runSteps(double n) {
-    return guard([&] {
-      int count = stepCount(n), i = 0;
+    int count = 0;
+    if (guard([&] { count = stepCount(n); return 0; }) == ERR) return ERR;   // a bad argument is not a failed step
+    return guardStep([&] {
+      int i = 0;
       while (i < count) {
+        bool more = fdm()->Run();
+        if (inspect()) break;
         ++i;
-        if (!fdm()->Run()) break;
+        if (contain_.on) readOut();
+        if (!more) break;
       }
       return i;
     });
@@ -189,18 +217,42 @@ class Sim {
   int readOutputs() {
     return guard([&] { readOut(); return 1; });
   }
-  // Apply inputs, run up to n steps, read outputs. Returns steps completed, or -1.
+  // Apply inputs, run up to n steps, read outputs. Returns steps completed, or -1. With containment the
+  // outputs are read after every accepted step, so that they always hold the last accepted state; a step
+  // that halts the simulation is not counted and not published (haltReason() != 0 afterwards).
   int stepBulk(double n) {
-    return guard([&] {
-      int count = stepCount(n);
-      applyIn();
+    int count = 0;
+    // A bad argument or a refused input value is an error of the call, not a failed step: nothing is halted.
+    if (guard([&] { count = stepCount(n); if (halt_ == 0) applyIn(); return 0; }) == ERR) return ERR;
+    return guardStep([&] {
       int i = 0;
       bool more = true;
-      while (i < count && more) { ++i; more = fdm()->Run(); }
-      readOut();
+      while (i < count && more) {
+        more = fdm()->Run();
+        if (inspect()) return i;
+        ++i;
+        if (contain_.on) readOut();
+      }
+      if (!contain_.on) readOut();
       return more ? i : -(i + 2);  // -(i+2) => script ended after i steps (distinct from -1)
     });
   }
+
+  // --- crash containment ---
+  // Limits: a value that is NaN switches that check off. on = false switches everything off but the
+  // non-finite check is part of "on". Returns 1.
+  int setContainment(bool on, double maxRateRadS, double minCgAglFt, double maxTiltOnGroundDeg, double maxGroundForceWeights) {
+    return guard([&] {
+      fdm();
+      contain_ = {on, maxRateRadS, minCgAglFt, maxTiltOnGroundDeg, maxGroundForceWeights};
+      return 1;
+    });
+  }
+  // 0 = not halted; 1 non-finite state, 2 runaway body rates, 3 below the surface, 4 tipped over on the
+  // ground, 5 ground force beyond the limit, 6 a step threw an exception.
+  int haltReason() const { return halt_; }
+  std::string haltDetail() const { return haltDetail_; }
+  double haltTime() const { return haltTime_; }
 
   // --- misc ---
   double getDt() const { return fdm_ ? fdm_->GetDeltaT() : 0.0; }
@@ -293,6 +345,58 @@ class Sim {
     for (size_t k = 0; k < out_.size(); ++k) outBuf_[k] = handles_[out_[k]].node->getDoubleValue();
   }
 
+  struct Containment { bool on = false; double maxRate = 0, minAgl = 0, maxTilt = 0, maxForce = 0; };
+
+  void halt(int reason, const std::string& detail) {
+    halt_ = reason;
+    haltDetail_ = detail;
+    haltTime_ = fdm_ ? fdm_->GetSimTime() : 0.0;
+  }
+
+  // Inspect the state the latest step produced. Returns true (and halts) if it must not be published.
+  bool inspect() {
+    if (!contain_.on) return false;
+    auto prop = fdm_->GetPropagate();
+    auto gr = fdm_->GetGroundReactions();
+    const JSBSim::FGColumnVector3& w = prop->GetPQR();
+    const JSBSim::FGColumnVector3& v = prop->GetUVW();
+    const JSBSim::FGColumnVector3& e = prop->GetEuler();
+    // The ground force as the property forces/fb*-gear-lbs reports it: wheel and airframe contact forces
+    // INCLUDING friction (FGAccelerations adds the friction it solves; FGGroundReactions::GetForces() lacks it).
+    const JSBSim::FGColumnVector3& f = fdm_->GetAccelerations()->GetGroundForces();
+    const double agl = prop->GetDistanceAGL();
+    double sum = agl;
+    for (int i = 1; i <= 3; ++i) sum += w(i) + v(i) + e(i) + f(i);
+    if (!std::isfinite(sum)) { halt(1, "non-finite state (rates, velocity, attitude, height or ground force)"); return true; }
+    const double rate = std::max(std::fabs(w(1)), std::max(std::fabs(w(2)), std::fabs(w(3))));
+    if (rate > contain_.maxRate) { halt(2, "runaway body rate: " + std::to_string(rate) + " rad/s"); return true; }
+    if (agl < contain_.minAgl) { halt(3, "below the surface: centre of gravity " + std::to_string(agl) + " ft above the ground"); return true; }
+    const double weight = fdm_->GetMassBalance()->GetWeight();
+    const double force = f.Magnitude();
+    if (force > contain_.maxForce * weight) { halt(5, "ground force " + std::to_string(force / weight) + " times the weight"); return true; }
+    bool contact = false;
+    for (int i = 0; i < gr->GetNumGearUnits(); ++i) if (gr->GetGearUnit(i)->GetWOW()) { contact = true; break; }
+    if (contact) {
+      // tilt = angle between the aircraft's down axis and the local vertical
+      const double tilt = std::acos(std::max(-1.0, std::min(1.0, std::cos(e(1)) * std::cos(e(2))))) * 57.29577951308232;
+      if (tilt > contain_.maxTilt) { halt(4, "tipped over on the ground: " + std::to_string(tilt) + " deg from upright"); return true; }
+    }
+    return false;
+  }
+
+  // Like guard(), for the calls that step the simulation: refuses to step a halted simulation, and an
+  // exception thrown by a step halts it (reason 6).
+  template <class F>
+  int guardStep(F&& f) {
+    if (halt_ != 0) {
+      err_ = "the simulation is halted (" + haltDetail_ + " at t = " + std::to_string(haltTime_) + " s); call reset()";
+      return ERR;
+    }
+    int r = guard(f);
+    if (r == ERR && fdm_) halt(6, "a step threw an exception: " + err_);
+    return r;
+  }
+
   template <class F, class R = int>
   R guard(F&& f, R offset = R()) {
     err_.clear();
@@ -335,6 +439,10 @@ class Sim {
   std::vector<int> in_, out_;
   std::vector<double> inBuf_, outBuf_;
   std::string err_;
+  Containment contain_;
+  int halt_ = 0;
+  std::string haltDetail_;
+  double haltTime_ = 0.0;
   double base_ = 0.0;
   bool everInit_ = false;
   int lastStatus_ = 1;
@@ -367,6 +475,10 @@ EMSCRIPTEN_BINDINGS(fdm_jsbsim) {
       .function("applyInputs", &Sim::applyInputs)
       .function("readOutputs", &Sim::readOutputs)
       .function("stepBulk", &Sim::stepBulk)
+      .function("setContainment", &Sim::setContainment)
+      .function("haltReason", &Sim::haltReason)
+      .function("haltDetail", &Sim::haltDetail)
+      .function("haltTime", &Sim::haltTime)
       .function("getDt", &Sim::getDt)
       .function("setDt", &Sim::setDt)
       .function("simTime", &Sim::simTime)

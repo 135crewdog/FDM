@@ -1,6 +1,6 @@
 // iPhone test page for our own WebAssembly build of JSBSim (session 02).
 // Bundled by scripts/build-site.mjs (esbuild) into site/app.js. Shares code with the Node tests.
-import { JSBSim, JSBSimError, type ModuleFactory } from "../src/jsbsim.ts";
+import { JSBSim, JSBSimError, FDM_DEFAULT, type ModuleFactory, type Profile } from "../src/jsbsim.ts";
 import { tryLoad, withForces, timingScript, timeRun, type ForceMethod } from "../src/checks.ts";
 
 declare const BUILD: {
@@ -29,11 +29,14 @@ const VARIANTS = {
 } as const;
 type Variant = keyof typeof VARIANTS;
 
-async function createSim(variant: Variant): Promise<JSBSim> {
+// Sections 1 to 4 run JSBSim's own defaults (profile "jsbsim"), as in sessions 02 to 04, so that their numbers can
+// be compared. Section 5 runs the wrapper's default configuration (profile "fdm", chosen in session 05).
+async function createSim(variant: Variant, profile: Profile = "jsbsim"): Promise<JSBSim> {
   const url = new URL(`./${variant}.mjs?v=${V}`, location.href).href; // a variable, so the bundler leaves it alone
   const factory = (await import(url)).default as ModuleFactory;
   const sim = await JSBSim.create({
     factory,
+    profile,
     moduleOptions: { locateFile: (p: string) => `${p}?v=${V}` },
   });
   const data = await getData();
@@ -142,6 +145,30 @@ async function run(variant: Variant) {
       const same = ends.every((e) => e === ends[0]);
       log(`   dt=1/${String(Math.round(1 / dt)).padEnd(5)} ${parts.join("  ")}  us/step   (name/handle/bulk same end state: ${same ? "yes" : "NO " + ends.join(" ")})`);
     }
+    log("");
+    log(`5) The default configuration (session 05): ${FDM_DEFAULT.stepRateHz} steps per second, implicit-midpoint body rates,`);
+    log("   Buss 2 attitude, strut limits. Same flights as in 3) and 4); crash containment on in the last line.");
+    const simD = await createSim(variant, "fdm");
+    const dtD = 1 / FDM_DEFAULT.stepRateHz;
+    for (const [label, script] of [["c172x", "scripts/t_c172x.xml"], ["f16", "scripts/t_f16.xml"]]) {
+      status(`Timing default ${label}…`);
+      const r = timeRun(simD, script, label, dtD, "none");
+      const set = `rates ${simD.getProperty("simulation/integrator/rate/rotational")}, attitude ${simD.getProperty("simulation/integrator/position/rotational")}, strut limits ${simD.getProperty("gear/strut-limits/enabled")}, dt 1/${Math.round(1 / simD.dt)}`;
+      log(`   ${label.padEnd(6)} ${us(r.usPerStep)} us/step = ${(r.usPerStep * FDM_DEFAULT.stepRateHz / 1000).toFixed(1)} ms per second of flight  (end ${r.altFt.toFixed(0)} ft, ${r.kts.toFixed(1)} kt; ${set})`);
+      await tick();
+    }
+    {
+      status("Timing default + 20 forces…");
+      const r = timeRun(simD, "scripts/t_c172x_ext20.xml", "c172x_ext20", dtD, "bulk");
+      log(`   c172x + 20 forces (bulk) ${us(r.usPerStep)} us/step = ${(r.usPerStep * FDM_DEFAULT.stepRateHz / 1000).toFixed(1)} ms per second of flight`);
+      await tick();
+      status("Timing default + containment…");
+      simD.setContainment({});
+      const rc = timeRun(simD, "scripts/t_c172x.xml", "c172x", dtD, "none");
+      log(`   c172x with crash containment on ${us(rc.usPerStep)} us/step  (halted: ${simD.halted ? simD.halted.reason : "no"})`);
+      simD.setContainment(null);
+    }
+    simD.delete();
     log("");
     log("Done. Page still responsive.");
     status("Done. Tap 'Copy results' and paste them back.");

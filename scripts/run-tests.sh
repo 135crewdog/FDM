@@ -45,6 +45,7 @@ if has 0; then {
   echo "## Comparator self-test (synthetic bad logs must be refused)"
   $PY tests/parity/selftest_compare.py
   for v in $EXC $WEH; do echo; wasm $v tests/binding/regress.ts; done
+  for v in $EXC $WEH; do echo; wasm $v tests/binding/containment.ts unit; done
   echo; echo "## Build self-test (patches always re-applied and hashed; wrong Emscripten version refused)"
   tests/build/selftest_patches.sh
   echo; npx tsc && echo "typecheck: ok"

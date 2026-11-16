@@ -1,0 +1,39 @@
+# Corrected hard-landing gate G2c: configuration `c2-mid-g`
+
+- Role: CANDIDATE 2 (implicit-midpoint body rates, Buss 2) with the strut limits of patch 0004 switched on
+- G2c definition: gates-04b.json sha256 e8c25cef4ed58ba4; last commit touching the G2c files: 9fb7f63 2026-11-15T20:47:05+00:00
+
+## G2c Hard landing, forward, repeated: 480 Hz PASS, 1000 Hz PASS
+As G2b, but every aircraft is first turned to face north, so it really moves forward at 100 ft/s (body velocity 100, 0, 30 ft/s; checked). Each cell: good runs, native / WebAssembly, of 21. Gate: every run, on both.
+
+| aircraft | 120 Hz | 240 Hz | 480 Hz | 1000 Hz |
+|---|---|---|---|---|
+| c172x | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| f16 | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| c310 | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| ah1s | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| 737 | 21 / 21 | 21 / 21 | 21 / 21 | 21 / 21 |
+| **all five (of 105)** | 105 / 105 | 105 / 105 | 105 / 105 | 105 / 105 |
+
+## G2b read as a crash case, compared with the floor: 480 Hz PASS, 1000 Hz PASS
+G2b's touchdown is backward or sideways for four of the five aircraft (GATES-04b.md). Its bad runs are counted per step rate and compared with the floor's count plus 5% of the runs, as G3b does.
+
+| rate | platform | bad runs (of 105) | floor | allowed (floor + 5) | verdict |
+|---|---|---|---|---|---|
+| 120 Hz | native | 0 | 40 | 45 | no worse |
+| 120 Hz | wasm-jsbsim-weh | 0 | 39 | 44 | no worse |
+| 240 Hz | native | 0 | 37 | 42 | no worse |
+| 240 Hz | wasm-jsbsim-weh | 0 | 39 | 44 | no worse |
+| 480 Hz | native | 0 | 28 | 33 | no worse |
+| 480 Hz | wasm-jsbsim-weh | 0 | 29 | 34 | no worse |
+| 1000 Hz | native | 0 | 2 | 7 | no worse |
+| 1000 Hz | wasm-jsbsim-weh | 0 | 0 | 5 | no worse |
+
+## Verdict per step rate, both ways
+
+| step rate | G1 Rest | G2c Forward hard landing x21 | G2b as a crash case | G3b Impacts x21 | G4 NASA | G5b Rigid body | G6 Parity | all, corrected (G2c) | all, as first committed (G2b must be 21 of 21) |
+|---|---|---|---|---|---|---|---|---|---|
+| 120 Hz | PASS | PASS | PASS | PASS | not measured | PASS | PASS | reported only | reported only |
+| 240 Hz | PASS | PASS | PASS | PASS | not measured | PASS | PASS | reported only | reported only |
+| **480 Hz (judged)** | PASS | PASS | PASS | PASS | FAIL | PASS | PASS | **FAIL** | FAIL |
+| **1000 Hz (judged)** | PASS | PASS | PASS | PASS | FAIL | PASS | PASS | **FAIL** | FAIL |

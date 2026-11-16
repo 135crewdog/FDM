@@ -1,0 +1,85 @@
+# Crash containment, wasm jsbsim sha256 edde5ef5e3593c3d (fdm-wasm-20261116.0911, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+## 1. Off by default; on, a healthy simulation is not disturbed
+PASS  no halt before containment is switched on
+PASS  c172x standing on its gear for 2 s with the default limits: 960 steps, not halted  [960 steps]
+PASS  containment persists over reset(); c172x flying for 2 s: not halted
+## 2. Every reason halts, is reported, and refuses further steps
+PASS  runaway-rate: c172x rolling at 1 rad/s with a limit of 0.5 rad/s  [runaway-rate after 0 accepted steps: runaway body rate: 0.991309 rad/s]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (runaway body rate: 0.991309 rad/s at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  below-surface: c172x at 500 ft with the height limit at 1000 ft  [below-surface after 0 accepted steps: below the surface: centre of gravity 500.000000 ft above the ground]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (below the surface: centre of gravity 500.000000 ft above the ground at t = 0.002083 s); c...]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  tipped-over: c172x standing (0.6 deg nose up) with a tilt limit of 0.1 deg  [tipped-over after 61 accepted steps: tipped over on the ground: 0.100932 deg from upright]
+PASS    ... outputs hold the last accepted state (time 0 + 61 steps), not the refused one  [outputs time 0.1270833333333335, refused step at 0.12916666666666682]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (tipped over on the ground: 0.100932 deg from upright at t = 0.129167 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  ground-force: c172x standing (the ground carries 1 weight) with a limit of 0.5 weights  [ground-force after 0 accepted steps: ground force 1.034505 times the weight]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (ground force 1.034505 times the weight at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  reset() clears the halt; with containment off the same start runs
+PASS  setContainment refuses a limit that is not a number  [setContainment: maxBodyRateRadS must be a number or null]
+PASS  a bad argument to runSteps is an error of the call and halts nothing
+## 3. A step that throws halts the simulation (containment on or off)
+PASS  containment off: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+PASS  containment on: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+## 3b. The midpoint scheme's own failure: Newton's method does not converge
+PASS  the simulation stops: either containment refuses a step first, or the Newton failure arrives as a JSBSimError  [runaway-rate at t = 0.0008 s after 0 accepted steps: runaway body rate: 1386.172558 rad/s]
+PASS    ... the published rates are finite and inside the limits  [published p, q, r: 1.000, 2.000, 3.000]
+PASS  without containment: Newton's failure arrives as a JSBSimError with the scheme's message  [313 steps, then: run: FGPropagate: no midpoint step for the body rates at 507.1 rad/s: Newton did not converge]
+PASS    ... the simulation is halted (reason "exception") and the counter of the scheme says why  [not-converged 1, singular 0]
+## 4. The crash cases of G3d, stepped like a game (16 steps per frame), default limits
+| configuration | step rate | runs | ran 15 s within the limits | halted: below surface | tipped over | ground force | runaway rate | non-finite | exception | a published state broke a limit | thrown past the wrapper |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| floor | 480 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| floor | 960 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| floor | 1200 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| floor + strut limits | 480 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor + strut limits, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| floor + strut limits | 960 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor + strut limits, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| floor + strut limits | 1200 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  floor + strut limits, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 | 480 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 | 960 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 | 1200 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 + strut limits | 480 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4 + strut limits, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 + strut limits | 960 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4 + strut limits, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c3-ab4 + strut limits | 1200 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c3-ab4 + strut limits, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid | 480 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid | 960 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid | 1200 Hz | 100 | 20 | 5 | 40 | 35 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid + strut limits | 480 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid + strut limits, 480 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid + strut limits | 960 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid + strut limits, 960 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+| c2-mid + strut limits | 1200 Hz | 100 | 25 | 15 | 50 | 10 | 0 | 0 | 0 | 0 | 0 |
+PASS  c2-mid + strut limits, 1200 Hz: no published state broke a limit, nothing escaped the wrapper, every run ended complete or halted with a reason
+# 58 passed, 0 failed (variant jsbsim)

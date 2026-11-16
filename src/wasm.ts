@@ -3,7 +3,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { JSBSim, JSBSimError, type ModuleFactory } from "./jsbsim.ts";
+import { JSBSim, JSBSimError, type ModuleFactory, type Profile } from "./jsbsim.ts";
 
 export { JSBSim, JSBSimError };
 export const ROOT_DIR = new URL("../", import.meta.url).pathname;
@@ -35,11 +35,21 @@ export function describeBuild(variant: Variant = currentVariant()): string {
   return `wasm ${variant} sha256 ${sha.slice(0, 16)} (${info.buildVersion ?? "unknown build"}, patches: ${patches})`;
 }
 
-export async function createSim(opts: { variant?: Variant; dirs?: string[] } = {}): Promise<JSBSim> {
+/** The profile createSim() uses when none is given: FDM_PROFILE, else "jsbsim". This Node helper serves the tests and
+ *  the frozen gate runners, which compare with native JSBSim and set every integrator themselves, so it keeps
+ *  JSBSim's own defaults. The game creates its simulation with JSBSim.create(), whose default is "fdm". */
+export function currentProfile(): Profile {
+  const p = process.env.FDM_PROFILE ?? "jsbsim";
+  if (p !== "fdm" && p !== "jsbsim") throw new Error(`FDM_PROFILE must be fdm or jsbsim, got ${p}`);
+  return p;
+}
+
+export async function createSim(opts: { variant?: Variant; dirs?: string[]; profile?: Profile } = {}): Promise<JSBSim> {
   const variant = opts.variant ?? currentVariant();
   const factory = (await import(join(BIN, `${variant}.mjs`))).default as ModuleFactory;
   const sim = await JSBSim.create({
     factory,
+    profile: opts.profile ?? currentProfile(),
     moduleOptions: { wasmBinary: readFileSync(join(BIN, `${variant}.wasm`)) },
     echo: process.env.JSBSIM_LOG ? (l) => console.error(l) : undefined,
   });

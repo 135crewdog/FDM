@@ -1,0 +1,462 @@
+# Test 0: self-tests of the harness and the binding
+## Builds under test
+- wasm jsbsim: sha256 edde5ef5e3593c3d10763655d8f465a08565f4e7df5c734970eaba8e90478211 (fdm-wasm-20261116.0911)
+- wasm jsbsim-weh: sha256 8c989b8827c793d7825bdc2d5fc39655c14870cee81deff366862c33cf2323cb (fdm-wasm-20261116.0911)
+- wasm patches: [{"file": "0001-integrator-aware-friction.patch", "sha256": "c8abb500ee33a596f7d028179119cb062fe8e05a5e02750aded6b101a4445149"}, {"file": "0002-implicit-midpoint-body-rates.patch", "sha256": "b6081c13df3b3c981e19acbfff0337cd2f49f83d8df4e675a426819caa8c47c9"}, {"file": "0003-body-rate-scheme-on-contact.patch", "sha256": "780a6e00946a43bdd20dcf38bd2af58f44ef752c390a1025cfd87be28ab00f22"}, {"file": "0003b-validated-switch-settings.patch", "sha256": "4aaae0a40562e1789ff1baecf40ff4c6c3282f2108fa07c528a07214d3a9bed0"}, {"file": "0004-strut-limits.patch", "sha256": "ded6f68b6facc636252b6a266ae9514eb23e91b7abd27e8af565e351da9ecb6a"}]
+- native JSBSim 1.3.3 [patched] module sha256 d2292b28cad059d6 patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+
+## Comparator self-test (synthetic bad logs must be refused)
+PASS  missing files: exit 2, expected 2
+PASS  identical logs (ref,cand): exit 0, expected 0
+PASS  identical logs (cand,ref): exit 0, expected 0
+PASS  identical logs, --gate (ref,cand): exit 0, expected 0
+PASS  identical logs, --gate (cand,ref): exit 0, expected 0
+PASS  difference inside tolerance, --gate (ref,cand): exit 0, expected 0
+PASS  difference inside tolerance, --gate (cand,ref): exit 0, expected 0
+PASS  NaN in candidate (ref,cand): exit 2, expected 2
+PASS  NaN in candidate (cand,ref): exit 2, expected 2
+PASS  +Inf in candidate (ref,cand): exit 2, expected 2
+PASS  +Inf in candidate (cand,ref): exit 2, expected 2
+PASS  -Inf in candidate (ref,cand): exit 2, expected 2
+PASS  -Inf in candidate (cand,ref): exit 2, expected 2
+PASS  truncated candidate (one row, NaN): the review's probe (ref,cand): exit 2, expected 2
+PASS  truncated candidate (one row, NaN): the review's probe (cand,ref): exit 2, expected 2
+PASS  truncated candidate (finite) (ref,cand): exit 2, expected 2
+PASS  truncated candidate (finite) (cand,ref): exit 2, expected 2
+PASS  candidate longer (ref,cand): exit 2, expected 2
+PASS  candidate longer (cand,ref): exit 2, expected 2
+PASS  time-shifted candidate (ref,cand): exit 2, expected 2
+PASS  time-shifted candidate (cand,ref): exit 2, expected 2
+PASS  different header (ref,cand): exit 2, expected 2
+PASS  different header (cand,ref): exit 2, expected 2
+PASS  columns in a different order (ref,cand): exit 2, expected 2
+PASS  columns in a different order (cand,ref): exit 2, expected 2
+PASS  missing value in a row (ref,cand): exit 2, expected 2
+PASS  missing value in a row (cand,ref): exit 2, expected 2
+PASS  text where a number belongs (ref,cand): exit 2, expected 2
+PASS  text where a number belongs (cand,ref): exit 2, expected 2
+PASS  header only (ref,cand): exit 2, expected 2
+PASS  header only (cand,ref): exit 2, expected 2
+PASS  empty file (ref,cand): exit 2, expected 2
+PASS  empty file (cand,ref): exit 2, expected 2
+PASS  rate out of tolerance, --gate (ref,cand): exit 1, expected 1
+PASS  rate out of tolerance, --gate (cand,ref): exit 1, expected 1
+PASS  position out of tolerance, --gate (ref,cand): exit 1, expected 1
+PASS  position out of tolerance, --gate (cand,ref): exit 1, expected 1
+PASS  rate out of tolerance, no --gate (report only) (ref,cand): exit 0, expected 0
+PASS  rate out of tolerance, no --gate (report only) (cand,ref): exit 0, expected 0
+# all comparator self-tests passed
+
+# Binding regression tests, variant jsbsim
+## 1. Every C++ exception becomes a JSBSimError with JSBSim's message
+PASS  hasProperty(malformed path)  [hasProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  getProperty(malformed path): message decoded (std::string throw)  [getProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  setProperty(malformed path)  [setProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  handle(malformed path)  [handle(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  handle(missing property)  [handle(review/does-not-exist): No property named review/does-not-exist]
+PASS  bindInputs([malformed path])  [handle(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  bindOutputs([missing property])  [handle(review/does-not-exist): No property named review/does-not-exist]
+PASS  hasProperty(existing) is true  [true]
+PASS  hasProperty(missing) is false  [false]
+PASS  loadModel(missing aircraft)  [loadModel(no_such_aircraft) returned false. Could not open file: Path "/jsbsim/aircraft/no_such_aircraft/no_su...]
+PASS  the same instance still flies after the errors  [10]
+PASS  loadIC(missing file)  [loadIC(no_such_reset_file): File: Path "/jsbsim/aircraft/c172x/no_such_reset_file" could not be read.
+]
+PASS  loadIC(reset00) then runIC  [4.30500000065137]
+## 2. Writes to read-only properties fail
+PASS  setProperty(read-only simulation/sim-time-sec)  [setProperty(simulation/sim-time-sec): cannot write /fdm/jsbsim/simulation/sim-time-sec: the property is read-o...]
+PASS  read-only value unchanged  [0.08333333333333333]
+PASS  set(handle of read-only property)  [set(handle 2097152): cannot write /fdm/jsbsim/simulation/sim-time-sec: the property is read-only]
+PASS  bindInputs([read-only property])  [bindInputs: cannot bind /fdm/jsbsim/simulation/sim-time-sec as an input: the property is read-only]
+PASS  bindOutputs([read-only property]) is allowed  [1]
+## 3. Handles must be integers in range
+PASS  valid handle round trip  [41]
+PASS  get(-1)  [get(handle -1): invalid handle -1 (a handle is the integer returned by handle(); reset() invalidates all earli...]
+PASS  set(-1)  [set(handle -1): invalid handle -1 (a handle is the integer returned by handle(); reset() invalidates all earli...]
+PASS  get(1e10)  [get(handle 10000000000): invalid handle 10000000000 (a handle is the integer returned by handle(); reset() inv...]
+PASS  set(1e10)  [set(handle 10000000000): invalid handle 10000000000 (a handle is the integer returned by handle(); reset() inv...]
+PASS  get(0.9)  [get(handle 0.9): invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates al...]
+PASS  set(0.9)  [set(handle 0.9): invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates al...]
+PASS  get(NaN)  [get(handle NaN): invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all ear...]
+PASS  set(NaN)  [set(handle NaN): invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all ear...]
+PASS  get(2**32 + valid)  [get(handle 4297064451): invalid handle 4297064451 (a handle is the integer returned by handle(); reset() inval...]
+PASS  set(2**32 + valid)  [set(handle 4297064451): invalid handle 4297064451 (a handle is the integer returned by handle(); reset() inval...]
+PASS  get(Infinity)  [get(handle Infinity): invalid handle Infinity (a handle is the integer returned by handle(); reset() invalidat...]
+PASS  set(Infinity)  [set(handle Infinity): invalid handle Infinity (a handle is the integer returned by handle(); reset() invalidat...]
+PASS  get(valid + 0.5)  [get(handle 2097155.5): invalid handle 2097155.500000 (a handle is the integer returned by handle(); reset() in...]
+PASS  set(valid + 0.5)  [set(handle 2097155.5): invalid handle 2097155.500000 (a handle is the integer returned by handle(); reset() in...]
+PASS  review/a not changed by the rejected writes  [41]
+PASS  bindInputs([valid, NaN])  [bindInputs: invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all earlier ...]
+PASS  bindOutputs([0.9])  [bindOutputs: invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates all ea...]
+## 4. Bulk exchange, and reset() clears it and invalidates old handles
+PASS  bulk exchange works  [[56,78]]
+PASS  a failed bind leaves the earlier binding intact  [2]
+PASS  bulk views survive memory growth when re-read  [{"grew":true,"out":[90,91]}]
+PASS  after reset(): inputs and outputs have length 0  [[0,0]]
+PASS  old handle after reset(): get fails  [get(handle 2097155): invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates...]
+PASS  old handle after reset(): set fails  [set(handle 2097155): invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates...]
+PASS  a new handle differs from every old handle  [[2097155,2097156,3145728]]
+PASS  old handle did not write the new property  [0]
+PASS  bindInputs([old handle]) after reset()  [bindInputs: invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates all earl...]
+## 5. Time step and integrator IDs are validated
+PASS  dt = 0  [dt: invalid dt 0 (must be finite and positive)]
+PASS  dt = -0.01  [dt: invalid dt -0.010000 (must be finite and positive)]
+PASS  dt = NaN  [dt: invalid dt NaN (must be finite and positive)]
+PASS  dt = Infinity  [dt: invalid dt Infinity (must be finite and positive)]
+PASS  dt unchanged by the rejected values  [0.008333333333333333]
+PASS  dt = 1/480 before loading a model  [0.0020833333333333333]
+PASS  dt changed after a model is loaded (FCS filters cached the old dt)  [dt: set dt before loading a model (flight-control filters cache dt at load); call reset() first, or setDtAfter...]
+PASS  setDtAfterLoad() is the explicit way  [0.004166666666666667]
+PASS  loadScript with a negative dt  [loadScript(scripts/c1721.xml): invalid dt -1 (must be finite and positive, or 0 for the script's own dt)]
+PASS  setIntegrators: rateRotational 12345  [setIntegrators: invalid integrator id 12345 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational 2.5  [setIntegrators: invalid integrator id 2.5 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational NaN  [setIntegrators: invalid integrator id NaN for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational -1  [setIntegrators: invalid integrator id -1 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational 7 (Buss 2 is for attitude only)  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateTranslational 6 (Buss 1 is for attitude only)  [setIntegrators: invalid integrator id 6 for simulation/integrator/rate/translational]
+PASS  setIntegrators: positionTranslational 8  [setIntegrators: invalid integrator id 8 for simulation/integrator/position/translational]
+PASS  setIntegrators: positionRotational 10  [setIntegrators: invalid integrator id 10 for simulation/integrator/position/rotational]
+PASS  setProperty('simulation/integrator/rate/rotational', 12345)  [setProperty(simulation/integrator/rate/rotational): invalid integrator id 12345 for /fdm/jsbsim/simulation/int...]
+PASS  integrator unchanged by the rejected values  [1]
+PASS  valid integrators accepted (AB4 rates, Buss 2 attitude)  [[5,7]]
+PASS  implicit midpoint (10) accepted for the body rates; Euler (1) on contact  [[10,1]]
+PASS  setIntegrators: rateTranslational 10 (midpoint is for the body rates only)  [setIntegrators: invalid integrator id 10 for simulation/integrator/rate/translational]
+PASS  setIntegrators: rateRotationalOnContact 7  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational-on-contact]
+PASS  setProperty('simulation/integrator/rate/rotational-on-contact', -2)  [setProperty(simulation/integrator/rate/rotational-on-contact): invalid integrator id -2 for /fdm/jsbsim/simula...]
+PASS  switching off again (-1) and back to AB4, Buss 2  [[5,-1]]
+## 6. Step counts are validated
+PASS  runSteps(NaN)  [runSteps: invalid step count NaN (must be a non-negative integer)]
+PASS  step(NaN)  [step: invalid step count NaN (must be a non-negative integer)]
+PASS  runSteps(-1)  [runSteps: invalid step count -1 (must be a non-negative integer)]
+PASS  step(-1)  [step: invalid step count -1 (must be a non-negative integer)]
+PASS  runSteps(2.5)  [runSteps: invalid step count 2.500000 (must be a non-negative integer)]
+PASS  step(2.5)  [step: invalid step count 2.500000 (must be a non-negative integer)]
+PASS  runSteps(2**32)  [runSteps: invalid step count 4294967296 (must be a non-negative integer)]
+PASS  step(2**32)  [step: invalid step count 4294967296 (must be a non-negative integer)]
+PASS  runSteps(5) runs 5 steps  [5]
+## 7. The 737 runs on a clean install (its socket input must not need the npm package 'ws')
+PASS  737: load, runIC, 200 steps, finite  [{"n":200,"h":4.599567137658596}]
+## 8. Gaps found by the review of session 04 (REVIEW-codex-04.md)
+PASS  loadScript: the script's own dt="-0.01" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="-0.01">) is invalid: it must be finit...]
+PASS    ... and the simulation is not left with that step (dt="-0.01")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="0" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="0">) is invalid: it must be finite an...]
+PASS    ... and the simulation is not left with that step (dt="0")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="-0" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="-0">) is invalid: it must be finite a...]
+PASS    ... and the simulation is not left with that step (dt="-0")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="inf" is rejected  [loadScript(scripts/regress-dt.xml): Expecting a numeric attribute value, but got: inf
+]
+PASS    ... and the simulation is not left with that step (dt="inf")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="nan" is rejected  [loadScript(scripts/regress-dt.xml): Expecting a numeric attribute value, but got: nan
+]
+PASS    ... and the simulation is not left with that step (dt="nan")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="" is rejected  [loadScript(scripts/regress-dt.xml): Expecting numeric attribute value, but got no data
+]
+PASS    ... and the simulation is not left with that step (dt="")  [0.008333333333333333]
+PASS  loadScript: a script with a valid dt of its own still loads  [0.005]
+PASS  loadScript: an explicit dt overrides a bad dt in the script  [0.004166666666666667]
+PASS  setIntegrators: a setting is read exactly once (an object whose value changes between reads cannot half-apply)  [{"reads":1,"threw":"","rate":5,"trans":3}]
+PASS  setIntegrators: when a later write fails, the earlier ones are undone (all or nothing)  [{"threw":true,"rate":1,"trans":3,"att":1}]
+PASS  setProperty(simulation/integrator/rate/contact-active) is refused (read-only)  [setProperty(simulation/integrator/rate/contact-active): cannot write /fdm/jsbsim/simulation/integrator/rate/co...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/rate/contact-switches) is refused (read-only)  [setProperty(simulation/integrator/rate/contact-switches): cannot write /fdm/jsbsim/simulation/integrator/rate/...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/steps) is refused (read-only)  [setProperty(simulation/integrator/midpoint/steps): cannot write /fdm/jsbsim/simulation/integrator/midpoint/ste...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/newton-iterations) is refused (read-only)  [setProperty(simulation/integrator/midpoint/newton-iterations): cannot write /fdm/jsbsim/simulation/integrator/...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/max-newton-iterations) is refused (read-only)  [setProperty(simulation/integrator/midpoint/max-newton-iterations): cannot write /fdm/jsbsim/simulation/integra...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/split-steps) is refused (read-only)  [setProperty(simulation/integrator/midpoint/split-steps): cannot write /fdm/jsbsim/simulation/integrator/midpoi...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/rounding-exits) is refused (read-only)  [setProperty(simulation/integrator/midpoint/rounding-exits): cannot write /fdm/jsbsim/simulation/integrator/mid...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/euler-fallbacks) is refused (read-only)  [setProperty(simulation/integrator/midpoint/euler-fallbacks): cannot write /fdm/jsbsim/simulation/integrator/mi...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/not-converged) is refused (read-only)  [setProperty(simulation/integrator/midpoint/not-converged): cannot write /fdm/jsbsim/simulation/integrator/midp...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/singular-jacobian) is refused (read-only)  [setProperty(simulation/integrator/midpoint/singular-jacobian): cannot write /fdm/jsbsim/simulation/integrator/...]
+PASS    ... and its value is unchanged  [0]
+PASS  set(handle of contact-active) is refused  [set(handle 16777216): cannot write /fdm/jsbsim/simulation/integrator/rate/contact-active: the property is read...]
+PASS  bindInputs([contact-active]) is refused  [bindInputs: cannot bind /fdm/jsbsim/simulation/integrator/rate/contact-active as an input: the property is rea...]
+PASS  contact-hold-sec = -1 is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec = NaN is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec = Infinity is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec unchanged by the refused values  [0]
+PASS  contact-hold-sec = 0.1 is accepted  [0.1]
+PASS  contact-release-mode = 99 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode = -1 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode = 2 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode unchanged by the refused values  [1]
+PASS  contact-release-mode = 0 and 1 are accepted  [[0,1]]
+PASS  the status values still count: a c172x dropped onto its gear with Euler on contact switches scheme  [{"active":1,"switches":1}]
+## 9. Defaults (session 05): the configuration that passed every gate, unless JSBSim's own are asked for
+PASS  the Node test helper keeps JSBSim's own defaults (profile "jsbsim"): 120 Hz, Euler rates, Euler attitude, no strut limits  [{"profile":"jsbsim","hz":120,"rate":1,"att":1,"limits":0}]
+PASS  profile "fdm" (JSBSim.create's default): 1200 Hz before anything is loaded  [1200]
+PASS    ... after loadModel: midpoint body rates (10), Buss 2 attitude (7), strut limits on  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... it flies: c172x for one second, finite, still at 1200 Hz  [{"n":1200,"t":1.0000000000000162,"h":0.7803047560155392}]
+PASS    ... after reset() and another load the defaults are back  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... a script given an explicit dt runs at that dt with the default integrators  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... the caller can still choose other integrators after loading  [{"hz":1200,"rate":1,"att":7,"limits":1}]
+# 136 passed, 0 failed (variant jsbsim)
+
+# Binding regression tests, variant jsbsim-weh
+## 1. Every C++ exception becomes a JSBSimError with JSBSim's message
+PASS  hasProperty(malformed path)  [hasProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  getProperty(malformed path): message decoded (std::string throw)  [getProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  setProperty(malformed path)  [setProperty(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  handle(malformed path)  [handle(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  handle(missing property)  [handle(review/does-not-exist): No property named review/does-not-exist]
+PASS  bindInputs([malformed path])  [handle(review/bad[): unterminated index (looking for ']') in 'review/bad[']
+PASS  bindOutputs([missing property])  [handle(review/does-not-exist): No property named review/does-not-exist]
+PASS  hasProperty(existing) is true  [true]
+PASS  hasProperty(missing) is false  [false]
+PASS  loadModel(missing aircraft)  [loadModel(no_such_aircraft) returned false. Could not open file: Path "/jsbsim/aircraft/no_such_aircraft/no_su...]
+PASS  the same instance still flies after the errors  [10]
+PASS  loadIC(missing file)  [loadIC(no_such_reset_file): File: Path "/jsbsim/aircraft/c172x/no_such_reset_file" could not be read.
+]
+PASS  loadIC(reset00) then runIC  [4.30500000065137]
+## 2. Writes to read-only properties fail
+PASS  setProperty(read-only simulation/sim-time-sec)  [setProperty(simulation/sim-time-sec): cannot write /fdm/jsbsim/simulation/sim-time-sec: the property is read-o...]
+PASS  read-only value unchanged  [0.08333333333333333]
+PASS  set(handle of read-only property)  [set(handle 2097152): cannot write /fdm/jsbsim/simulation/sim-time-sec: the property is read-only]
+PASS  bindInputs([read-only property])  [bindInputs: cannot bind /fdm/jsbsim/simulation/sim-time-sec as an input: the property is read-only]
+PASS  bindOutputs([read-only property]) is allowed  [1]
+## 3. Handles must be integers in range
+PASS  valid handle round trip  [41]
+PASS  get(-1)  [get(handle -1): invalid handle -1 (a handle is the integer returned by handle(); reset() invalidates all earli...]
+PASS  set(-1)  [set(handle -1): invalid handle -1 (a handle is the integer returned by handle(); reset() invalidates all earli...]
+PASS  get(1e10)  [get(handle 10000000000): invalid handle 10000000000 (a handle is the integer returned by handle(); reset() inv...]
+PASS  set(1e10)  [set(handle 10000000000): invalid handle 10000000000 (a handle is the integer returned by handle(); reset() inv...]
+PASS  get(0.9)  [get(handle 0.9): invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates al...]
+PASS  set(0.9)  [set(handle 0.9): invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates al...]
+PASS  get(NaN)  [get(handle NaN): invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all ear...]
+PASS  set(NaN)  [set(handle NaN): invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all ear...]
+PASS  get(2**32 + valid)  [get(handle 4297064451): invalid handle 4297064451 (a handle is the integer returned by handle(); reset() inval...]
+PASS  set(2**32 + valid)  [set(handle 4297064451): invalid handle 4297064451 (a handle is the integer returned by handle(); reset() inval...]
+PASS  get(Infinity)  [get(handle Infinity): invalid handle Infinity (a handle is the integer returned by handle(); reset() invalidat...]
+PASS  set(Infinity)  [set(handle Infinity): invalid handle Infinity (a handle is the integer returned by handle(); reset() invalidat...]
+PASS  get(valid + 0.5)  [get(handle 2097155.5): invalid handle 2097155.500000 (a handle is the integer returned by handle(); reset() in...]
+PASS  set(valid + 0.5)  [set(handle 2097155.5): invalid handle 2097155.500000 (a handle is the integer returned by handle(); reset() in...]
+PASS  review/a not changed by the rejected writes  [41]
+PASS  bindInputs([valid, NaN])  [bindInputs: invalid handle NaN (a handle is the integer returned by handle(); reset() invalidates all earlier ...]
+PASS  bindOutputs([0.9])  [bindOutputs: invalid handle 0.900000 (a handle is the integer returned by handle(); reset() invalidates all ea...]
+## 4. Bulk exchange, and reset() clears it and invalidates old handles
+PASS  bulk exchange works  [[56,78]]
+PASS  a failed bind leaves the earlier binding intact  [2]
+PASS  bulk views survive memory growth when re-read  [{"grew":true,"out":[90,91]}]
+PASS  after reset(): inputs and outputs have length 0  [[0,0]]
+PASS  old handle after reset(): get fails  [get(handle 2097155): invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates...]
+PASS  old handle after reset(): set fails  [set(handle 2097155): invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates...]
+PASS  a new handle differs from every old handle  [[2097155,2097156,3145728]]
+PASS  old handle did not write the new property  [0]
+PASS  bindInputs([old handle]) after reset()  [bindInputs: invalid handle 2097155 (a handle is the integer returned by handle(); reset() invalidates all earl...]
+## 5. Time step and integrator IDs are validated
+PASS  dt = 0  [dt: invalid dt 0 (must be finite and positive)]
+PASS  dt = -0.01  [dt: invalid dt -0.010000 (must be finite and positive)]
+PASS  dt = NaN  [dt: invalid dt NaN (must be finite and positive)]
+PASS  dt = Infinity  [dt: invalid dt Infinity (must be finite and positive)]
+PASS  dt unchanged by the rejected values  [0.008333333333333333]
+PASS  dt = 1/480 before loading a model  [0.0020833333333333333]
+PASS  dt changed after a model is loaded (FCS filters cached the old dt)  [dt: set dt before loading a model (flight-control filters cache dt at load); call reset() first, or setDtAfter...]
+PASS  setDtAfterLoad() is the explicit way  [0.004166666666666667]
+PASS  loadScript with a negative dt  [loadScript(scripts/c1721.xml): invalid dt -1 (must be finite and positive, or 0 for the script's own dt)]
+PASS  setIntegrators: rateRotational 12345  [setIntegrators: invalid integrator id 12345 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational 2.5  [setIntegrators: invalid integrator id 2.5 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational NaN  [setIntegrators: invalid integrator id NaN for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational -1  [setIntegrators: invalid integrator id -1 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateRotational 7 (Buss 2 is for attitude only)  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational]
+PASS  setIntegrators: rateTranslational 6 (Buss 1 is for attitude only)  [setIntegrators: invalid integrator id 6 for simulation/integrator/rate/translational]
+PASS  setIntegrators: positionTranslational 8  [setIntegrators: invalid integrator id 8 for simulation/integrator/position/translational]
+PASS  setIntegrators: positionRotational 10  [setIntegrators: invalid integrator id 10 for simulation/integrator/position/rotational]
+PASS  setProperty('simulation/integrator/rate/rotational', 12345)  [setProperty(simulation/integrator/rate/rotational): invalid integrator id 12345 for /fdm/jsbsim/simulation/int...]
+PASS  integrator unchanged by the rejected values  [1]
+PASS  valid integrators accepted (AB4 rates, Buss 2 attitude)  [[5,7]]
+PASS  implicit midpoint (10) accepted for the body rates; Euler (1) on contact  [[10,1]]
+PASS  setIntegrators: rateTranslational 10 (midpoint is for the body rates only)  [setIntegrators: invalid integrator id 10 for simulation/integrator/rate/translational]
+PASS  setIntegrators: rateRotationalOnContact 7  [setIntegrators: invalid integrator id 7 for simulation/integrator/rate/rotational-on-contact]
+PASS  setProperty('simulation/integrator/rate/rotational-on-contact', -2)  [setProperty(simulation/integrator/rate/rotational-on-contact): invalid integrator id -2 for /fdm/jsbsim/simula...]
+PASS  switching off again (-1) and back to AB4, Buss 2  [[5,-1]]
+## 6. Step counts are validated
+PASS  runSteps(NaN)  [runSteps: invalid step count NaN (must be a non-negative integer)]
+PASS  step(NaN)  [step: invalid step count NaN (must be a non-negative integer)]
+PASS  runSteps(-1)  [runSteps: invalid step count -1 (must be a non-negative integer)]
+PASS  step(-1)  [step: invalid step count -1 (must be a non-negative integer)]
+PASS  runSteps(2.5)  [runSteps: invalid step count 2.500000 (must be a non-negative integer)]
+PASS  step(2.5)  [step: invalid step count 2.500000 (must be a non-negative integer)]
+PASS  runSteps(2**32)  [runSteps: invalid step count 4294967296 (must be a non-negative integer)]
+PASS  step(2**32)  [step: invalid step count 4294967296 (must be a non-negative integer)]
+PASS  runSteps(5) runs 5 steps  [5]
+## 7. The 737 runs on a clean install (its socket input must not need the npm package 'ws')
+PASS  737: load, runIC, 200 steps, finite  [{"n":200,"h":4.599567137658596}]
+## 8. Gaps found by the review of session 04 (REVIEW-codex-04.md)
+PASS  loadScript: the script's own dt="-0.01" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="-0.01">) is invalid: it must be finit...]
+PASS    ... and the simulation is not left with that step (dt="-0.01")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="0" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="0">) is invalid: it must be finite an...]
+PASS    ... and the simulation is not left with that step (dt="0")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="-0" is rejected  [loadScript(scripts/regress-dt.xml): the script's own time step (<run dt="-0">) is invalid: it must be finite a...]
+PASS    ... and the simulation is not left with that step (dt="-0")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="inf" is rejected  [loadScript(scripts/regress-dt.xml): Expecting a numeric attribute value, but got: inf
+]
+PASS    ... and the simulation is not left with that step (dt="inf")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="nan" is rejected  [loadScript(scripts/regress-dt.xml): Expecting a numeric attribute value, but got: nan
+]
+PASS    ... and the simulation is not left with that step (dt="nan")  [0.008333333333333333]
+PASS  loadScript: the script's own dt="" is rejected  [loadScript(scripts/regress-dt.xml): Expecting numeric attribute value, but got no data
+]
+PASS    ... and the simulation is not left with that step (dt="")  [0.008333333333333333]
+PASS  loadScript: a script with a valid dt of its own still loads  [0.005]
+PASS  loadScript: an explicit dt overrides a bad dt in the script  [0.004166666666666667]
+PASS  setIntegrators: a setting is read exactly once (an object whose value changes between reads cannot half-apply)  [{"reads":1,"threw":"","rate":5,"trans":3}]
+PASS  setIntegrators: when a later write fails, the earlier ones are undone (all or nothing)  [{"threw":true,"rate":1,"trans":3,"att":1}]
+PASS  setProperty(simulation/integrator/rate/contact-active) is refused (read-only)  [setProperty(simulation/integrator/rate/contact-active): cannot write /fdm/jsbsim/simulation/integrator/rate/co...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/rate/contact-switches) is refused (read-only)  [setProperty(simulation/integrator/rate/contact-switches): cannot write /fdm/jsbsim/simulation/integrator/rate/...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/steps) is refused (read-only)  [setProperty(simulation/integrator/midpoint/steps): cannot write /fdm/jsbsim/simulation/integrator/midpoint/ste...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/newton-iterations) is refused (read-only)  [setProperty(simulation/integrator/midpoint/newton-iterations): cannot write /fdm/jsbsim/simulation/integrator/...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/max-newton-iterations) is refused (read-only)  [setProperty(simulation/integrator/midpoint/max-newton-iterations): cannot write /fdm/jsbsim/simulation/integra...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/split-steps) is refused (read-only)  [setProperty(simulation/integrator/midpoint/split-steps): cannot write /fdm/jsbsim/simulation/integrator/midpoi...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/rounding-exits) is refused (read-only)  [setProperty(simulation/integrator/midpoint/rounding-exits): cannot write /fdm/jsbsim/simulation/integrator/mid...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/euler-fallbacks) is refused (read-only)  [setProperty(simulation/integrator/midpoint/euler-fallbacks): cannot write /fdm/jsbsim/simulation/integrator/mi...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/not-converged) is refused (read-only)  [setProperty(simulation/integrator/midpoint/not-converged): cannot write /fdm/jsbsim/simulation/integrator/midp...]
+PASS    ... and its value is unchanged  [0]
+PASS  setProperty(simulation/integrator/midpoint/singular-jacobian) is refused (read-only)  [setProperty(simulation/integrator/midpoint/singular-jacobian): cannot write /fdm/jsbsim/simulation/integrator/...]
+PASS    ... and its value is unchanged  [0]
+PASS  set(handle of contact-active) is refused  [set(handle 16777216): cannot write /fdm/jsbsim/simulation/integrator/rate/contact-active: the property is read...]
+PASS  bindInputs([contact-active]) is refused  [bindInputs: cannot bind /fdm/jsbsim/simulation/integrator/rate/contact-active as an input: the property is rea...]
+PASS  contact-hold-sec = -1 is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec = NaN is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec = Infinity is refused  [setProperty(simulation/integrator/rate/contact-hold-sec): simulation/integrator/rate/contact-hold-sec: invalid...]
+PASS  contact-hold-sec unchanged by the refused values  [0]
+PASS  contact-hold-sec = 0.1 is accepted  [0.1]
+PASS  contact-release-mode = 99 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode = -1 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode = 2 is refused  [setProperty(simulation/integrator/rate/contact-release-mode): simulation/integrator/rate/contact-release-mode:...]
+PASS  contact-release-mode unchanged by the refused values  [1]
+PASS  contact-release-mode = 0 and 1 are accepted  [[0,1]]
+PASS  the status values still count: a c172x dropped onto its gear with Euler on contact switches scheme  [{"active":1,"switches":1}]
+## 9. Defaults (session 05): the configuration that passed every gate, unless JSBSim's own are asked for
+PASS  the Node test helper keeps JSBSim's own defaults (profile "jsbsim"): 120 Hz, Euler rates, Euler attitude, no strut limits  [{"profile":"jsbsim","hz":120,"rate":1,"att":1,"limits":0}]
+PASS  profile "fdm" (JSBSim.create's default): 1200 Hz before anything is loaded  [1200]
+PASS    ... after loadModel: midpoint body rates (10), Buss 2 attitude (7), strut limits on  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... it flies: c172x for one second, finite, still at 1200 Hz  [{"n":1200,"t":1.0000000000000162,"h":0.7803047560155392}]
+PASS    ... after reset() and another load the defaults are back  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... a script given an explicit dt runs at that dt with the default integrators  [{"hz":1200,"rate":10,"att":7,"limits":1}]
+PASS    ... the caller can still choose other integrators after loading  [{"hz":1200,"rate":1,"att":7,"limits":1}]
+# 136 passed, 0 failed (variant jsbsim-weh)
+
+# Crash containment, wasm jsbsim sha256 edde5ef5e3593c3d (fdm-wasm-20261116.0911, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+## 1. Off by default; on, a healthy simulation is not disturbed
+PASS  no halt before containment is switched on
+PASS  c172x standing on its gear for 2 s with the default limits: 960 steps, not halted  [960 steps]
+PASS  containment persists over reset(); c172x flying for 2 s: not halted
+## 2. Every reason halts, is reported, and refuses further steps
+PASS  runaway-rate: c172x rolling at 1 rad/s with a limit of 0.5 rad/s  [runaway-rate after 0 accepted steps: runaway body rate: 0.991309 rad/s]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (runaway body rate: 0.991309 rad/s at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  below-surface: c172x at 500 ft with the height limit at 1000 ft  [below-surface after 0 accepted steps: below the surface: centre of gravity 500.000000 ft above the ground]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (below the surface: centre of gravity 500.000000 ft above the ground at t = 0.002083 s); c...]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  tipped-over: c172x standing (0.6 deg nose up) with a tilt limit of 0.1 deg  [tipped-over after 61 accepted steps: tipped over on the ground: 0.100932 deg from upright]
+PASS    ... outputs hold the last accepted state (time 0 + 61 steps), not the refused one  [outputs time 0.1270833333333335, refused step at 0.12916666666666682]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (tipped over on the ground: 0.100932 deg from upright at t = 0.129167 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  ground-force: c172x standing (the ground carries 1 weight) with a limit of 0.5 weights  [ground-force after 0 accepted steps: ground force 1.034505 times the weight]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (ground force 1.034505 times the weight at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  reset() clears the halt; with containment off the same start runs
+PASS  setContainment refuses a limit that is not a number  [setContainment: maxBodyRateRadS must be a number or null]
+PASS  a bad argument to runSteps is an error of the call and halts nothing
+## 3. A step that throws halts the simulation (containment on or off)
+PASS  containment off: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+PASS  containment on: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+## 3b. The midpoint scheme's own failure: Newton's method does not converge
+PASS  the simulation stops: either containment refuses a step first, or the Newton failure arrives as a JSBSimError  [runaway-rate at t = 0.0008 s after 0 accepted steps: runaway body rate: 1386.172558 rad/s]
+PASS    ... the published rates are finite and inside the limits  [published p, q, r: 1.000, 2.000, 3.000]
+PASS  without containment: Newton's failure arrives as a JSBSimError with the scheme's message  [313 steps, then: run: FGPropagate: no midpoint step for the body rates at 507.1 rad/s: Newton did not converge]
+PASS    ... the simulation is halted (reason "exception") and the counter of the scheme says why  [not-converged 1, singular 0]
+# 40 passed, 0 failed (variant jsbsim)
+
+# Crash containment, wasm jsbsim-weh sha256 8c989b8827c793d7 (fdm-wasm-20261116.0911, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+## 1. Off by default; on, a healthy simulation is not disturbed
+PASS  no halt before containment is switched on
+PASS  c172x standing on its gear for 2 s with the default limits: 960 steps, not halted  [960 steps]
+PASS  containment persists over reset(); c172x flying for 2 s: not halted
+## 2. Every reason halts, is reported, and refuses further steps
+PASS  runaway-rate: c172x rolling at 1 rad/s with a limit of 0.5 rad/s  [runaway-rate after 0 accepted steps: runaway body rate: 0.991309 rad/s]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (runaway body rate: 0.991309 rad/s at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  below-surface: c172x at 500 ft with the height limit at 1000 ft  [below-surface after 0 accepted steps: below the surface: centre of gravity 500.000000 ft above the ground]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (below the surface: centre of gravity 500.000000 ft above the ground at t = 0.002083 s); c...]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  tipped-over: c172x standing (0.6 deg nose up) with a tilt limit of 0.1 deg  [tipped-over after 61 accepted steps: tipped over on the ground: 0.100932 deg from upright]
+PASS    ... outputs hold the last accepted state (time 0 + 61 steps), not the refused one  [outputs time 0.1270833333333335, refused step at 0.12916666666666682]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (tipped over on the ground: 0.100932 deg from upright at t = 0.129167 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  ground-force: c172x standing (the ground carries 1 weight) with a limit of 0.5 weights  [ground-force after 0 accepted steps: ground force 1.034505 times the weight]
+PASS    ... outputs hold the last accepted state (time 0 + 0 steps), not the refused one  [outputs time 0, refused step at 0.0020833333333333333]
+PASS    ... the next run() throws a JSBSimError that says the simulation is halted  [run: the simulation is halted (ground force 1.034505 times the weight at t = 0.002083 s); call reset()]
+PASS    ... and so does step()
+PASS    ... properties can still be read (for drawing or logging)
+PASS  reset() clears the halt; with containment off the same start runs
+PASS  setContainment refuses a limit that is not a number  [setContainment: maxBodyRateRadS must be a number or null]
+PASS  a bad argument to runSteps is an error of the call and halts nothing
+## 3. A step that throws halts the simulation (containment on or off)
+PASS  containment off: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+PASS  containment on: the throwing step arrives as a JSBSimError with JSBSim's message  [49 steps, then: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!]
+PASS    ... and the simulation is halted with reason "exception"  [a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational positi...]
+PASS    ... time inside JSBSim has moved on (the step is not rolled back), the outputs have not  [JSBSim's time 0.10000000000000007, outputs' time 0.09800000000000007]
+PASS    ... stepping again is refused until reset()  [run: the simulation is halted (a step threw an exception: Can only use Buss (1 & 2) or local linearization integration m...]
+PASS    ... after reset() the instance flies again
+## 3b. The midpoint scheme's own failure: Newton's method does not converge
+PASS  the simulation stops: either containment refuses a step first, or the Newton failure arrives as a JSBSimError  [runaway-rate at t = 0.0008 s after 0 accepted steps: runaway body rate: 1386.172558 rad/s]
+PASS    ... the published rates are finite and inside the limits  [published p, q, r: 1.000, 2.000, 3.000]
+PASS  without containment: Newton's failure arrives as a JSBSimError with the scheme's message  [313 steps, then: run: FGPropagate: no midpoint step for the body rates at 507.1 rad/s: Newton did not converge]
+PASS    ... the simulation is halted (reason "exception") and the counter of the scheme says why  [not-converged 1, singular 0]
+# 40 passed, 0 failed (variant jsbsim-weh)
+
+## Build self-test (patches always re-applied and hashed; wrong Emscripten version refused)
+PASS  unpatched tree equals the pinned commit
+PASS  unpatched: recorded patch list is empty
+PASS  a NEW patch reaches an EXISTING source tree (the old script skipped it)
+PASS  the patch name and sha256 are recorded
+PASS  a CHANGED patch replaces the old one in the tree
+PASS  the recorded hash changed with the patch
+PASS  the unpatched set removes the patch again
+PASS  a patch that does not apply stops the build
+PASS  a different Emscripten version stops scripts/build-wasm.sh
+PASS  a failed compile stops scripts/build-native.sh and leaves no answer key (stale module present)
+PASS  a failed compile stops scripts/build-wasm.sh and writes no binary or build-info (stale files present)
+# all build self-tests passed
+
+typecheck: ok

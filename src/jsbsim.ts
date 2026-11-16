@@ -18,6 +18,14 @@
 // - Set `dt` before loading a model: flight-control filters cache dt when they are loaded. Changing
 //   dt after loading throws; setDtAfterLoad() is the explicit override.
 // - Socket input (<input port=...> in aircraft files) is disabled in this runtime.
+// - Defaults (session 05): unless created with `profile: "jsbsim"`, a simulation runs the configuration that
+//   passed every gate (FDM_DEFAULT below): 1200 steps per second, implicit-midpoint body rates, Buss 2 attitude,
+//   the strut limits of patch 0004. The step rate is set at create() and reset(); the integrators and the strut
+//   limits are set after every successful loadModel() or loadScript() (JSBSim returns them to its own defaults
+//   whenever a model is initialised). A script loaded without an explicit dt keeps its own dt: the configuration
+//   is qualified at 1200 Hz only.
+// - A step that throws halts the simulation (see setContainment and `halted`): every later run/runSteps/step
+//   throws until reset(). Errors of other calls (properties, handles, arguments) halt nothing.
 
 /** Raw embind class exported by wasm/bindings.cpp. */
 interface RawSim {
@@ -43,6 +51,10 @@ interface RawSim {
   applyInputs(): number;
   readOutputs(): number;
   stepBulk(n: number): number;
+  setContainment(on: boolean, maxRateRadS: number, minCgAglFt: number, maxTiltOnGroundDeg: number, maxGroundForceWeights: number): number;
+  haltReason(): number;
+  haltDetail(): string;
+  haltTime(): number;
   getDt(): number;
   setDt(dt: number): number;
   simTime(): number;
@@ -118,7 +130,37 @@ function validIntegrator(slot: keyof IntegratorSettings, id: number): boolean {
   return slot === "positionRotational" || !(id >= 6 && id <= 8);
 }
 
+/** Limits of the crash containment (setContainment). Omitted = the default; null = that check is off. */
+export interface ContainmentLimits {
+  /** Largest body rate, rad/s. Default 30 (1,700 deg/s: no aircraft tumbles that fast). */
+  maxBodyRateRadS?: number | null;
+  /** Lowest height of the centre of gravity above the ground, ft. Default 0 (the centre of gravity is under the surface). */
+  minCgHeightAglFt?: number | null;
+  /** Largest tilt from upright while any contact point touches the ground, deg. Default 75. */
+  maxTiltOnGroundDeg?: number | null;
+  /** Largest total ground force, in units of the aircraft's weight. Default 50. */
+  maxGroundForceWeights?: number | null;
+}
+export const CONTAINMENT_DEFAULTS = { maxBodyRateRadS: 30, minCgHeightAglFt: 0, maxTiltOnGroundDeg: 75, maxGroundForceWeights: 50 } as const;
+export type HaltReason = "non-finite" | "runaway-rate" | "below-surface" | "tipped-over" | "ground-force" | "exception";
+const HALT_REASONS: HaltReason[] = ["non-finite", "runaway-rate", "below-surface", "tipped-over", "ground-force", "exception"];
+/** Why the simulation was halted, and the simulation time of the step that was refused. */
+export interface Halt { reason: HaltReason; detail: string; simTime: number }
+
+/** The configuration that passed every gate of session 05 (REPORT-05.md): `c2-mid-g` at 1200 Hz. */
+export const FDM_DEFAULT = {
+  stepRateHz: 1200,
+  integrators: { rateRotational: 10, positionRotational: 7 } as IntegratorSettings,
+  /** patch 0004: limits on the wheel strut model */
+  properties: { "gear/strut-limits/enabled": 1 } as Record<string, number>,
+} as const;
+/** "fdm" (default): FDM_DEFAULT is applied. "jsbsim": JSBSim's own defaults, untouched (120 Hz, Euler body rates,
+ *  Euler attitude, no strut limits); what every earlier test and the native answer key use. */
+export type Profile = "fdm" | "jsbsim";
+
 export interface CreateOptions {
+  /** Which defaults a simulation starts with (see Profile). Default "fdm". */
+  profile?: Profile;
   /** Module factory (default import of wasm/bin/jsbsim.mjs or jsbsim-weh.mjs). */
   factory: ModuleFactory;
   /** Extra Emscripten module options (e.g. wasmBinary, locateFile). */
@@ -136,8 +178,23 @@ export class JSBSim {
     private readonly sim: RawSim,
     private readonly log: LogBuffer,
     root: string,
+    /** The defaults this simulation was created with (CreateOptions.profile). */
+    readonly profile: Profile,
   ) {
     this.root = root;
+  }
+
+  /** The profile's step rate, set before anything is loaded (create and reset). */
+  private applyProfileDt(): void {
+    if (this.profile === "fdm") this.check(this.sim.setDt(1 / FDM_DEFAULT.stepRateHz), "dt");
+  }
+  /** The profile's integrators and switches, set after a model has been loaded. */
+  private applyProfile(): void {
+    if (this.profile !== "fdm") return;
+    for (const prop of ["simulation/integrator/midpoint/steps", ...Object.keys(FDM_DEFAULT.properties)])
+      if (!this.hasProperty(prop)) throw new JSBSimError(`the default configuration needs a build with patches 0002 and 0004 (${prop} is missing); create the simulation with profile: "jsbsim" to run JSBSim's own defaults`);
+    this.setIntegrators(FDM_DEFAULT.integrators);
+    for (const [prop, v] of Object.entries(FDM_DEFAULT.properties)) this.setProperty(prop, v);
   }
 
   static async create(opts: CreateOptions): Promise<JSBSim> {
@@ -146,9 +203,12 @@ export class JSBSim {
     const root = opts.root ?? "/jsbsim";
     module.FS.mkdirTree(root);
     const sim = new module.Sim();
-    const s = new JSBSim(module, sim, log, root);
+    const profile = opts.profile ?? "fdm";
+    if (profile !== "fdm" && profile !== "jsbsim") throw new JSBSimError(`unknown profile ${String(profile)} (use "fdm" or "jsbsim")`);
+    const s = new JSBSim(module, sim, log, root, profile);
     try {
       s.check(sim.init(root), "init");
+      s.applyProfileDt();
     } catch (e) {
       sim.delete(); // embind objects are not garbage collected
       throw e;
@@ -173,6 +233,7 @@ export class JSBSim {
     this.nIn = this.nOut = 0;
     this.loaded = false;
     this.check(this.sim.init(this.root), "init");
+    this.applyProfileDt();
   }
   private loaded = false;
 
@@ -184,6 +245,7 @@ export class JSBSim {
     const r = this.sim.loadModel(model, addModelToPath);
     this.check(r, `loadModel(${model})`);
     if (r === 0) throw new JSBSimError(`loadModel(${model}) returned false. ${this.log.text()}`.trim());
+    this.applyProfile();
   }
 
   loadScript(script: string, dt = 0, initfile = ""): void {
@@ -193,6 +255,7 @@ export class JSBSim {
     const r = this.sim.loadScript(script, dt, initfile);
     this.check(r, `loadScript(${script})`);
     if (r === 0) throw new JSBSimError(`loadScript(${script}) returned false. ${this.log.text()}`.trim());
+    this.applyProfile();
   }
 
   /** Load an initial-conditions file after loadModel, e.g. loadIC("reset00") for aircraft/<model>/reset00.xml
@@ -210,11 +273,38 @@ export class JSBSim {
     if (r === 0) throw new JSBSimError(`runIC returned false. ${this.log.text()}`.trim());
   }
 
-  /** One step. Returns false when a script has finished (like FGFDMExec::Run). */
+  /** One step. Returns false when a script has finished (like FGFDMExec::Run) or when the step halted the
+   *  simulation (crash containment: then `halted` says why). */
   run(): boolean { return this.check(this.sim.run(), "run") === 1; }
 
-  /** Up to n steps; returns steps completed (fewer if a script finished). */
+  /** Up to n steps; returns the steps completed and accepted (fewer if a script finished or the simulation was halted). */
   runSteps(n: number): number { return this.check(this.sim.runSteps(n), "runSteps"); }
+
+  // ---- crash containment ----
+  /** Inspect the state after EVERY physics step (inside run, runSteps and step(n), not once per call): non-finite
+   *  values, runaway body rates, centre of gravity below the surface, tipped over while touching the ground,
+   *  ground force beyond the limit. On a hit the simulation is halted: the offending step is not published (the
+   *  bulk `outputs` keep the last accepted state, so the game can keep drawing it), no further step runs, and
+   *  `halted` says why. Only reset() clears a halt. Off until this is called; null switches it off again.
+   *
+   *  Independently of this setting, a step that THROWS also halts the simulation: JSBSim has already advanced time
+   *  and may have updated the attitude when it throws, so catching the error is not a rollback. */
+  setContainment(limits: ContainmentLimits | null): void {
+    const v = (k: keyof ContainmentLimits): number => {
+      const x = limits![k];
+      if (x === null) return NaN; // a comparison with NaN is never true: the check is off
+      if (x === undefined) return CONTAINMENT_DEFAULTS[k];
+      if (typeof x !== "number" || Number.isNaN(x)) throw new JSBSimError(`setContainment: ${k} must be a number or null`);
+      return x;
+    };
+    if (limits === null) this.check(this.sim.setContainment(false, NaN, NaN, NaN, NaN), "setContainment");
+    else this.check(this.sim.setContainment(true, v("maxBodyRateRadS"), v("minCgHeightAglFt"), v("maxTiltOnGroundDeg"), v("maxGroundForceWeights")), "setContainment");
+  }
+  /** null while the simulation may be stepped; otherwise why it was halted. */
+  get halted(): Halt | null {
+    const r = this.sim.haltReason();
+    return r === 0 ? null : { reason: HALT_REASONS[r - 1] ?? "exception", detail: this.sim.haltDetail(), simTime: this.sim.haltTime() };
+  }
 
   // ---- properties by name (simple, ~1 µs per call) ----
   getProperty(name: string): number {
@@ -268,7 +358,9 @@ export class JSBSim {
     return this.outView;
   }
   /** Write `inputs` into JSBSim, run up to n steps, read `outputs`.
-   *  Returns the number of steps run; negative (-steps) if a script finished during the call. */
+   *  Returns the number of steps run; negative (-steps) if a script finished during the call. With crash
+   *  containment on, fewer than n steps and `halted` non-null mean that the next step was refused; `outputs`
+   *  then hold the last accepted state. */
   step(n = 1): number {
     const r = this.sim.stepBulk(n);
     if (r === -1) this.check(-1, "step");

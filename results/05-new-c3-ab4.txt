@@ -1,0 +1,456 @@
+# Session 05 gates (GATES-05.md): c3-ab4
+CANDIDATE 3: AB4 body rates in the air, Euler while any contact point touches (patch 0003), Buss 2 attitude; friction as in JSBSim
+Properties: {"simulation/integrator/rate/rotational": 5, "simulation/integrator/position/rotational": 7, "simulation/integrator/rate/rotational-on-contact": 1}. Source: patched. References: ref05-ground-patched (ground), ref05-flight-patched (flight), at 9600 Hz.
+- 480 Hz, native: native JSBSim module sha256 d2292b28cad059d6 [patched] patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+- 480 Hz, wasm: wasm jsbsim-weh sha256 d0099b2968ad8b18 (fdm-wasm-20261116.0819, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+- 960 Hz, native: native JSBSim module sha256 d2292b28cad059d6 [patched] patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+- 960 Hz, wasm: wasm jsbsim-weh sha256 d0099b2968ad8b18 (fdm-wasm-20261116.0819, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+- 1000 Hz, native: native JSBSim module sha256 d2292b28cad059d6 [patched] patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+- 1000 Hz, wasm: wasm jsbsim-weh sha256 d0099b2968ad8b18 (fdm-wasm-20261116.0819, patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac)
+
+## Verdict per step rate (a gate passes only if it passes on both platforms)
+| step rate | G2d Landing | G8 Repeated contact | G3d Crash containment | G7 Forced flight | all four |
+|---|---|---|---|---|---|
+| 480 Hz | pass 23/23 / 23/23 | pass 8/8 / 8/8 | **FAIL** 14/20 / 15/20 | **FAIL** 10/12 / 10/12 | **FAIL** |
+| 960 Hz | pass 23/23 / 23/23 | pass 8/8 / 8/8 | **FAIL** 15/20 / 15/20 | pass 12/12 / 12/12 | **FAIL** |
+| 1000 Hz | pass 23/23 / 23/23 | pass 8/8 / 8/8 | **FAIL** 16/20 / 15/20 | pass 12/12 / 12/12 | **FAIL** |
+
+Cells: cases good, native / WebAssembly.
+
+## 480 Hz
+
+### G2d Landing
+| aircraft | case | platform | touchdown: sink ft/s, pitch, bank deg, kt | lowest CG ft | largest bank deg | ground force / weight | largest compression ft | energy closure ft | ground work max ft | airborne again until s | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| c172x | firm | native | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0053 | 0.0000 | 0.00 | good |
+| c172x | hard | native | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.74 | 0.40 | 0.0067 | 0.0000 | 0.00 | good |
+| c172x | limit | native | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.33 | 0.51 | 0.0176 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | native | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.98 | 0.47 | 0.0074 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | native | 5.75, 0.8, 2.3, 55 | 4.22 | 2.8 | 2.02 | 0.48 | 0.0116 | 0.0000 | 0.54 | good |
+| c310 | firm | native | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0074 | 0.0000 | 0.00 | good |
+| c310 | hard | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.87 | 0.31 | 0.0094 | 0.0000 | 0.00 | good |
+| c310 | limit | native | 9.24, 1.3, -0.4, 75 | 3.38 | 0.5 | 6.04 | 0.36 | 0.0364 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | native | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.95 | 0.31 | 0.0104 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.10 | 0.32 | 0.0132 | 0.0000 | 0.00 | good |
+| 737 | firm | native | 1.76, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0083 | 0.0000 | 0.78 | good |
+| 737 | hard | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.19 | 0.40 | 0.0088 | 0.0000 | 0.87 | good |
+| 737 | limit | native | 9.33, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0185 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | native | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0104 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.23 | 0.42 | 0.0089 | 0.0000 | 0.81 | good |
+| f16 | firm | native | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.32 | 0.25 | 0.0185 | 0.0000 | 0.00 | good |
+| f16 | hard | native | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.41 | 0.25 | 0.0265 | 0.0000 | 0.00 | good |
+| f16 | limit | native | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.61 | 0.29 | 0.0701 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | native | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.60 | 0.25 | 0.0233 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | native | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.52 | 0.23 | 0.0306 | 0.0000 | 0.00 | good |
+| ah1s | firm | native | 1.92, -0.4, -2.2, 1 | 6.29 | 2.7 | 0.98 | 0.43 | 0.0005 | 0.0000 | 0.00 | good |
+| ah1s | hard | native | 5.86, -0.3, -2.5, 3 | 6.29 | 2.9 | 2.01 | 0.43 | 0.0051 | 0.0000 | 0.00 | good |
+| ah1s | limit | native | 7.88, -0.3, -2.6, 5 | 6.29 | 2.9 | 3.14 | 0.43 | 0.0065 | 0.0000 | 0.00 | good |
+| c172x | firm | wasm | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0053 | 0.0000 | 0.00 | good |
+| c172x | hard | wasm | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.74 | 0.40 | 0.0067 | 0.0000 | 0.00 | good |
+| c172x | limit | wasm | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.33 | 0.51 | 0.0176 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | wasm | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.98 | 0.47 | 0.0074 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | wasm | 5.75, 0.8, 2.3, 55 | 4.22 | 2.8 | 2.02 | 0.48 | 0.0116 | 0.0000 | 0.54 | good |
+| c310 | firm | wasm | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0074 | 0.0000 | 0.00 | good |
+| c310 | hard | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.87 | 0.31 | 0.0094 | 0.0000 | 0.00 | good |
+| c310 | limit | wasm | 9.24, 1.3, -0.4, 75 | 3.38 | 0.5 | 6.04 | 0.36 | 0.0364 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | wasm | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.95 | 0.31 | 0.0104 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.10 | 0.32 | 0.0132 | 0.0000 | 0.00 | good |
+| 737 | firm | wasm | 1.76, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0083 | 0.0000 | 0.78 | good |
+| 737 | hard | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.19 | 0.40 | 0.0088 | 0.0000 | 0.87 | good |
+| 737 | limit | wasm | 9.33, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0185 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | wasm | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0104 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.23 | 0.42 | 0.0089 | 0.0000 | 0.81 | good |
+| f16 | firm | wasm | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.32 | 0.25 | 0.0185 | 0.0000 | 0.00 | good |
+| f16 | hard | wasm | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.41 | 0.25 | 0.0265 | 0.0000 | 0.00 | good |
+| f16 | limit | wasm | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.61 | 0.29 | 0.0701 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | wasm | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.60 | 0.25 | 0.0233 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | wasm | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.52 | 0.23 | 0.0306 | 0.0000 | 0.00 | good |
+| ah1s | firm | wasm | 1.92, -0.4, -2.2, 1 | 6.29 | 2.7 | 0.98 | 0.43 | 0.0005 | 0.0000 | 0.00 | good |
+| ah1s | hard | wasm | 5.86, -0.3, -2.5, 3 | 6.29 | 2.9 | 2.01 | 0.43 | 0.0051 | 0.0000 | 0.00 | good |
+| ah1s | limit | wasm | 7.88, -0.3, -2.6, 5 | 6.29 | 2.9 | 3.14 | 0.43 | 0.0065 | 0.0000 | 0.00 | good |
+
+### G8 Repeated contact (against the reference at the same times)
+| aircraft | case | platform | contact episodes (reference) | attitude error: largest, at the end, deg | rate error at the end rad/s | largest rate error rad/s (not judged) | verdict |
+|---|---|---|---|---|---|---|---|
+| c172x | touch_and_go | native | 2 (2) | 0.0335, 0.0017 | 0.00000 | 0.0159 | good |
+| c172x | skip | native | 29 (29) | 0.0716, 0.0472 | 0.00082 | 0.0052 | good |
+| c310 | touch_and_go | native | 1 (1) | 0.0090, 0.0003 | 0.00002 | 0.0049 | good |
+| c310 | skip | native | 41 (41) | 0.0048, 0.0005 | 0.00005 | 0.0007 | good |
+| 737 | touch_and_go | native | 2 (2) | 0.0053, 0.0001 | 0.00002 | 0.0002 | good |
+| 737 | skip | native | 69 (69) | 0.0009, 0.0002 | 0.00000 | 0.0001 | good |
+| f16 | touch_and_go | native | 1 (1) | 0.0075, 0.0057 | 0.00003 | 0.0032 | good |
+| f16 | skip | native | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0006 | good |
+| c172x | touch_and_go | wasm | 2 (2) | 0.0335, 0.0017 | 0.00000 | 0.0159 | good |
+| c172x | skip | wasm | 29 (29) | 0.0716, 0.0472 | 0.00082 | 0.0052 | good |
+| c310 | touch_and_go | wasm | 1 (1) | 0.0090, 0.0003 | 0.00002 | 0.0049 | good |
+| c310 | skip | wasm | 41 (41) | 0.0048, 0.0005 | 0.00005 | 0.0007 | good |
+| 737 | touch_and_go | wasm | 2 (2) | 0.0053, 0.0001 | 0.00002 | 0.0002 | good |
+| 737 | skip | wasm | 69 (69) | 0.0009, 0.0002 | 0.00000 | 0.0001 | good |
+| f16 | touch_and_go | wasm | 1 (1) | 0.0075, 0.0057 | 0.00003 | 0.0032 | good |
+| f16 | skip | wasm | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0006 | good |
+- Synthetic case of the review, native (reported, not judged): largest body-rate error 0.0874 rad/s, rate at the end 0.0871 rad/s (exact: 0), 400 contact steps, error: None.
+- Synthetic case of the review, wasm (reported, not judged): largest body-rate error 0.0874 rad/s, rate at the end 0.0871 rad/s (exact: 0), 400 contact steps, error: None.
+
+### G3d Crash containment (5 runs per case)
+| aircraft | case | platform | failed runs | largest ground force / weight | largest energy from the ground ft | largest body rate rad/s | height range of the CG ft | verdict |
+|---|---|---|---|---|---|---|---|---|
+| c172x | drop | native | 0/5 | 6.871 | 0 | 1.31 | 3.27 to 40 | contained |
+| c172x | inverted | native | 0/5 | 78.65 | 0 | 2.61 | -0.3458 to 40 | contained |
+| c172x | banked | native | 0/5 | 73.92 | 0 | 5.59 | -0.3254 to 40 | contained |
+| c172x | nose | native | 0/5 | 267.9 | 0 | 5.36 | 1.604 to 40 | contained |
+| f16 | drop | native | 0/5 | 42.52 | 0 | 0.144 | 4.286 to 40 | contained |
+| f16 | inverted | native | 0/5 | 23.8 | 0 | 3.03 | -2.088 to 40 | contained |
+| f16 | banked | native | 0/5 | 103.2 | 0 | 5.93 | 4.695 to 40 | contained |
+| f16 | nose | native | 0/5 | 57.56 | 0 | 4.31 | 5.336 to 40 | contained |
+| c310 | drop | native | 0/5 | 33.61 | 0 | 2.75 | 2.478 to 40 | contained |
+| c310 | inverted | native | 0/5 | 35.62 | 0 | 5.63 | 0.2461 to 40 | contained |
+| c310 | banked | native | 0/5 | 39.92 | 0 | 3.56 | 2.562 to 40 | contained |
+| c310 | nose | native | 0/5 | 280.5 | 0 | 2.95 | 3.254 to 40 | contained |
+| ah1s | drop | native | 3/5 | 1.414e+06 | 6.439 | 3.83e+45 | -30.9 to 1.883e+12 | **FAILS**: did not complete: non-finite |
+| ah1s | inverted | native | 5/5 | 3.63e+09 | 1.33e+24 | 9.22e+22 | -1.464e+05 to 9.258e+10 | **FAILS**: did not complete: non-finite |
+| ah1s | banked | native | 1/5 | 3472 | 0 | 44.6 | -30.6 to 171.3 | **FAILS**: ground force 3472 times the weight |
+| ah1s | nose | native | 0/5 | 320.5 | 0 | 33.5 | -30.75 to 97.94 | contained |
+| 737 | drop | native | 5/5 | 1.732e+08 | 3.27e+04 | 8.01e+104 | -2.534e+05 to 5.211e+14 | **FAILS**: did not complete: non-finite |
+| 737 | inverted | native | 5/5 | 4.494e+07 | 2.954e+44 | 1.53e+76 | -1.653e+05 to 1.296e+04 | **FAILS**: did not complete: non-finite |
+| 737 | banked | native | 0/5 | 80.34 | 0 | 2.09 | 3.023 to 40 | contained |
+| 737 | nose | native | 5/5 | 3467 | 1083 | 13.9 | -44.91 to 701.2 | **FAILS**: ground force 3467 times the weight |
+| c172x | drop | wasm | 0/5 | 6.871 | 0 | 1.31 | 3.27 to 40 | contained |
+| c172x | inverted | wasm | 0/5 | 78.65 | 0 | 2.61 | -0.3458 to 40 | contained |
+| c172x | banked | wasm | 0/5 | 73.92 | 0 | 5.59 | -0.3254 to 40 | contained |
+| c172x | nose | wasm | 0/5 | 267.9 | 0 | 5.36 | 1.604 to 40 | contained |
+| f16 | drop | wasm | 0/5 | 42.52 | 0 | 0.144 | 4.286 to 40 | contained |
+| f16 | inverted | wasm | 0/5 | 23.8 | 0 | 3.03 | -2.088 to 40 | contained |
+| f16 | banked | wasm | 0/5 | 103.2 | 0 | 5.93 | 4.695 to 40 | contained |
+| f16 | nose | wasm | 0/5 | 57.56 | 0 | 4.31 | 5.336 to 40 | contained |
+| c310 | drop | wasm | 0/5 | 33.61 | 0 | 2.75 | 2.478 to 40 | contained |
+| c310 | inverted | wasm | 0/5 | 35.62 | 0 | 5.63 | 0.2461 to 40 | contained |
+| c310 | banked | wasm | 0/5 | 39.92 | 0 | 3.56 | 2.562 to 40 | contained |
+| c310 | nose | wasm | 0/5 | 280.5 | 0 | 2.95 | 3.254 to 40 | contained |
+| ah1s | drop | wasm | 2/5 | 838 | 0 | 12.6 | -31.74 to 76.4 | **FAILS**: ground force 736.9 times the weight |
+| ah1s | inverted | wasm | 5/5 | 8.308e+08 | 2.488e+13 | 3.39e+23 | -1.464e+05 to 9.302e+10 | **FAILS**: did not complete: non-finite |
+| ah1s | banked | wasm | 0/5 | 463.7 | 0 | 15.5 | -30.5 to 68.09 | contained |
+| ah1s | nose | wasm | 0/5 | 320.5 | 0 | 33.9 | -30.87 to 98.58 | contained |
+| 737 | drop | wasm | 5/5 | 1.563e+05 | 3653 | 3.26e+96 | -245.6 to 1169 | **FAILS**: did not complete: non-finite |
+| 737 | inverted | wasm | 5/5 | 6.666e+08 | 2.451e+45 | 1.53e+76 | -3443 to 40 | **FAILS**: did not complete: non-finite |
+| 737 | banked | wasm | 0/5 | 80.34 | 0 | 2.09 | 3.023 to 40 | contained |
+| 737 | nose | wasm | 5/5 | 397.9 | 1158 | 14.6 | -45.79 to 701.2 | **FAILS**: the ground gave energy: 1158 ft |
+
+### G7 Forced flight
+| what | platform | peak / start | error / start | left after 10 time constants | attitude error deg | rate error rad/s | verdict |
+|---|---|---|---|---|---|---|---|
+| damping_1x, core | native | 1 | 0.0183 | 4.01e-05 | n/a | n/a | good |
+| damping_1x, external | native | 1 | 0.171 | 3.13e-06 | n/a | n/a | good |
+| damping_2x, core | native | 2.1e+06 | 2.1e+06 | 2.1e+06 | n/a | n/a | **BAD**: did not complete: non-finite or runaway |
+| damping_2x, external | native | 1 | 0.332 | 0.0129 | n/a | n/a | **BAD**: did not die away: still 0.0129 of its start after 10 time constants |
+| spring_1x, core | native | 1 | 7.27e-05 | 4.7e-05 | n/a | n/a | good |
+| spring_1x, external | native | 1 | 0.0138 | 5.51e-05 | n/a | n/a | good |
+| spring_2x, core | native | 1 | 0.00029 | 4.73e-05 | n/a | n/a | good |
+| spring_2x, external | native | 1 | 0.0282 | 6.02e-05 | n/a | n/a | good |
+| c172x at its fastest | native | n/a | n/a | n/a | 0.132 | 0.0108 | good |
+| c310 at its fastest | native | n/a | n/a | n/a | 0.00184 | 0.00014 | good |
+| 737 at its fastest | native | n/a | n/a | n/a | 0.00171 | 0.000136 | good |
+| f16 at its fastest | native | n/a | n/a | n/a | 0.0409 | 0.00265 | good |
+| damping_1x, core | wasm | 1 | 0.0183 | 4.01e-05 | n/a | n/a | good |
+| damping_1x, external | wasm | 1 | 0.171 | 3.13e-06 | n/a | n/a | good |
+| damping_2x, core | wasm | 2.1e+06 | 2.1e+06 | 2.1e+06 | n/a | n/a | **BAD**: did not complete: non-finite or runaway |
+| damping_2x, external | wasm | 1 | 0.332 | 0.0129 | n/a | n/a | **BAD**: did not die away: still 0.0129 of its start after 10 time constants |
+| spring_1x, core | wasm | 1 | 7.27e-05 | 4.7e-05 | n/a | n/a | good |
+| spring_1x, external | wasm | 1 | 0.0138 | 5.51e-05 | n/a | n/a | good |
+| spring_2x, core | wasm | 1 | 0.00029 | 4.73e-05 | n/a | n/a | good |
+| spring_2x, external | wasm | 1 | 0.0282 | 6.02e-05 | n/a | n/a | good |
+| c172x at its fastest | wasm | n/a | n/a | n/a | 0.132 | 0.0108 | good |
+| c310 at its fastest | wasm | n/a | n/a | n/a | 0.00184 | 0.00014 | good |
+| 737 at its fastest | wasm | n/a | n/a | n/a | 0.00171 | 0.000136 | good |
+| f16 at its fastest | wasm | n/a | n/a | n/a | 0.0409 | 0.00265 | good |
+
+## 960 Hz
+
+### G2d Landing
+| aircraft | case | platform | touchdown: sink ft/s, pitch, bank deg, kt | lowest CG ft | largest bank deg | ground force / weight | largest compression ft | energy closure ft | ground work max ft | airborne again until s | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| c172x | firm | native | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0026 | 0.0000 | 0.00 | good |
+| c172x | hard | native | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.73 | 0.40 | 0.0038 | 0.0000 | 0.00 | good |
+| c172x | limit | native | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.32 | 0.51 | 0.0086 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | native | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.99 | 0.47 | 0.0037 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | native | 5.75, 0.8, 2.3, 55 | 4.23 | 2.8 | 2.02 | 0.48 | 0.0042 | 0.0000 | 0.54 | good |
+| c310 | firm | native | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0037 | 0.0000 | 0.00 | good |
+| c310 | hard | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.97 | 0.31 | 0.0071 | 0.0000 | 0.00 | good |
+| c310 | limit | native | 9.24, 1.3, -0.4, 75 | 3.38 | 0.4 | 6.06 | 0.35 | 0.0154 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | native | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.94 | 0.31 | 0.0056 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.20 | 0.32 | 0.0114 | 0.0000 | 0.00 | good |
+| 737 | firm | native | 1.75, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0041 | 0.0000 | 0.78 | good |
+| 737 | hard | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.18 | 0.40 | 0.0052 | 0.0000 | 0.87 | good |
+| 737 | limit | native | 9.33, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0073 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | native | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0052 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.23 | 0.42 | 0.0062 | 0.0000 | 0.81 | good |
+| f16 | firm | native | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.36 | 0.25 | 0.0093 | 0.0000 | 0.00 | good |
+| f16 | hard | native | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.52 | 0.25 | 0.0099 | 0.0000 | 0.00 | good |
+| f16 | limit | native | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.58 | 0.29 | 0.0249 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | native | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.57 | 0.25 | 0.0117 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | native | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.63 | 0.23 | 0.0137 | 0.0000 | 0.00 | good |
+| ah1s | firm | native | 1.92, -0.4, -1.9, 1 | 6.30 | 2.5 | 0.97 | 0.42 | 0.0003 | 0.0000 | 0.00 | good |
+| ah1s | hard | native | 5.80, -0.3, -2.3, 3 | 6.30 | 2.9 | 2.03 | 0.42 | 0.0020 | 0.0000 | 0.00 | good |
+| ah1s | limit | native | 7.80, -0.3, -2.5, 4 | 6.29 | 2.9 | 3.14 | 0.42 | 0.0038 | 0.0000 | 0.00 | good |
+| c172x | firm | wasm | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0026 | 0.0000 | 0.00 | good |
+| c172x | hard | wasm | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.73 | 0.40 | 0.0038 | 0.0000 | 0.00 | good |
+| c172x | limit | wasm | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.32 | 0.51 | 0.0086 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | wasm | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.99 | 0.47 | 0.0037 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | wasm | 5.75, 0.8, 2.3, 55 | 4.23 | 2.8 | 2.02 | 0.48 | 0.0042 | 0.0000 | 0.54 | good |
+| c310 | firm | wasm | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0037 | 0.0000 | 0.00 | good |
+| c310 | hard | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.97 | 0.31 | 0.0071 | 0.0000 | 0.00 | good |
+| c310 | limit | wasm | 9.24, 1.3, -0.4, 75 | 3.38 | 0.4 | 6.06 | 0.35 | 0.0154 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | wasm | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.94 | 0.31 | 0.0056 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.20 | 0.32 | 0.0114 | 0.0000 | 0.00 | good |
+| 737 | firm | wasm | 1.75, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0041 | 0.0000 | 0.78 | good |
+| 737 | hard | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.18 | 0.40 | 0.0052 | 0.0000 | 0.87 | good |
+| 737 | limit | wasm | 9.33, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0073 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | wasm | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0052 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.23 | 0.42 | 0.0062 | 0.0000 | 0.81 | good |
+| f16 | firm | wasm | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.36 | 0.25 | 0.0093 | 0.0000 | 0.00 | good |
+| f16 | hard | wasm | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.52 | 0.25 | 0.0099 | 0.0000 | 0.00 | good |
+| f16 | limit | wasm | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.58 | 0.29 | 0.0249 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | wasm | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.57 | 0.25 | 0.0117 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | wasm | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.63 | 0.23 | 0.0137 | 0.0000 | 0.00 | good |
+| ah1s | firm | wasm | 1.92, -0.4, -1.9, 1 | 6.30 | 2.5 | 0.97 | 0.42 | 0.0003 | 0.0000 | 0.00 | good |
+| ah1s | hard | wasm | 5.80, -0.3, -2.3, 3 | 6.30 | 2.9 | 2.03 | 0.42 | 0.0020 | 0.0000 | 0.00 | good |
+| ah1s | limit | wasm | 7.80, -0.3, -2.5, 4 | 6.29 | 2.9 | 3.14 | 0.42 | 0.0038 | 0.0000 | 0.00 | good |
+
+### G8 Repeated contact (against the reference at the same times)
+| aircraft | case | platform | contact episodes (reference) | attitude error: largest, at the end, deg | rate error at the end rad/s | largest rate error rad/s (not judged) | verdict |
+|---|---|---|---|---|---|---|---|
+| c172x | touch_and_go | native | 2 (2) | 0.0141, 0.0007 | 0.00000 | 0.0076 | good |
+| c172x | skip | native | 29 (29) | 0.0398, 0.0236 | 0.00057 | 0.0028 | good |
+| c310 | touch_and_go | native | 1 (1) | 0.0039, 0.0002 | 0.00001 | 0.0023 | good |
+| c310 | skip | native | 41 (41) | 0.0021, 0.0003 | 0.00003 | 0.0007 | good |
+| 737 | touch_and_go | native | 2 (2) | 0.0019, 0.0003 | 0.00001 | 0.0001 | good |
+| 737 | skip | native | 69 (69) | 0.0005, 0.0001 | 0.00001 | 0.0000 | good |
+| f16 | touch_and_go | native | 1 (1) | 0.0057, 0.0057 | 0.00003 | 0.0015 | good |
+| f16 | skip | native | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0004 | good |
+| c172x | touch_and_go | wasm | 2 (2) | 0.0141, 0.0007 | 0.00000 | 0.0076 | good |
+| c172x | skip | wasm | 29 (29) | 0.0398, 0.0236 | 0.00057 | 0.0028 | good |
+| c310 | touch_and_go | wasm | 1 (1) | 0.0039, 0.0002 | 0.00001 | 0.0023 | good |
+| c310 | skip | wasm | 41 (41) | 0.0021, 0.0003 | 0.00003 | 0.0007 | good |
+| 737 | touch_and_go | wasm | 2 (2) | 0.0019, 0.0003 | 0.00001 | 0.0001 | good |
+| 737 | skip | wasm | 69 (69) | 0.0005, 0.0001 | 0.00001 | 0.0000 | good |
+| f16 | touch_and_go | wasm | 1 (1) | 0.0057, 0.0057 | 0.00003 | 0.0015 | good |
+| f16 | skip | wasm | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0004 | good |
+- Synthetic case of the review, native (reported, not judged): largest body-rate error 0.0393 rad/s, rate at the end 0.0392 rad/s (exact: 0), 800 contact steps, error: None.
+- Synthetic case of the review, wasm (reported, not judged): largest body-rate error 0.0393 rad/s, rate at the end 0.0392 rad/s (exact: 0), 800 contact steps, error: None.
+
+### G3d Crash containment (5 runs per case)
+| aircraft | case | platform | failed runs | largest ground force / weight | largest energy from the ground ft | largest body rate rad/s | height range of the CG ft | verdict |
+|---|---|---|---|---|---|---|---|---|
+| c172x | drop | native | 0/5 | 6.841 | 0 | 1.31 | 3.276 to 40 | contained |
+| c172x | inverted | native | 0/5 | 83.89 | 0 | 2.61 | -0.3438 to 40 | contained |
+| c172x | banked | native | 0/5 | 74.8 | 0 | 5.57 | -0.3216 to 40 | contained |
+| c172x | nose | native | 0/5 | 257.2 | 0 | 5.98 | 1.591 to 40 | contained |
+| f16 | drop | native | 0/5 | 43.37 | 0 | 0.142 | 4.305 to 40 | contained |
+| f16 | inverted | native | 0/5 | 24.3 | 0 | 3.01 | -2.065 to 40 | contained |
+| f16 | banked | native | 0/5 | 106.9 | 0 | 5.93 | 4.731 to 40 | contained |
+| f16 | nose | native | 0/5 | 59.46 | 0 | 4.28 | 5.362 to 40 | contained |
+| c310 | drop | native | 0/5 | 33.76 | 0 | 2.71 | 2.494 to 40 | contained |
+| c310 | inverted | native | 0/5 | 41.65 | 0 | 5.59 | 0.2648 to 40 | contained |
+| c310 | banked | native | 0/5 | 39.7 | 0 | 3.55 | 2.57 to 40 | contained |
+| c310 | nose | native | 0/5 | 396.7 | 0 | 2.71 | 3.255 to 40 | contained |
+| ah1s | drop | native | 1/5 | 1.994e+06 | 0 | 2.43e+21 | -6.608e+04 to 5.959e+09 | **FAILS**: did not complete: non-finite |
+| ah1s | inverted | native | 5/5 | 1.159e+06 | 0 | 3.2e+18 | -1.886e+04 to 1.255e+08 | **FAILS**: ground force 8165 times the weight |
+| ah1s | banked | native | 0/5 | 445.5 | 0 | 24.5 | -30.4 to 65.72 | contained |
+| ah1s | nose | native | 0/5 | 306.3 | 0 | 6.55 | -14.73 to 76.25 | contained |
+| 737 | drop | native | 5/5 | 1.556e+04 | 9644 | 295 | -244.5 to 2109 | **FAILS**: ground force 618.4 times the weight; the ground gave energy: 9644 ft |
+| 737 | inverted | native | 5/5 | 2.971e+07 | 7.404e+15 | 2.01e+60 | -3446 to 1156 | **FAILS**: did not complete: non-finite |
+| 737 | banked | native | 0/5 | 177.5 | 0 | 2.07 | 3.032 to 40 | contained |
+| 737 | nose | native | 5/5 | 2.242e+04 | 0 | 9.79 | -6.054 to 2690 | **FAILS**: ground force 2.103e+04 times the weight |
+| c172x | drop | wasm | 0/5 | 6.841 | 0 | 1.31 | 3.276 to 40 | contained |
+| c172x | inverted | wasm | 0/5 | 83.89 | 0 | 2.61 | -0.3438 to 40 | contained |
+| c172x | banked | wasm | 0/5 | 74.8 | 0 | 5.57 | -0.3216 to 40 | contained |
+| c172x | nose | wasm | 0/5 | 257.2 | 0 | 5.98 | 1.591 to 40 | contained |
+| f16 | drop | wasm | 0/5 | 43.37 | 0 | 0.142 | 4.305 to 40 | contained |
+| f16 | inverted | wasm | 0/5 | 24.3 | 0 | 3.01 | -2.065 to 40 | contained |
+| f16 | banked | wasm | 0/5 | 106.9 | 0 | 5.93 | 4.731 to 40 | contained |
+| f16 | nose | wasm | 0/5 | 59.46 | 0 | 4.28 | 5.362 to 40 | contained |
+| c310 | drop | wasm | 0/5 | 33.76 | 0 | 2.71 | 2.494 to 40 | contained |
+| c310 | inverted | wasm | 0/5 | 41.65 | 0 | 5.59 | 0.2648 to 40 | contained |
+| c310 | banked | wasm | 0/5 | 39.7 | 0 | 3.55 | 2.57 to 40 | contained |
+| c310 | nose | wasm | 0/5 | 396.7 | 0 | 2.71 | 3.255 to 40 | contained |
+| ah1s | drop | wasm | 1/5 | 1697 | 0.2092 | 60 | -31.38 to 112.9 | **FAILS**: ground force 1697 times the weight |
+| ah1s | inverted | wasm | 5/5 | 1.335e+06 | 0 | 2.48e+19 | -2923 to 2.182e+08 | **FAILS**: ground force 8165 times the weight |
+| ah1s | banked | wasm | 0/5 | 445.5 | 0 | 15.8 | -30.51 to 66.06 | contained |
+| ah1s | nose | wasm | 0/5 | 306.3 | 0 | 6.55 | -14.73 to 76.25 | contained |
+| 737 | drop | wasm | 5/5 | 5749 | 770 | 172 | -207.9 to 1156 | **FAILS**: ground force 3520 times the weight; the ground gave energy: 695.8 ft |
+| 737 | inverted | wasm | 5/5 | 9.814e+07 | 3.862e+07 | 2.01e+60 | -3446 to 40 | **FAILS**: did not complete: non-finite |
+| 737 | banked | wasm | 0/5 | 177.5 | 0 | 2.07 | 3.032 to 40 | contained |
+| 737 | nose | wasm | 5/5 | 2.242e+04 | 0 | 9.79 | -6.054 to 2690 | **FAILS**: ground force 1.877e+04 times the weight |
+
+### G7 Forced flight
+| what | platform | peak / start | error / start | left after 10 time constants | attitude error deg | rate error rad/s | verdict |
+|---|---|---|---|---|---|---|---|
+| damping_1x, core | native | 1 | 0.00426 | 4.4e-05 | n/a | n/a | good |
+| damping_1x, external | native | 1 | 0.0895 | 1.55e-05 | n/a | n/a | good |
+| damping_2x, core | native | 1 | 0.0183 | 4.01e-05 | n/a | n/a | good |
+| damping_2x, external | native | 1 | 0.171 | 3.13e-06 | n/a | n/a | good |
+| spring_1x, core | native | 1 | 1.82e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_1x, external | native | 1 | 0.00683 | 5.17e-05 | n/a | n/a | good |
+| spring_2x, core | native | 1 | 7.27e-05 | 4.7e-05 | n/a | n/a | good |
+| spring_2x, external | native | 1 | 0.0138 | 5.51e-05 | n/a | n/a | good |
+| c172x at its fastest | native | n/a | n/a | n/a | 0.106 | 0.00689 | good |
+| c310 at its fastest | native | n/a | n/a | n/a | 0.000866 | 6.58e-05 | good |
+| 737 at its fastest | native | n/a | n/a | n/a | 0.000807 | 6.4e-05 | good |
+| f16 at its fastest | native | n/a | n/a | n/a | 0.0194 | 0.00126 | good |
+| damping_1x, core | wasm | 1 | 0.00426 | 4.4e-05 | n/a | n/a | good |
+| damping_1x, external | wasm | 1 | 0.0895 | 1.55e-05 | n/a | n/a | good |
+| damping_2x, core | wasm | 1 | 0.0183 | 4.01e-05 | n/a | n/a | good |
+| damping_2x, external | wasm | 1 | 0.171 | 3.13e-06 | n/a | n/a | good |
+| spring_1x, core | wasm | 1 | 1.82e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_1x, external | wasm | 1 | 0.00683 | 5.17e-05 | n/a | n/a | good |
+| spring_2x, core | wasm | 1 | 7.27e-05 | 4.7e-05 | n/a | n/a | good |
+| spring_2x, external | wasm | 1 | 0.0138 | 5.51e-05 | n/a | n/a | good |
+| c172x at its fastest | wasm | n/a | n/a | n/a | 0.106 | 0.00689 | good |
+| c310 at its fastest | wasm | n/a | n/a | n/a | 0.000866 | 6.58e-05 | good |
+| 737 at its fastest | wasm | n/a | n/a | n/a | 0.000807 | 6.4e-05 | good |
+| f16 at its fastest | wasm | n/a | n/a | n/a | 0.0194 | 0.00126 | good |
+
+## 1000 Hz
+
+### G2d Landing
+| aircraft | case | platform | touchdown: sink ft/s, pitch, bank deg, kt | lowest CG ft | largest bank deg | ground force / weight | largest compression ft | energy closure ft | ground work max ft | airborne again until s | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| c172x | firm | native | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0025 | 0.0000 | 0.00 | good |
+| c172x | hard | native | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.73 | 0.40 | 0.0032 | 0.0000 | 0.00 | good |
+| c172x | limit | native | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.32 | 0.51 | 0.0059 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | native | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.99 | 0.47 | 0.0035 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | native | 5.75, 0.8, 2.3, 55 | 4.23 | 2.8 | 2.02 | 0.48 | 0.0044 | 0.0000 | 0.54 | good |
+| c310 | firm | native | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0035 | 0.0000 | 0.00 | good |
+| c310 | hard | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.90 | 0.31 | 0.0078 | 0.0000 | 0.00 | good |
+| c310 | limit | native | 9.24, 1.3, -0.4, 75 | 3.38 | 0.4 | 6.02 | 0.35 | 0.0192 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | native | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.93 | 0.31 | 0.0075 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | native | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.22 | 0.32 | 0.0111 | 0.0000 | 0.00 | good |
+| 737 | firm | native | 1.75, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0040 | 0.0000 | 0.78 | good |
+| 737 | hard | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.18 | 0.40 | 0.0042 | 0.0000 | 0.87 | good |
+| 737 | limit | native | 9.32, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0083 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | native | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0050 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | native | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.22 | 0.42 | 0.0042 | 0.0000 | 0.81 | good |
+| f16 | firm | native | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.34 | 0.25 | 0.0089 | 0.0000 | 0.00 | good |
+| f16 | hard | native | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.56 | 0.25 | 0.0160 | 0.0000 | 0.00 | good |
+| f16 | limit | native | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.65 | 0.29 | 0.0368 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | native | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.61 | 0.25 | 0.0128 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | native | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.65 | 0.23 | 0.0208 | 0.0000 | 0.00 | good |
+| ah1s | firm | native | 1.92, -0.4, -1.9, 1 | 6.30 | 2.5 | 0.97 | 0.42 | 0.0003 | 0.0000 | 0.00 | good |
+| ah1s | hard | native | 5.79, -0.3, -2.3, 3 | 6.30 | 2.9 | 2.05 | 0.42 | 0.0023 | 0.0000 | 0.00 | good |
+| ah1s | limit | native | 7.79, -0.3, -2.5, 4 | 6.30 | 2.9 | 3.15 | 0.42 | 0.0045 | 0.0000 | 0.00 | good |
+| c172x | firm | wasm | 1.91, 3.1, 2.5, 55 | 4.32 | 2.5 | 0.92 | 0.35 | 0.0025 | 0.0000 | 0.00 | good |
+| c172x | hard | wasm | 5.78, 0.8, 2.3, 55 | 4.23 | 2.3 | 1.73 | 0.40 | 0.0032 | 0.0000 | 0.00 | good |
+| c172x | limit | wasm | 8.18, -0.7, 2.2, 55 | 4.12 | 2.2 | 2.32 | 0.51 | 0.0059 | 0.0000 | 0.61 | good |
+| c172x | hard_bank3 | wasm | 5.88, 0.8, 5.1, 55 | 4.27 | 5.1 | 1.99 | 0.47 | 0.0035 | 0.0000 | 0.00 | good |
+| c172x | hard_drift | wasm | 5.75, 0.8, 2.3, 55 | 4.23 | 2.8 | 2.02 | 0.48 | 0.0044 | 0.0000 | 0.54 | good |
+| c310 | firm | wasm | 1.54, 4.3, -0.8, 75 | 3.39 | 0.8 | 0.86 | 0.31 | 0.0035 | 0.0000 | 0.00 | good |
+| c310 | hard | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 2.90 | 0.31 | 0.0078 | 0.0000 | 0.00 | good |
+| c310 | limit | wasm | 9.24, 1.3, -0.4, 75 | 3.38 | 0.4 | 6.02 | 0.35 | 0.0192 | 0.0000 | 0.00 | good |
+| c310 | hard_bank3 | wasm | 5.40, 2.9, 2.2, 75 | 3.39 | 3.0 | 1.93 | 0.31 | 0.0075 | 0.0000 | 0.00 | good |
+| c310 | hard_drift | wasm | 5.30, 3.0, -0.6, 75 | 3.39 | 0.6 | 3.22 | 0.32 | 0.0111 | 0.0000 | 0.00 | good |
+| 737 | firm | wasm | 1.75, 4.1, -0.0, 130 | 3.87 | 0.0 | 0.55 | 0.23 | 0.0040 | 0.0000 | 0.78 | good |
+| 737 | hard | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.0 | 1.18 | 0.40 | 0.0042 | 0.0000 | 0.87 | good |
+| 737 | limit | wasm | 9.32, 2.8, -0.0, 130 | 3.52 | 0.0 | 2.04 | 0.69 | 0.0083 | 0.0000 | 0.84 | good |
+| 737 | hard_bank3 | wasm | 5.55, 3.6, 2.8, 130 | 3.86 | 3.0 | 0.88 | 0.52 | 0.0050 | 0.0000 | 0.00 | good |
+| 737 | hard_drift | wasm | 5.42, 3.6, -0.0, 130 | 3.86 | 0.4 | 1.22 | 0.42 | 0.0042 | 0.0000 | 0.81 | good |
+| f16 | firm | wasm | 1.82, 10.5, -0.0, 150 | 5.47 | 0.0 | 1.34 | 0.25 | 0.0089 | 0.0000 | 0.00 | good |
+| f16 | hard | wasm | 4.73, 10.4, -0.0, 150 | 5.47 | 0.0 | 3.56 | 0.25 | 0.0160 | 0.0000 | 0.00 | good |
+| f16 | limit | wasm | 8.90, 9.7, -0.0, 150 | 5.47 | 0.0 | 6.65 | 0.29 | 0.0368 | 0.0000 | 0.00 | good |
+| f16 | hard_bank3 | wasm | 6.06, 10.3, 2.8, 150 | 5.47 | 3.0 | 2.61 | 0.25 | 0.0128 | 0.0000 | 0.00 | good |
+| f16 | hard_drift | wasm | 4.73, 10.4, -0.0, 150 | 5.48 | 0.6 | 3.65 | 0.23 | 0.0208 | 0.0000 | 0.00 | good |
+| ah1s | firm | wasm | 1.92, -0.4, -1.9, 1 | 6.30 | 2.5 | 0.97 | 0.42 | 0.0003 | 0.0000 | 0.00 | good |
+| ah1s | hard | wasm | 5.79, -0.3, -2.3, 3 | 6.30 | 2.9 | 2.05 | 0.42 | 0.0023 | 0.0000 | 0.00 | good |
+| ah1s | limit | wasm | 7.79, -0.3, -2.5, 4 | 6.30 | 2.9 | 3.15 | 0.42 | 0.0045 | 0.0000 | 0.00 | good |
+
+### G8 Repeated contact (against the reference at the same times)
+| aircraft | case | platform | contact episodes (reference) | attitude error: largest, at the end, deg | rate error at the end rad/s | largest rate error rad/s (not judged) | verdict |
+|---|---|---|---|---|---|---|---|
+| c172x | touch_and_go | native | 2 (2) | 0.0135, 0.0007 | 0.00000 | 0.0072 | good |
+| c172x | skip | native | 29 (29) | 0.0377, 0.0222 | 0.00057 | 0.0026 | good |
+| c310 | touch_and_go | native | 1 (1) | 0.0038, 0.0002 | 0.00001 | 0.0022 | good |
+| c310 | skip | native | 41 (41) | 0.0018, 0.0002 | 0.00007 | 0.0006 | good |
+| 737 | touch_and_go | native | 2 (2) | 0.0026, 0.0000 | 0.00001 | 0.0001 | good |
+| 737 | skip | native | 69 (69) | 0.0005, 0.0001 | 0.00000 | 0.0000 | good |
+| f16 | touch_and_go | native | 1 (1) | 0.0057, 0.0057 | 0.00003 | 0.0014 | good |
+| f16 | skip | native | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0004 | good |
+| c172x | touch_and_go | wasm | 2 (2) | 0.0135, 0.0007 | 0.00000 | 0.0072 | good |
+| c172x | skip | wasm | 29 (29) | 0.0377, 0.0222 | 0.00057 | 0.0026 | good |
+| c310 | touch_and_go | wasm | 1 (1) | 0.0038, 0.0002 | 0.00001 | 0.0022 | good |
+| c310 | skip | wasm | 41 (41) | 0.0018, 0.0002 | 0.00007 | 0.0006 | good |
+| 737 | touch_and_go | wasm | 2 (2) | 0.0026, 0.0000 | 0.00001 | 0.0001 | good |
+| 737 | skip | wasm | 69 (69) | 0.0005, 0.0001 | 0.00000 | 0.0000 | good |
+| f16 | touch_and_go | wasm | 1 (1) | 0.0057, 0.0057 | 0.00003 | 0.0014 | good |
+| f16 | skip | wasm | 82 (82) | 0.0108, 0.0108 | 0.00004 | 0.0004 | good |
+- Synthetic case of the review, native (reported, not judged): largest body-rate error 0.0389 rad/s, rate at the end 0.0388 rad/s (exact: 0), 850 contact steps, error: None.
+- Synthetic case of the review, wasm (reported, not judged): largest body-rate error 0.0389 rad/s, rate at the end 0.0388 rad/s (exact: 0), 850 contact steps, error: None.
+
+### G3d Crash containment (5 runs per case)
+| aircraft | case | platform | failed runs | largest ground force / weight | largest energy from the ground ft | largest body rate rad/s | height range of the CG ft | verdict |
+|---|---|---|---|---|---|---|---|---|
+| c172x | drop | native | 0/5 | 6.849 | 0 | 1.31 | 3.276 to 40 | contained |
+| c172x | inverted | native | 0/5 | 81.03 | 0 | 2.61 | -0.3433 to 40 | contained |
+| c172x | banked | native | 0/5 | 76.8 | 0 | 5.57 | -0.3216 to 40 | contained |
+| c172x | nose | native | 0/5 | 269.7 | 0 | 6.03 | 1.59 to 40 | contained |
+| f16 | drop | native | 0/5 | 43.85 | 0 | 0.143 | 4.306 to 40 | contained |
+| f16 | inverted | native | 0/5 | 24.07 | 0 | 3 | -2.064 to 40 | contained |
+| f16 | banked | native | 0/5 | 119.1 | 0 | 5.93 | 4.732 to 40 | contained |
+| f16 | nose | native | 0/5 | 59.23 | 0 | 4.28 | 5.363 to 40 | contained |
+| c310 | drop | native | 0/5 | 33.77 | 0 | 2.71 | 2.494 to 40 | contained |
+| c310 | inverted | native | 0/5 | 39.49 | 0 | 5.58 | 0.2656 to 40 | contained |
+| c310 | banked | native | 0/5 | 39.77 | 0 | 3.55 | 2.57 to 40 | contained |
+| c310 | nose | native | 0/5 | 416.3 | 0 | 2.7 | 3.255 to 40 | contained |
+| ah1s | drop | native | 0/5 | 371.6 | 0 | 53.5 | -34.13 to 93.6 | contained |
+| ah1s | inverted | native | 5/5 | 1.252e+09 | 0 | 1.09e+45 | -8.46e+05 to 1.896e+13 | **FAILS**: did not complete: non-finite |
+| ah1s | banked | native | 0/5 | 460.7 | 0 | 15.8 | -30.45 to 65.56 | contained |
+| ah1s | nose | native | 0/5 | 329.3 | 0 | 6.56 | -14.65 to 75.93 | contained |
+| 737 | drop | native | 5/5 | 2.909e+04 | 1.243e+04 | 379 | -235.1 to 3216 | **FAILS**: ground force 699.7 times the weight; the ground gave energy: 6618 ft |
+| 737 | inverted | native | 5/5 | 4.142e+07 | 2.423e+18 | 3.98e+68 | -3446 to 40 | **FAILS**: did not complete: non-finite |
+| 737 | banked | native | 0/5 | 165.1 | 0 | 2.07 | 3.032 to 40 | contained |
+| 737 | nose | native | 5/5 | 1.492e+07 | 0 | 6.8e+100 | -6.056 to 1374 | **FAILS**: did not complete: non-finite |
+| c172x | drop | wasm | 0/5 | 6.849 | 0 | 1.31 | 3.276 to 40 | contained |
+| c172x | inverted | wasm | 0/5 | 81.03 | 0 | 2.61 | -0.3433 to 40 | contained |
+| c172x | banked | wasm | 0/5 | 76.8 | 0 | 5.57 | -0.3216 to 40 | contained |
+| c172x | nose | wasm | 0/5 | 269.7 | 0 | 6.03 | 1.59 to 40 | contained |
+| f16 | drop | wasm | 0/5 | 43.85 | 0 | 0.143 | 4.306 to 40 | contained |
+| f16 | inverted | wasm | 0/5 | 24.07 | 0 | 3 | -2.064 to 40 | contained |
+| f16 | banked | wasm | 0/5 | 119.1 | 0 | 5.93 | 4.732 to 40 | contained |
+| f16 | nose | wasm | 0/5 | 59.23 | 0 | 4.28 | 5.363 to 40 | contained |
+| c310 | drop | wasm | 0/5 | 33.77 | 0 | 2.71 | 2.494 to 40 | contained |
+| c310 | inverted | wasm | 0/5 | 39.49 | 0 | 5.58 | 0.2656 to 40 | contained |
+| c310 | banked | wasm | 0/5 | 39.77 | 0 | 3.55 | 2.57 to 40 | contained |
+| c310 | nose | wasm | 0/5 | 416.3 | 0 | 2.7 | 3.255 to 40 | contained |
+| ah1s | drop | wasm | 2/5 | 905.9 | 0 | 126 | -30.56 to 201.9 | **FAILS**: ground force 905.9 times the weight |
+| ah1s | inverted | wasm | 5/5 | 9.456e+08 | 0 | 2.85e+44 | -8.462e+05 to 2.05e+13 | **FAILS**: did not complete: non-finite |
+| ah1s | banked | wasm | 0/5 | 460.7 | 0 | 18 | -30.64 to 65.87 | contained |
+| ah1s | nose | wasm | 0/5 | 329.3 | 0 | 6.56 | -14.65 to 75.93 | contained |
+| 737 | drop | wasm | 5/5 | 4.218e+04 | 2087 | 447 | -206.6 to 3215 | **FAILS**: ground force 4.218e+04 times the weight; the ground gave energy: 2087 ft |
+| 737 | inverted | wasm | 5/5 | 3.729e+06 | 9.738e+40 | 3.98e+68 | -3446 to 40 | **FAILS**: did not complete: non-finite |
+| 737 | banked | wasm | 0/5 | 165.1 | 0 | 2.07 | 3.032 to 40 | contained |
+| 737 | nose | wasm | 5/5 | 2.511e+07 | 0 | 5.19e+105 | -1928 to 4830 | **FAILS**: ground force 2.849e+04 times the weight |
+
+### G7 Forced flight
+| what | platform | peak / start | error / start | left after 10 time constants | attitude error deg | rate error rad/s | verdict |
+|---|---|---|---|---|---|---|---|
+| damping_1x, core | native | 1 | 0.00393 | 4.19e-05 | n/a | n/a | good |
+| damping_1x, external | native | 1 | 0.0861 | 1.54e-05 | n/a | n/a | good |
+| damping_2x, core | native | 1 | 0.0166 | 4.19e-05 | n/a | n/a | good |
+| damping_2x, external | native | 1 | 0.165 | 3.82e-06 | n/a | n/a | good |
+| spring_1x, core | native | 1 | 1.68e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_1x, external | native | 1 | 0.00655 | 5.16e-05 | n/a | n/a | good |
+| spring_2x, core | native | 1 | 6.7e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_2x, external | native | 1 | 0.0132 | 5.53e-05 | n/a | n/a | good |
+| c172x at its fastest | native | n/a | n/a | n/a | 0.107 | 0.00692 | good |
+| c310 at its fastest | native | n/a | n/a | n/a | 0.000828 | 6.29e-05 | good |
+| 737 at its fastest | native | n/a | n/a | n/a | 0.000771 | 6.12e-05 | good |
+| f16 at its fastest | native | n/a | n/a | n/a | 0.0185 | 0.00121 | good |
+| damping_1x, core | wasm | 1 | 0.00393 | 4.19e-05 | n/a | n/a | good |
+| damping_1x, external | wasm | 1 | 0.0861 | 1.54e-05 | n/a | n/a | good |
+| damping_2x, core | wasm | 1 | 0.0166 | 4.19e-05 | n/a | n/a | good |
+| damping_2x, external | wasm | 1 | 0.165 | 3.82e-06 | n/a | n/a | good |
+| spring_1x, core | wasm | 1 | 1.68e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_1x, external | wasm | 1 | 0.00655 | 5.16e-05 | n/a | n/a | good |
+| spring_2x, core | wasm | 1 | 6.7e-05 | 4.73e-05 | n/a | n/a | good |
+| spring_2x, external | wasm | 1 | 0.0132 | 5.53e-05 | n/a | n/a | good |
+| c172x at its fastest | wasm | n/a | n/a | n/a | 0.107 | 0.00692 | good |
+| c310 at its fastest | wasm | n/a | n/a | n/a | 0.000828 | 6.29e-05 | good |
+| 737 at its fastest | wasm | n/a | n/a | n/a | 0.000771 | 6.12e-05 | good |
+| f16 at its fastest | wasm | n/a | n/a | n/a | 0.0185 | 0.00121 | good |

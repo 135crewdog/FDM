@@ -1,0 +1,109 @@
+# NEW READING (session 05): the frozen gates read at 1200 Hz. Frozen code and limits unchanged; only these rate lists differ in the shadow copy: rates_hz: [120, 240, 480, 1000] -> [1200];G4.rates_hz: [480, 1000] -> [1200];G5.rates_hz: [480, 1000] -> [1200];G5.report_only_rates_hz: [120, 240] -> [];G6.hz: 480 -> 1200;gates-04.json judged_rates_hz: [480, 1000] -> [1200];gates-04.json reported_rates_hz: [120, 240] -> [];
+# Gates: configuration `floor`
+
+- Role: FLOOR: JSBSim's default body rates (Euler) plus Buss 2 attitude. No patch. The fallback if nothing else passes.
+- Source: JSBSim v1.3.3 unpatched; properties: `simulation/integrator/rate/rotational` = 1, `simulation/integrator/position/rotational` = 7
+- native: native JSBSim 1.3.3 [unpatched] module sha256 9fcccf7f190f3735; patches: none
+- wasm-jsbsim-weh: wasm jsbsim-weh sha256 2f93068e67d80bc9 (fdm-wasm-20261116.0727, patches: none); patches: none
+- wasm-jsbsim: wasm jsbsim sha256 63d7b6922d390ebc (fdm-wasm-20261116.0727, patches: none); patches: none
+- Gate definitions: gates.json sha256 5d991d5021a29677; last commit touching the frozen gate files: NOT COMMITTED
+
+## G1 Rest: PASS
+60 s on the gear. Each cell: worst of native and WebAssembly, largest body rate in the last 10 s (rad/s, gate < 1e-6) / largest horizontal movement in the last 10 s (ft, gate < 0.01).
+
+| aircraft | 1200 Hz |
+|---|---|
+| c172x | ok 1.4e-08 / 3.6e-08 |
+| f16 | ok 8.2e-10 / 3.0e-05 |
+| c310 | ok 8.0e-10 / 3.2e-08 |
+| ah1s | ok 2.0e-09 / 5.6e-04 |
+| 737 | ok 9.4e-10 / 4.8e-08 |
+
+## G2 Hard landing: PASS
+40 ft, 100 ft/s forward, 30 ft/s down, level; 15 s. Gate: every state finite, no body rate above 1e6 rad/s, on native and WebAssembly.
+
+| aircraft | 1200 Hz |
+|---|---|
+| c172x | finite |
+| f16 | finite |
+| c310 | finite |
+| ah1s | finite |
+| 737 | finite |
+
+## G3 Extreme impacts: REFERENCE (this is the floor)
+Inverted, banked and nose-first impacts; 15 s; 5 aircraft x 3 scenarios x 4 rates. Not pass/fail on its own: the count of runaways (rates > 1e6 rad/s, NaN or exception) must be no higher than the floor's.
+
+| platform | runaways (of 15) | floor | new compared with the floor | verdict |
+|---|---|---|---|---|
+| native | 2 | (this is the floor) | - | reference |
+| wasm-jsbsim-weh | 2 | (this is the floor) | - | reference |
+- native, all runaways: 737 inverted 1200 Hz (13.757 s); ah1s inverted 1200 Hz (0.490 s)
+- wasm-jsbsim-weh, all runaways: 737 inverted 1200 Hz (13.757 s); ah1s inverted 1200 Hz (0.490 s)
+
+## G4 NASA case 02: FAIL
+
+| platform | rate | reference | samples | worst body-rate error, deg/s (gate < 2e-06) | worst attitude error, deg (gate < 0.001) | verdict |
+|---|---|---|---|---|---|---|
+| native | 1200 Hz | sim_01 | 301/301 | 3.67e-02 | 2.07e-01 | **FAIL** |
+| native | 1200 Hz | sim_04 | 301/301 | 3.67e-02 | 2.07e-01 | **FAIL** |
+| wasm-jsbsim-weh | 1200 Hz | sim_01 | 301/301 | 3.67e-02 | 2.07e-01 | **FAIL** |
+| wasm-jsbsim-weh | 1200 Hz | sim_04 | 301/301 | 3.67e-02 | 2.07e-01 | **FAIL** |
+- native 1200 Hz vs sim_01: rate 3.67e-02 deg/s, attitude 2.07e-01 deg, 301 samples
+- native 1200 Hz vs sim_04: rate 3.67e-02 deg/s, attitude 2.07e-01 deg, 301 samples
+- wasm-jsbsim-weh 1200 Hz vs sim_01: rate 3.67e-02 deg/s, attitude 2.07e-01 deg, 301 samples
+- wasm-jsbsim-weh 1200 Hz vs sim_04: rate 3.67e-02 deg/s, attitude 2.07e-01 deg, 301 samples
+
+Position differences (native; reported, not gated; largest over 30 s). Cause: `brick.xml` gives the planet an equatorial radius of 20925646.9951 ft, so the run starts 0.67 ft further from the Earth's centre than NASA's sims (REVIEW-codex-02); the offset is there at t = 0 and stays in ECEF X.
+- 1200 Hz vs sim_01: gePosition_ft_X 0.67, gePosition_ft_Y 6.28e-06, gePosition_ft_Z 0, altitudeMsl_ft 0.000721, longitude_deg 1.9e-11, latitude_deg 0; at t=0: X 0.6698 ft
+- 1200 Hz vs sim_04: altitudeMsl_ft 0.0009, longitude_deg 2.09e-11, latitude_deg 0
+
+## G5 Torque-free rigid body: FAIL
+60 s of free tumbling. Each cell: worst of native and WebAssembly, relative drift of rotational kinetic energy / of the magnitude of angular momentum (gate: both < 1e-6 at 480 and 1000 Hz).
+
+| body | spin (deg/s) | 1200 Hz |
+|---|---|---|
+| brick | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 1.7e-03 / 6.9e-04 |
+| brick | B_x_60 [60, 0, 0] | ok 0.0e+00 / 0.0e+00 |
+| brick | C_y_60 [0, 60, 0] | **FAIL** 1.9e-03 / 9.7e-04 |
+| brick | D_z_60 [0, 0, 60] | ok 1.0e-10 / 3.9e-11 |
+| brick | E_intermediate_120 [2, 120, 2] | **FAIL** 1.1e-02 / 5.4e-03 |
+| brick | F_fast_229 [200, 100, -50] | **FAIL** 1.9e-01 / 1.4e-01 |
+| brick | G_fast_356 [300, -150, 120] | **FAIL** 6.1e-01 / 3.6e-01 |
+| brick | H_extreme_712 (not gated) [600, -300, 240] | 1.4e+01 / 3.5e+00 |
+| brick_poi | A_nasa_10_20_30 [10, 20, 30] | **FAIL** 4.2e-03 / 1.7e-03 |
+| brick_poi | B_x_60 [60, 0, 0] | **FAIL** 9.8e-03 / 7.0e-03 |
+| brick_poi | C_y_60 [0, 60, 0] | **FAIL** 1.0e-02 / 4.5e-03 |
+| brick_poi | D_z_60 [0, 0, 60] | **FAIL** 7.3e-03 / 2.5e-03 |
+| brick_poi | E_intermediate_120 [2, 120, 2] | **FAIL** 4.1e-02 / 1.8e-02 |
+| brick_poi | F_fast_229 [200, 100, -50] | **FAIL** 6.0e-03 / 9.2e-03 |
+| brick_poi | G_fast_356 [300, -150, 120] | **FAIL** 5.3e-01 / 1.8e-01 |
+| brick_poi | H_extreme_712 (not gated) [600, -300, 240] | blew up (non-finite) |
+- brick A_nasa_10_20_30 1200 Hz: energy 1.66e-03, |H| 6.91e-04
+- brick C_y_60 1200 Hz: energy 1.95e-03, |H| 9.74e-04
+- brick E_intermediate_120 1200 Hz: energy 1.09e-02, |H| 5.43e-03
+- brick F_fast_229 1200 Hz: energy 1.91e-01, |H| 1.40e-01
+- brick G_fast_356 1200 Hz: energy 6.11e-01, |H| 3.63e-01
+- brick_poi A_nasa_10_20_30 1200 Hz: energy 4.16e-03, |H| 1.69e-03
+- brick_poi B_x_60 1200 Hz: energy 9.75e-03, |H| 6.99e-03
+- brick_poi C_y_60 1200 Hz: energy 1.02e-02, |H| 4.52e-03
+- ... and 4 more (every trial is in out/gates/<config>/*.jsonl)
+- Reported, not gated: largest change of the direction of the angular momentum in the inertial frame over the gated cases (native): 3.91e-03 rad = 2.24e-01 deg. It depends on the attitude integrator (see G4).
+
+## G6 Parity, WebAssembly against native of the same source: PASS
+
+| flight | WebAssembly variant | rows | columns out of tolerance | largest difference | verdict |
+|---|---|---|---|---|---|
+| c172x | wasm-jsbsim-weh | 12001 | 0 of 30 | position/h-sl-ft 3.73e-09 (tolerance 1e-04) | ok |
+| c172x | wasm-jsbsim | 12001 | 0 of 30 | position/h-sl-ft 3.73e-09 (tolerance 1e-04) | ok |
+| f16 | wasm-jsbsim-weh | 12001 | 0 of 30 | position/h-sl-ft 3.73e-09 (tolerance 1e-04) | ok |
+| f16 | wasm-jsbsim | 12001 | 0 of 30 | position/h-sl-ft 3.73e-09 (tolerance 1e-04) | ok |
+
+## Cost per step in Node (no gate)
+
+not measured
+
+## Summary
+
+| G1 Rest | G2 Hard landing | G3 Extreme impacts | G4 NASA | G5 Rigid body | G6 Parity |
+|---|---|---|---|---|---|
+| PASS | PASS | reference | FAIL | FAIL | PASS |

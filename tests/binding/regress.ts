@@ -239,6 +239,36 @@ if (sim.hasProperty("simulation/integrator/rate/rotational-on-contact")) {
   }, (r) => r.active === 1 && r.switches >= 1);
 }
 
+console.log("## 9. Defaults (session 05): the configuration that passed every gate, unless JSBSim's own are asked for");
+{
+  const R = "simulation/integrator/";
+  const read = (s: JSBSim) => ({ hz: Math.round(1 / s.dt), rate: s.getProperty(R + "rate/rotational"), att: s.getProperty(R + "position/rotational"),
+    limits: s.hasProperty("gear/strut-limits/enabled") ? s.getProperty("gear/strut-limits/enabled") : -1 });
+  mustWork("the Node test helper keeps JSBSim's own defaults (profile \"jsbsim\"): 120 Hz, Euler rates, Euler attitude, no strut limits", () => {
+    sim.reset(); sim.setDebugLevel(0); sim.loadModel("c172x"); return { profile: sim.profile, ...read(sim) };
+  }, (r) => r.profile === "jsbsim" && r.hz === 120 && r.rate === 1 && r.att === 1 && r.limits <= 0);
+  if (sim.hasProperty("gear/strut-limits/enabled")) {
+    const d = await createSim({ variant: variant as "jsbsim" | "jsbsim-weh", profile: "fdm" });
+    d.setDebugLevel(0);
+    mustWork("profile \"fdm\" (JSBSim.create's default): 1200 Hz before anything is loaded", () => Math.round(1 / d.dt), (r) => r === 1200);
+    mustWork("  ... after loadModel: midpoint body rates (10), Buss 2 attitude (7), strut limits on", () => { d.loadModel("c172x"); return read(d); },
+      (r) => r.hz === 1200 && r.rate === 10 && r.att === 7 && r.limits === 1);
+    mustWork("  ... it flies: c172x for one second, finite, still at 1200 Hz", () => { d.runIC(); const n = d.runSteps(1200); return { n, t: d.simTime, h: d.getProperty("position/h-sl-ft") }; },
+      (r) => r.n === 1200 && Math.abs(r.t - 1) < 1e-9 && Number.isFinite(r.h));
+    mustWork("  ... after reset() and another load the defaults are back", () => { d.reset(); d.setDebugLevel(0); d.loadModel("f16"); return read(d); },
+      (r) => r.hz === 1200 && r.rate === 10 && r.att === 7 && r.limits === 1);
+    mustWork("  ... a script given an explicit dt runs at that dt with the default integrators", () => { d.reset(); d.setDebugLevel(0); d.loadScript("scripts/c1721.xml", 1 / 1200); return read(d); },
+      (r) => r.hz === 1200 && r.rate === 10 && r.att === 7 && r.limits === 1);
+    mustWork("  ... the caller can still choose other integrators after loading", () => { d.setIntegrators({ rateRotational: 1 }); return read(d); }, (r) => r.rate === 1 && r.att === 7);
+    d.delete();
+  } else {
+    const d = await createSim({ variant: variant as "jsbsim" | "jsbsim-weh", profile: "fdm" });
+    d.setDebugLevel(0);
+    mustThrow("profile \"fdm\" on a build without the patches: loading a model says what is missing", () => d.loadModel("c172x"), /patches 0002 and 0004/);
+    d.delete();
+  }
+}
+
 try { sim.delete(); } catch { /* the instance may be unusable after a raw exception in the old binding */ }
 console.log(`# ${passed} passed, ${failed} failed (variant ${variant})`);
 process.exit(failed ? 1 : 0);

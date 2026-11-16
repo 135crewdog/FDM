@@ -1,0 +1,6 @@
+# Strut-limit counters at the end of every G2d landing (floor's integrators, limits on)
+# native JSBSim 1.3.3 [patched] module sha256 d2292b28cad059d6 patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+| step rate | landings | landings in which a limit acted | counters summed (projection floored, force capped, travel exceeded) |
+|---|---|---|---|
+| 480 Hz | 23 | 0 | 0, 0, 0 |
+| 1200 Hz | 23 | 0 | 0, 0, 0 |

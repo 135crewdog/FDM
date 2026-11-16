@@ -67,4 +67,5 @@ fi
 HEAD="# NEW READING (session 05): the frozen gates read at $HZ Hz. Frozen code and limits unchanged; only these rate lists differ in the shadow copy: $(tr '\n' ';' < shadow-diff.txt)"
 { echo "$HEAD"; $PY tests/gates/evaluate.py "$CONFIG"; } > "$ROOT/results/${SESSION:-05}-rates-$HZ-gates-$CONFIG.txt"
 { echo "$HEAD"; $PY tests/gates/evaluate_04.py "$CONFIG"; } > "$ROOT/results/${SESSION:-05}-rates-$HZ-later-$CONFIG.txt"
-grep -E "^\| (pass|FAIL|\*\*)|Verdict|verdict" "$ROOT/results/${SESSION:-05}-rates-$HZ-gates-$CONFIG.txt" | tail -n 3
+# A one-line summary on the terminal (the reports are already written; a line that is not found is not an error).
+{ grep -E "^## G[1-6]" "$ROOT/results/${SESSION:-05}-rates-$HZ-gates-$CONFIG.txt" || true; } | sed -E 's/^## (G[0-9]) [^:]*: /\1 /' | tr '\n' ';'; echo
