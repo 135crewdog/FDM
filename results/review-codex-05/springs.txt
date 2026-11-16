@@ -1,0 +1,193 @@
+native JSBSim 1.3.3 [patched] module sha256 535f413ae9c33733 patches: 0001-integrator-aware-friction.patch c8abb500ee33, 0002-implicit-midpoint-body-rates.patch b6081c13df3b, 0003-body-rate-scheme-on-contact.patch 780a6e00946a, 0003b-validated-switch-settings.patch 4aaae0a40562, 0004-strut-limits.patch ded6f68b6fac
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 20, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 2401, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.006667425375994412, "late_max_over_initial": 5.0597357582459076e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 20, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 2401, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.015751263956315185, "late_max_over_initial": 5.6717292346071985e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 20, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 1921, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 7.265598705097007e-05, "late_max_over_initial": 4.703256060895777e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 20, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 1921, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.013807583758899478, "late_max_over_initial": 5.5064731394776144e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 100, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 481, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0339413626158077, "late_max_over_initial": 5.964881060331038e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 100, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 481, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.08730460934214578, "late_max_over_initial": 0.00016879941639593493, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 100, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 385, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0017837442224469865, "late_max_over_initial": 4.439052780492989e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 100, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 385, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0758794901911595, "late_max_over_initial": 0.00011512454089814396, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0694608065849887, "late_max_over_initial": 7.845473055954292e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.20590437985937554, "late_max_over_initial": 0.0017923573796884188, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0067247994132857945, "late_max_over_initial": 3.902082148787937e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.17198653898097335, "late_max_over_initial": 0.0008544586111985087, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 400, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.1444020080011239, "late_max_over_initial": 0.00035434774558863177, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 400, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.7650394288055666, "late_max_over_initial": 0.41063687365470264, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 400, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.038227986069573616, "late_max_over_initial": 3.908229743912524e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 400, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.5491910951717802, "late_max_over_initial": 0.07369948408460217, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 800, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.32085950044573824, "late_max_over_initial": 0.005346710498313445, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 800, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 311.62485133408705, "max_error_over_initial": 311.6248513340829, "late_max_over_initial": 311.62485133408705, "other_axes_max": 8.881784197001252e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 800, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.27383932229891533, "late_max_over_initial": 2.1938943346769622e-05, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 800, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 193, "finite": true, "complete": true, "peak_over_initial": 312.5187620563186, "max_error_over_initial": 312.5187620564534, "late_max_over_initial": 312.5187620563186, "other_axes_max": 1.7763568394002505e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 1200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.612858598771683, "late_max_over_initial": 0.15800759110851656, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.3, "omega": 1200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 241, "finite": true, "complete": true, "peak_over_initial": 313.93348290462444, "max_error_over_initial": 313.93348290462444, "late_max_over_initial": 313.93348290462444, "other_axes_max": 8.881784197001252e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 1200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": "non-finite or runaway", "rows": 34, "finite": true, "complete": false, "peak_over_initial": 281.2911066252095, "max_error_over_initial": 281.29110187037884, "late_max_over_initial": 281.2911066252095, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.3, "omega": 1200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": "non-finite or runaway", "rows": 41, "finite": true, "complete": false, "peak_over_initial": 306.5545364549228, "max_error_over_initial": 306.55453548097233, "late_max_over_initial": 306.5545364549228, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 20, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 72001, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.19596171454440983, "late_max_over_initial": 0.00289048973147167, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 20, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 72001, "finite": true, "complete": true, "peak_over_initial": 20.133081891200447, "max_error_over_initial": 20.133075823600024, "late_max_over_initial": 20.133081891200447, "other_axes_max": 8.881784197001252e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 20, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 57601, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0013301560431462887, "late_max_over_initial": 4.439557905071603e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 20, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 57601, "finite": true, "complete": true, "peak_over_initial": 1.6537133202357859, "max_error_over_initial": 1.6537073212653786, "late_max_over_initial": 1.6537133202357859, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 100, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 14401, "finite": true, "complete": true, "peak_over_initial": 314.1552225418592, "max_error_over_initial": 314.15511027018357, "late_max_over_initial": 314.1345699965385, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 100, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 14401, "finite": true, "complete": true, "peak_over_initial": 314.1578938378933, "max_error_over_initial": 314.4423599734443, "late_max_over_initial": 314.15602214911564, "other_axes_max": 1.3322676295501878e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 100, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 11521, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.0325752855988235, "late_max_over_initial": 4.4891361264579715e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 100, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 11521, "finite": true, "complete": true, "peak_over_initial": 314.15422628682086, "max_error_over_initial": 314.24791860383885, "late_max_over_initial": 314.1089716035185, "other_axes_max": 1.3322676295501878e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 7201, "finite": true, "complete": true, "peak_over_initial": 314.15896691439104, "max_error_over_initial": 314.1589671643367, "late_max_over_initial": 314.15896691439104, "other_axes_max": 9.325873406851315e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 7201, "finite": true, "complete": true, "peak_over_initial": 314.15572054743836, "max_error_over_initial": 314.1934529495563, "late_max_over_initial": 313.6937076964144, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 5761, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.12180477265556701, "late_max_over_initial": 4.4282979229046815e-05, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 5761, "finite": true, "complete": true, "peak_over_initial": 314.1471268451132, "max_error_over_initial": 314.27618270813934, "late_max_over_initial": 314.0982416982679, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 400, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 3601, "finite": true, "complete": true, "peak_over_initial": 314.1553467996989, "max_error_over_initial": 314.1378815274192, "late_max_over_initial": 314.11994272897834, "other_axes_max": 4.884981308350689e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 400, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 3601, "finite": true, "complete": true, "peak_over_initial": 313.9702148681879, "max_error_over_initial": 313.9749155000472, "late_max_over_initial": 313.9702148681879, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 400, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 2881, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.3550519772265165, "late_max_over_initial": 3.0413417928861095e-06, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 400, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 2881, "finite": true, "complete": true, "peak_over_initial": 313.7654008122126, "max_error_over_initial": 313.7625216506706, "late_max_over_initial": 312.06639928706096, "other_axes_max": 3.552713678800501e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 800, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 1801, "finite": true, "complete": true, "peak_over_initial": 313.9993033620481, "max_error_over_initial": 313.9992953005743, "late_max_over_initial": 313.9993033620481, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 800, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 1801, "finite": true, "complete": true, "peak_over_initial": 314.0920662745045, "max_error_over_initial": 314.11197086335096, "late_max_over_initial": 313.3090394888606, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 800, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 1441, "finite": true, "complete": true, "peak_over_initial": 1.0000000000000002, "max_error_over_initial": 0.7783220756548694, "late_max_over_initial": 2.3201446103836462e-32, "other_axes_max": 4.440892098500626e-16}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 800, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 1441, "finite": true, "complete": true, "peak_over_initial": 314.05564342253666, "max_error_over_initial": 314.4981694021913, "late_max_over_initial": 313.3790570664363, "other_axes_max": 3.552713678800501e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 1200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 1200, "error": null, "rows": 1201, "finite": true, "complete": true, "peak_over_initial": 313.4297283055715, "max_error_over_initial": 313.4302745502571, "late_max_over_initial": 311.4070356407214, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c2-mid-g", "hz": 1200, "zeta": 0.01, "omega": 1200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 1200, "error": null, "rows": 1201, "finite": true, "complete": true, "peak_over_initial": 313.7562171259474, "max_error_over_initial": 313.7139577128376, "late_max_over_initial": 312.0368783614771, "other_axes_max": 0.0}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 1200, "where": "core", "metrics": {"kind": "probe", "case": "review", "where": "core", "hz": 960, "error": null, "rows": 961, "finite": true, "complete": true, "peak_over_initial": 313.57622148483426, "max_error_over_initial": 313.4777808057703, "late_max_over_initial": 309.69111255088274, "other_axes_max": 3.552713678800501e-15}}
+
+  The aerodynamic axis system has been set by default to the Lift/Side/Drag system.
+
+  The aerodynamic moment axis system has been set by default to the bodyXYZ system.
+{"config": "c3-ab4-g", "hz": 960, "zeta": 0.01, "omega": 1200, "where": "external", "metrics": {"kind": "probe", "case": "review", "where": "external", "hz": 960, "error": null, "rows": 961, "finite": true, "complete": true, "peak_over_initial": 313.96866809036896, "max_error_over_initial": 313.96982746607836, "late_max_over_initial": 312.31000807500925, "other_axes_max": 4.440892098500626e-16}}

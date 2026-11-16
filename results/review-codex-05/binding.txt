@@ -1,0 +1,32 @@
+loaded { dt: 0.0008333333333333334, profile: 'fdm', settings: [ 10, 7, 1 ] }
+simulation/reset { dt: 0.0008333333333333334, profile: 'fdm', settings: [ 1, 1, 0 ] }
+script implicit dt { dt: 0.008333333333333333, profile: 'fdm', settings: [ 10, 7, 1 ] }
+fractional setting {
+  p: 'simulation/integrator/rate/contact-release-mode',
+  v: 0.9,
+  read: 0,
+  error: ''
+}
+fractional setting { p: 'gear/strut-limits/enabled', v: 0.9, read: 0, error: '' }
+refused {
+  n: 0,
+  before: [ 0, 4.30500000065137 ],
+  outputs: [ 0, 4.30500000065137 ],
+  live: 4.305000026751797,
+  halt: {
+    reason: 'below-surface',
+    detail: 'below the surface: centre of gravity 4.305000 ft above the ground',
+    simTime: 0.0008333333333333334
+  }
+}
+readOutputs after halt [ 0.0008333333333333334, 4.305000026751797 ]
+batch exception {
+  error: 'JSBSimError: step: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!',
+  published: [ 0 ],
+  live: 0.10000000000000007,
+  halt: {
+    reason: 'exception',
+    detail: 'a step threw an exception: Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!',
+    simTime: 0.10000000000000007
+  }
+}
