@@ -37,5 +37,5 @@ Flight dynamics model for an iPhone PWA flight sim. **Attempt 2.** Read `README.
 ## Git
 - Push only to the branch the session's prompt names. The GitHub Pages environment allows `main` by default;
   deploying a page from another branch needs the user to allow it.
-- This session's git proxy has refused tag pushes (HTTP 403). If a tag cannot be pushed, record its intended name
+- The cloud sessions' git proxy has refused tag pushes and branch deletions (HTTP 403). If a tag cannot be pushed, record its intended name
   and commit in `PLAN.md` and ask the user to create it on GitHub (Releases → new tag on that commit).
