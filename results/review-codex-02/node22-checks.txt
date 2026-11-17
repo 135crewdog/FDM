@@ -1,8 +1,0 @@
-v22.23.5
-version: 1.3.3 Nov 15 2026 14:47:04
-c172x loaded
-f16 loaded
-no_such_aircraft -> JSBSimError: loadModel(no_such_aircraft) returned false. Could not open file: Path "/jsbsim/aircraft/no_such_aircraft/no_such_aircraft.xml"
-  JSBSim failed to open the configuration file: Path "/jsbsim/aircraft/no_such_aircraft/no_such_aircraft.xml"
-c1723 after 1200 steps: t = 10.008 h = 4.322
-handle -> JSBSimError: handle(no/such/prop): No property named no/such/prop

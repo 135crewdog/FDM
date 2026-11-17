@@ -1,4 +1,0 @@
-PteroLabs commit: 33384d9981614509c65698f5f8be8eb8d1950228
-Raw upstream file sha256: 8cafa5e7dbb9fbab0f4709d1013cb937734d03ba80c6e2d3772664732cb3b23d
-Solver block identical after removing counters/equivalent convergence split: True
-Normalized solver block sha256: 13f5d273666b5409f11f9c56ad27ac2ef1e74a4ed52b3ae6e6dba5e01891c3a0

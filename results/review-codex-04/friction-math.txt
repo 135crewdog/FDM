@@ -1,1 +1,0 @@
-{"samples": 1000, "max_mode1_slip_residual": 1.744324759630645e-14, "max_matrix_finite_difference_error": 4.338751580235112e-13, "max_2010_mixed_weight_slip_residual": 8.271928613575094}

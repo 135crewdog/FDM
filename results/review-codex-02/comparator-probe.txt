@@ -1,8 +1,0 @@
-Synthetic reference: 2 rows, finite rates 1 and 2.
-Synthetic candidate: 1 row, rate NaN.
-rows: 2 vs 1
-column                            max_abs    max_rel     at t= 1st rel>1e-6
-simulation/sim-time-sec         0.000e+00   0.00e+00         -         None
-velocities/q-rad_sec            0.000e+00   0.00e+00         -         None
-
-Comparator exit code: 0
