@@ -5,12 +5,13 @@ Update this file at the end of every session: mark what is done, link the report
 ## Done
 
 - **Session 00 (research), 2026-11-18:** `RESEARCH.md` on `main`. User decisions recorded in `CLAUDE.md`.
-- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim`, tag `jsbsim-baseline-v1`, report
+- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim`, tag `jsbsim-baseline-v1` (to be created by the user), report
   `REPORT.md` on that branch.
 
 ## Stage 1: JSBSim baseline (`baseline/jsbsim`)
 
-**Status:** done. Tag `jsbsim-baseline-v1` on the last commit of the branch (the hash is in `PLAN.md` on `main`).
+**Status:** done. The tag `jsbsim-baseline-v1` belongs on the last commit of this branch; its push was refused by
+the git proxy, so the user creates it on GitHub (hash and steps: `PLAN.md` on `main`).
 
 **What exists** (details and evidence labels in `REPORT.md` on the branch):
 - JSBSim v1.3.3 (`66f7fafc`), unpatched, built with Emscripten 6.0.13: `dist-wasm/fdm-weh` (`-fwasm-exceptions`)

@@ -269,7 +269,8 @@ both times the result was kept and the user decided how to go on.
 - Second stop, criterion 7: three scripts of the 59-script sweep fail a frozen line. **User decision
   (2026-11-18): record the three as failed with their causes, add no new pass/fail line, and continue.**
 - The user ran the test page on the iPhone and pasted the results: both builds pass every page line.
-- **User decision (2026-11-18): tag `jsbsim-baseline-v1` with the failed lines on record.**
+- **User decision (2026-11-18): tag `jsbsim-baseline-v1` with the failed lines on record.** The tag push was
+  refused by the git proxy; see criterion 10 below.
 
 **Frozen lines that failed and stay failed** (each with its cause, further down):
 1. Slope-rest run, Class A (criterion 4). The run passes the added Class N.
@@ -290,7 +291,7 @@ both times the result was kept and the user decided how to go on.
 | 7 Parity | named runs pass; sweep: 56 of 59 meet their line, **3 fail and stay failed** (below) |
 | 8 External forces | done, passes |
 | 9 iPhone page | done: passes on the user's iPhone in both builds |
-| 10 Finish | done: tag `jsbsim-baseline-v1`, `prompts/02-yasim-baseline.md`, `PLAN.md`, `prompts/README.md` |
+| 10 Finish | done, except that the tag push was refused: the commit is recorded in `PLAN.md` on `main` and the user creates the tag |
 
 ### Second stop: three sweep scripts fail a frozen line (criterion 7)
 
@@ -563,9 +564,13 @@ same handler passes the same protocol test in Node directly and in a `worker_thr
     tested with messages only. **Reasoned** for a real app switch (the test: switch apps during section 5).
   - The page installed as a home-screen app, and Low Power Mode (60 Hz frames or lower).
 
-**10. Finish: done.** Tag `jsbsim-baseline-v1` on the last commit of this branch (its hash is in `PLAN.md` on
-`main`). `prompts/02-yasim-baseline.md` written; `PLAN.md`, `prompts/README.md`, `RESEARCH.md` (corrections) and
-`CLAUDE.md` (lessons) updated on `main`.
+**10. Finish: done; the tag itself is left to the user.**
+- The git proxy refused the push of the tag `jsbsim-baseline-v1` (HTTP 403), as `CLAUDE.md` says it has before.
+  As criterion 10 provides, the commit is recorded in `PLAN.md` on `main`: it is the last commit of this branch.
+  The user creates the tag on GitHub (the steps are in `PLAN.md`). **Verified** (the refused push;
+  `git ls-remote --tags` shows no tag).
+- `prompts/02-yasim-baseline.md` written; `PLAN.md`, `prompts/README.md`, `RESEARCH.md` (corrections) and
+  `CLAUDE.md` (lessons) updated on `main`.
 
 ### Not done, and what would settle it
 - Stack depth of use (1 MiB is given): fill the stack with a pattern and read the high-water mark.
