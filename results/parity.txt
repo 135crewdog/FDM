@@ -1,0 +1,97 @@
+PARITY: WebAssembly against the native answer key
+Columns: the judged list of REPORT.md part 2, alpha/beta (information), turbulence read-back, every gear and contact WOW flag.
+
+c1723 (c172x take-off with autopilot): native ran 24001 steps, script ended, dt 0.008333333333333333; weh ran 24001 steps, script ended; jseh ran 24001 steps, script ended
+    exact checks: native twice identical; weh twice identical; jseh twice identical; weh = jseh bit for bit
+    weh, first 1 s, frozen Class A (result kept): FAIL rows 121; worst moments/n-total-lbsft: |d| 6.25e-6 at row 71, allowed 6.33e-9, first over at row 4
+    weh, first 1 s, Class N (added; ground contact): pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 3.07e-5, allowed 1.28e-4 (frozen 1.66e-7, 3 x spread 1.28e-4), ratio 0.239
+    jseh, first 1 s, frozen Class A (result kept): FAIL rows 121; worst moments/n-total-lbsft: |d| 6.25e-6 at row 71, allowed 6.33e-9, first over at row 4
+    jseh, first 1 s, Class N (added; ground contact): pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 3.07e-5, allowed 1.28e-4 (frozen 1.66e-7, 3 x spread 1.28e-4), ratio 0.239
+    weh, whole run (200 s), Class B: pass
+        position/h-sl-ft: |wasm - native| 2.38e-1 at row 23797; cap 1, ensemble spread 2.65e-1, allowed 1.00e+0: pass
+        attitude/phi-rad: |wasm - native| 1.53e-2 at row 15283; cap 0.05, ensemble spread 1.53e-2, allowed 5.00e-2: pass
+        attitude/theta-rad: |wasm - native| 1.23e-3 at row 18946; cap 0.05, ensemble spread 1.65e-3, allowed 5.00e-2: pass
+        attitude/psi-rad: |wasm - native| 1.46e-2 at row 15244; cap 0.05, ensemble spread 1.46e-2, allowed 5.00e-2: pass
+        velocities/vtrue-kts: |wasm - native| 4.95e-2 at row 19281; cap 1, ensemble spread 5.36e-2, allowed 1.00e+0: pass
+    jseh, whole run (200 s), Class B: pass
+        position/h-sl-ft: |wasm - native| 2.38e-1 at row 23797; cap 1, ensemble spread 2.65e-1, allowed 1.00e+0: pass
+        attitude/phi-rad: |wasm - native| 1.53e-2 at row 15283; cap 0.05, ensemble spread 1.53e-2, allowed 5.00e-2: pass
+        attitude/theta-rad: |wasm - native| 1.23e-3 at row 18946; cap 0.05, ensemble spread 1.65e-3, allowed 5.00e-2: pass
+        attitude/psi-rad: |wasm - native| 1.46e-2 at row 15244; cap 0.05, ensemble spread 1.46e-2, allowed 5.00e-2: pass
+        velocities/vtrue-kts: |wasm - native| 4.95e-2 at row 19281; cap 1, ensemble spread 5.36e-2, allowed 1.00e+0: pass
+    weh, first 10 s: TypeScript-driven = C++ runner bit for bit
+    jseh, first 10 s: TypeScript-driven = C++ runner bit for bit
+
+f16_test (the f16 script): native ran 14400 steps, dt 0.00833333; weh ran 14400 steps; jseh ran 14400 steps
+    exact checks: native twice identical; weh twice identical; jseh twice identical; weh = jseh bit for bit
+    weh, first 1 s, frozen Class A (result kept): FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-9, first over at row 0
+    weh, first 1 s, Class N (added; ground contact): pass rows 121, 8 members with effect; closest to its limit: velocities/u-fps: |d| 1.14e-8, allowed 3.21e-8 (frozen 1.00e-9, 3 x spread 3.21e-8), ratio 0.356
+    jseh, first 1 s, frozen Class A (result kept): FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-9, first over at row 0
+    jseh, first 1 s, Class N (added; ground contact): pass rows 121, 8 members with effect; closest to its limit: velocities/u-fps: |d| 1.14e-8, allowed 3.21e-8 (frozen 1.00e-9, 3 x spread 3.21e-8), ratio 0.356
+    weh, sim time up to 120 s (14401 rows), Class B: pass
+        position/h-sl-ft: |wasm - native| 6.00e-4 at row 14400; cap 1, ensemble spread 4.37e-4, allowed 1.00e+0: pass
+        attitude/phi-rad: |wasm - native| 5.87e-8 at row 11576; cap 0.05, ensemble spread 4.27e-8, allowed 5.00e-2: pass
+        attitude/theta-rad: |wasm - native| 2.32e-8 at row 12882; cap 0.05, ensemble spread 1.69e-8, allowed 5.00e-2: pass
+        attitude/psi-rad: |wasm - native| 1.43e-8 at row 11472; cap 0.05, ensemble spread 1.04e-8, allowed 5.00e-2: pass
+        velocities/vtrue-kts: |wasm - native| 3.64e-6 at row 13512; cap 1, ensemble spread 2.65e-6, allowed 1.00e+0: pass
+    jseh, sim time up to 120 s (14401 rows), Class B: pass
+        position/h-sl-ft: |wasm - native| 6.00e-4 at row 14400; cap 1, ensemble spread 4.37e-4, allowed 1.00e+0: pass
+        attitude/phi-rad: |wasm - native| 5.87e-8 at row 11576; cap 0.05, ensemble spread 4.27e-8, allowed 5.00e-2: pass
+        attitude/theta-rad: |wasm - native| 2.32e-8 at row 12882; cap 0.05, ensemble spread 1.69e-8, allowed 5.00e-2: pass
+        attitude/psi-rad: |wasm - native| 1.43e-8 at row 11472; cap 0.05, ensemble spread 1.04e-8, allowed 5.00e-2: pass
+        velocities/vtrue-kts: |wasm - native| 3.64e-6 at row 13512; cap 1, ensemble spread 2.65e-6, allowed 1.00e+0: pass
+
+NASA 02 (as shipped by JSBSim): native ran 3000 steps, dt 0.01; weh ran 3000 steps; jseh ran 3000 steps
+    exact checks: native twice identical; weh twice identical; jseh twice identical; weh = jseh bit for bit
+    weh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 2.22e-16 at row 894, allowed 1.15e-9
+    jseh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 2.22e-16 at row 894, allowed 1.15e-9
+    weh: TypeScript-driven = C++ runner bit for bit
+    jseh: TypeScript-driven = C++ runner bit for bit
+    NASA reference data, case 02 (information only): largest |ours (native, default integrators, dt 0.01) - NASA sim|, and NASA's own largest sim-to-sim difference
+      altitudeMsl_ft [ft]: sim_01 4.53e-4 (301 pts); sim_02 1.63e-3 (301 pts); sim_04 1.17e-3 (301 pts); sim_06 1.17e-3 (301 pts); NASA sim-to-sim 2.08e-3
+      eulerAngle_deg_Roll [deg]: sim_01 1.80e+0 (301 pts); sim_02 3.67e+0 (301 pts); sim_04 1.80e+0 (301 pts); sim_06 1.81e+0 (301 pts); NASA sim-to-sim 3.72e+0
+      eulerAngle_deg_Pitch [deg]: sim_01 1.21e+0 (301 pts); sim_02 3.69e+0 (301 pts); sim_04 1.21e+0 (301 pts); sim_06 1.22e+0 (301 pts); NASA sim-to-sim 3.41e+0
+      eulerAngle_deg_Yaw [deg]: sim_01 2.49e+0 (301 pts); sim_02 3.00e+0 (301 pts); sim_04 2.49e+0 (301 pts); sim_06 2.49e+0 (301 pts); NASA sim-to-sim 1.31e+0
+      bodyAngularRateWrtEi_deg_s_Roll [deg/s]: sim_01 2.91e-1 (301 pts); sim_02 2.91e-1 (301 pts); sim_04 2.91e-1 (301 pts); sim_06 2.92e-1 (301 pts); NASA sim-to-sim 3.02e-3
+      bodyAngularRateWrtEi_deg_s_Pitch [deg/s]: sim_01 4.45e-1 (301 pts); sim_02 4.45e-1 (301 pts); sim_04 4.45e-1 (301 pts); sim_06 4.46e-1 (301 pts); NASA sim-to-sim 4.74e-3
+      bodyAngularRateWrtEi_deg_s_Yaw [deg/s]: sim_01 1.18e-1 (301 pts); sim_02 1.18e-1 (301 pts); sim_04 1.18e-1 (301 pts); sim_06 1.19e-1 (301 pts); NASA sim-to-sim 1.15e-3
+
+NASA 01 (project fixture): native ran 3000 steps, dt 0.01; weh ran 3000 steps; jseh ran 3000 steps
+    exact checks: native twice identical; weh twice identical; jseh twice identical; weh = jseh bit for bit
+    weh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 4.34e-19 at row 2679, allowed 2.19e-12
+    jseh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 4.34e-19 at row 2679, allowed 2.19e-12
+    NASA reference data, case 01 (information only): largest |ours (native, default integrators, dt 0.01) - NASA sim|, and NASA's own largest sim-to-sim difference
+      altitudeMsl_ft [ft]: sim_01 4.53e-4 (301 pts); sim_02 1.63e-3 (301 pts); sim_03 1.16e-3 (301 pts); sim_04 1.17e-3 (301 pts); sim_06 1.17e-3 (301 pts); NASA sim-to-sim 2.08e-3
+      eulerAngle_deg_Roll [deg]: sim_01 3.65e-8 (301 pts); sim_02 5.22e-8 (301 pts); sim_04 3.40e-8 (301 pts); sim_06 3.40e-8 (301 pts); NASA sim-to-sim 8.87e-8
+      eulerAngle_deg_Pitch [deg]: sim_01 1.27e-14 (301 pts); sim_02 1.27e-14 (301 pts); sim_04 1.27e-14 (301 pts); sim_06 1.65e-26 (301 pts); NASA sim-to-sim 1.27e-14
+      eulerAngle_deg_Yaw [deg]: sim_01 0 (301 pts); sim_02 0 (301 pts); sim_04 0 (301 pts); sim_06 0 (301 pts); NASA sim-to-sim 0
+      bodyAngularRateWrtEi_deg_s_Roll [deg/s]: sim_01 3.11e-18 (301 pts); sim_02 3.11e-18 (301 pts); sim_04 3.11e-18 (301 pts); sim_06 3.11e-18 (301 pts); NASA sim-to-sim 0
+      bodyAngularRateWrtEi_deg_s_Pitch [deg/s]: sim_01 0 (301 pts); sim_02 0 (301 pts); sim_04 0 (301 pts); sim_06 0 (301 pts); NASA sim-to-sim 0
+      bodyAngularRateWrtEi_deg_s_Yaw [deg/s]: sim_01 9.28e-19 (301 pts); sim_02 9.28e-19 (301 pts); sim_04 9.28e-19 (301 pts); sim_06 2.51e-25 (301 pts); NASA sim-to-sim 9.28e-19
+
+NASA 03 (project fixture): native ran 3000 steps, dt 0.01; weh ran 3000 steps; jseh ran 3000 steps
+    exact checks: native twice identical; weh twice identical; jseh twice identical; weh = jseh bit for bit
+    weh, whole run, frozen Class A: pass rows 3001; worst attitude/psi-rad: |d| 8.88e-16 at row 1159, allowed 4.35e-9
+    jseh, whole run, frozen Class A: pass rows 3001; worst attitude/psi-rad: |d| 8.88e-16 at row 1159, allowed 4.35e-9
+    NASA reference data, case 03 (information only): largest |ours (native, default integrators, dt 0.01) - NASA sim|, and NASA's own largest sim-to-sim difference
+      altitudeMsl_ft [ft]: sim_01 8.37e-4 (301 pts); sim_02 1.63e-3 (301 pts); sim_04 1.17e-3 (301 pts); sim_06 1.17e-3 (301 pts); NASA sim-to-sim 7.96e-4
+      eulerAngle_deg_Roll [deg]: sim_01 2.09e-1 (301 pts); sim_02 5.58e-1 (301 pts); sim_04 2.34e-1 (301 pts); sim_06 1.83e-1 (301 pts); NASA sim-to-sim 5.55e-1
+      eulerAngle_deg_Pitch [deg]: sim_01 8.12e-2 (301 pts); sim_02 6.52e-1 (301 pts); sim_04 9.07e-2 (301 pts); sim_06 8.24e-2 (301 pts); NASA sim-to-sim 6.50e-1
+      eulerAngle_deg_Yaw [deg]: sim_01 6.25e-1 (301 pts); sim_02 5.86e-1 (301 pts); sim_04 3.39e-1 (301 pts); sim_06 3.19e-1 (301 pts); NASA sim-to-sim 3.42e-1
+      bodyAngularRateWrtEi_deg_s_Roll [deg/s]: sim_01 6.22e-2 (301 pts); sim_02 3.44e-2 (301 pts); sim_04 3.34e-2 (301 pts); sim_06 3.24e-2 (301 pts); NASA sim-to-sim 3.19e-2
+      bodyAngularRateWrtEi_deg_s_Pitch [deg/s]: sim_01 9.49e-2 (301 pts); sim_02 3.79e-2 (301 pts); sim_04 3.67e-2 (301 pts); sim_06 3.74e-2 (301 pts); NASA sim-to-sim 7.44e-2
+      bodyAngularRateWrtEi_deg_s_Yaw [deg/s]: sim_01 2.79e-2 (301 pts); sim_02 1.33e-2 (301 pts); sim_04 1.19e-2 (301 pts); sim_06 1.12e-2 (301 pts); NASA sim-to-sim 1.67e-2
+
+SCRIPT SWEEP: the other 59 upstream scripts, each at its own dt with the upstream ground callback, first 1 s judged
+    pass: 52 (of these, 27 touch the ground in the first second and are judged on Class N; 16 of them fail the frozen Class S)
+    pass because the script fails natively and fails the same way in wasm: 4
+    not comparable (RNG): 0
+    FAIL: 3
+    table: results/parity-sweep.md; per-column tables of every failure: results/parity-detail.txt
+
+FAILED LINES (5):
+  sweep c3104.xml weh Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
+  sweep c3104.xml jseh Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
+  sweep c3105.xml weh Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
+  sweep c3105.xml jseh Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
+  sweep mk82_script.xml: native FAILED at step 2242, weh FAILED at step 2308, jseh FAILED at step 2308

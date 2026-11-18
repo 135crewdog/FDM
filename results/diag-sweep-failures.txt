@@ -1,0 +1,203 @@
+===== c3104: native done ; wasm done
+first differing row per column (and the difference there):
+  position/ecef-x-ft                       row   0 native -1639032.56158       d -3.96e-9 (-17 ulp)
+  position/ecef-y-ft                       row  63 native -18136696.6258       d 3.73e-9 (1 ulp)
+  position/ecef-z-ft                       row  62 native 10273579.5858        d -1.86e-9 (-1 ulp)
+  position/h-sl-ft                         row   6 native 55.2699996904        d 3.73e-9 (524288 ulp)
+  position/h-agl-ft                        row   0 native 29.4999999940        d -5.68e-14 (-16 ulp)
+  velocities/u-fps                         row   1 native 0.00000214370526469  d 6.99e-15 (16515072 ulp)
+  velocities/v-fps                         row   1 native 8.14894066465e-7     d -1.58e-15 (-14906901 ulp)
+  velocities/w-fps                         row   1 native 0.642579496124       d 1.22e-14 (110 ulp)
+  velocities/vtrue-kts                     row   1 native 0.380717942501       d 7.22e-15 (130 ulp)
+  velocities/p-rad_sec                     row   1 native -3.37186875643e-17   d 1.36e-20 (2199023255552 ulp)
+  velocities/q-rad_sec                     row   1 native -4.71204542710e-11   d 4.05e-21 (626388 ulp)
+  velocities/r-rad_sec                     row   1 native 1.91361683444e-17    d 1.36e-20 (4398046511104 ulp)
+  attitude/phi-rad                         row   0 native 1.59424161825e-16    d -2.78e-16 (-11258999068426240 ulp)
+  attitude/theta-rad                       row   0 native 1.11022302463e-16    d -1.39e-16 (-5629499534213120 ulp)
+  attitude/psi-rad                         row   0 native 6.28318530718        d -6.28e+0 (-7074237752028440 ulp)
+  forces/fbx-total-lbs                     row   1 native 0.0240671210437      d 7.23e-13 (208414 ulp)
+  forces/fby-total-lbs                     row   1 native -1.84289494243e-7    d 3.57e-16 (13484978 ulp)
+  forces/fbz-total-lbs                     row   1 native -0.0932393186403     d -4.37e-15 (-315 ulp)
+  moments/l-total-lbsft                    row   1 native -3.59687403223e-7    d 6.96e-16 (13143980 ulp)
+  moments/m-total-lbsft                    row   1 native -0.615952623840      d -1.07e-11 (-96242 ulp)
+  moments/n-total-lbsft                    row   1 native 4.01731311980e-7     d -7.78e-16 (-14705055 ulp)
+  aero/alpha-rad                           row   1 native 1.57079299070        d -1.09e-14 (-49 ulp)
+  aero/beta-rad                            row   1 native 0.00000126816070444  d -2.46e-15 (-11599380 ulp)
+  propulsion/engine[0]/engine-rpm          row  14 native 12.1823700189        d -1.95e-14 (-11 ulp)
+  propulsion/engine[1]/engine-rpm          row  14 native 12.1823700189        d -1.95e-14 (-11 ulp)
+  propulsion/engine[0]/thrust-lbs          row  15 native 0.0176173451844      d -5.90e-17 (-17 ulp)
+  propulsion/engine[1]/thrust-lbs          row  15 native 0.0176173451844      d -5.90e-17 (-17 ulp)
+  propulsion/engine[0]/propeller-rpm       row  14 native 12.1823700189        d -1.95e-14 (-11 ulp)
+  propulsion/engine[0]/power-hp            row  14 native 0.0228658091897      d -4.51e-17 (-13 ulp)
+  propulsion/engine[1]/power-hp            row  14 native 0.0228658091897      d -4.51e-17 (-13 ulp)
+  moments/l-prop-lbsft                     row  14 native -207.850227989       d 4.26e-13 (15 ulp)
+  moments/n-prop-lbsft                     row  14 native 0.00201725860416     d 8.93e-17 (206 ulp)
+  moments/l-aero-lbsft                     row   1 native -3.59687403223e-7    d 6.96e-16 (13143980 ulp)
+  moments/n-aero-lbsft                     row   1 native 4.01731311980e-7     d -7.78e-16 (-14705055 ulp)
+  moments/l-gear-lbsft                     row  64 native 47896.0175356        d -9.89e-1 (-135981127279 ulp)
+  forces/fbx-prop-lbs                      row  15 native 0.0352346903688      d -1.18e-16 (-17 ulp)
+  propulsion/engine[0]/advance-ratio       row   1 native 3.06244751419e-7     d 9.99e-16 (18874579 ulp)
+  propulsion/engine[1]/advance-ratio       row   1 native 3.06244751387e-7     d 9.99e-16 (18874153 ulp)
+  propulsion/engine[0]/map-inhg            row   6 native 29.8974672088        d -3.16e-13 (-89 ulp)
+  propulsion/engine[1]/map-inhg            row   6 native 29.8974672088        d -3.16e-13 (-89 ulp)
+--- row 12, t=0.23999999999999996
+  propulsion/engine[0]/engine-rpm          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/engine-rpm          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[0]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/n-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-total-lbsft                    native -0.000619451401553761  wasm-native 8.98e-15
+  propulsion/engine[0]/advance-ratio       native 0.000509379870227553   wasm-native 2.58e-16
+  propulsion/engine[1]/advance-ratio       native 0.000509372020667492   wasm-native 2.58e-16
+  propulsion/engine[0]/power-hp            native -1.50000000000000      wasm-native 0.00e+0
+--- row 13, t=0.25999999999999995
+  propulsion/engine[0]/engine-rpm          native 1.15558032004914       wasm-native 0.00e+0
+  propulsion/engine[1]/engine-rpm          native 1.15558032004914       wasm-native 0.00e+0
+  propulsion/engine[0]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native -2178.21782178218      wasm-native 0.00e+0
+  moments/n-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-total-lbsft                    native -2178.28985160306      wasm-native 7.12e-2
+  propulsion/engine[0]/advance-ratio       native 0.000686660202787522   wasm-native 1.40e-15
+  propulsion/engine[1]/advance-ratio       native 0.000686649183073861   wasm-native 1.40e-15
+  propulsion/engine[0]/power-hp            native 0.0198019801980198     wasm-native 0.00e+0
+--- row 14, t=0.27999999999999997
+  propulsion/engine[0]/engine-rpm          native 12.1823700188637       wasm-native -1.95e-14
+  propulsion/engine[1]/engine-rpm          native 12.1823700188637       wasm-native -1.95e-14
+  propulsion/engine[0]/thrust-lbs          native 0.000158516618624276   wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.000158516618624276   wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native -207.850227988912      wasm-native 4.26e-13
+  moments/n-prop-lbsft                     native 0.00201725860415804    wasm-native 8.93e-17
+  moments/l-total-lbsft                    native -204.802129484216      wasm-native 6.99e-4
+  propulsion/engine[0]/advance-ratio       native 0.0472817534561228     wasm-native -3.90e-7
+  propulsion/engine[1]/advance-ratio       native 0.0472401756814257     wasm-native 3.90e-7
+  propulsion/engine[0]/power-hp            native 0.0228658091896508     wasm-native -4.51e-17
+--- row 18, t=0.36000000000000004
+  propulsion/engine[0]/engine-rpm          native 55.2606423189324       wasm-native -9.24e-14
+  propulsion/engine[1]/engine-rpm          native 55.2606423189324       wasm-native -9.24e-14
+  propulsion/engine[0]/thrust-lbs          native 0.236620889308908      wasm-native -8.05e-16
+  propulsion/engine[1]/thrust-lbs          native 0.236620889308908      wasm-native -8.05e-16
+  moments/l-prop-lbsft                     native -200.285755641140      wasm-native 3.13e-13
+  moments/n-prop-lbsft                     native 0.158887262117105      wasm-native -1.68e-13
+  moments/l-total-lbsft                    native -193.760430497885      wasm-native 8.24e-4
+  propulsion/engine[0]/advance-ratio       native 0.00332580191919184    wasm-native -1.06e-8
+  propulsion/engine[1]/advance-ratio       native 0.00331980736625593    wasm-native 1.06e-8
+  propulsion/engine[0]/power-hp            native 0.851275346003073      wasm-native -2.78e-15
+native ensemble (start altitude +-1..4 last digits), first 1 s (51 rows), members with effect 8:
+  moments/l-total-lbsft        |wasm-native| 7.12e-2   native ensemble spread 5.74e-11   ratio 1240312210.47
+  moments/n-total-lbsft        |wasm-native| 6.96e-3   native ensemble spread 4.19e-11   ratio 166174687.60
+  forces/fby-total-lbs         |wasm-native| 3.78e-5   native ensemble spread 6.56e-12   ratio 5752400.29
+  velocities/p-rad_sec         |wasm-native| 2.27e-7   native ensemble spread 1.01e-15   ratio 226098143.13
+  velocities/r-rad_sec         |wasm-native| 2.46e-8   native ensemble spread 5.33e-16   ratio 46065867.06
+  velocities/v-fps             |wasm-native| 3.37e-6   native ensemble spread 5.46e-13   ratio 6167045.67
+  attitude/phi-rad             |wasm-native| 1.07e-7   native ensemble spread 7.13e-16   ratio 150637517.49
+  moments/l-prop-lbsft         |wasm-native| 1.11e-11   native ensemble spread 2.03e-11   ratio 0.55
+===== c3105: native done ; wasm done
+first differing row per column (and the difference there):
+  position/ecef-x-ft                       row   0 native -1639032.56158       d -3.96e-9 (-17 ulp)
+  position/h-sl-ft                         row  12 native 55.3397848196        d 3.73e-9 (524288 ulp)
+  position/h-agl-ft                        row   0 native 29.4999999940        d -5.68e-14 (-16 ulp)
+  velocities/u-fps                         row   1 native 8.93210589881e-7     d 7.04e-15 (66453504 ulp)
+  velocities/v-fps                         row   1 native 1.41474616831e-7     d -1.39e-15 (-52544718 ulp)
+  velocities/w-fps                         row   1 native 0.267741446009       d 1.23e-14 (221 ulp)
+  velocities/vtrue-kts                     row   1 native 0.158632469697       d 7.24e-15 (261 ulp)
+  velocities/p-rad_sec                     row   2 native -1.63012100563e-14   d 1.36e-20 (4294967296 ulp)
+  velocities/q-rad_sec                     row   1 native -1.96335218316e-11   d 4.05e-21 (1252776 ulp)
+  velocities/r-rad_sec                     row   7 native 1.35324306692e-11    d -6.78e-21 (-4194304 ulp)
+  attitude/phi-rad                         row   0 native 1.59424161825e-16    d -2.78e-16 (-11258999068426240 ulp)
+  attitude/theta-rad                       row   0 native 1.11022302463e-16    d -1.39e-16 (-5629499534213120 ulp)
+  attitude/psi-rad                         row   0 native 6.28318530718        d -6.28e+0 (-7074237752028440 ulp)
+  forces/fbx-total-lbs                     row   1 native 0.00417831932354     d 1.75e-12 (2022324 ulp)
+  forces/fby-total-lbs                     row   1 native -1.33311207920e-8    d 1.31e-16 (79219983 ulp)
+  forces/fbz-total-lbs                     row   1 native -0.0161873788784     d -1.84e-15 (-529 ulp)
+  moments/l-total-lbsft                    row   1 native -2.60190446192e-8    d 2.56e-16 (77308980 ulp)
+  moments/m-total-lbsft                    row   1 native -0.106936210833      d -2.59e-11 (-1867300 ulp)
+  moments/n-total-lbsft                    row   1 native 2.90604138407e-8     d -2.86e-16 (-86345615 ulp)
+  aero/alpha-rad                           row   1 native 1.57079299070        d -2.62e-14 (-118 ulp)
+  aero/beta-rad                            row   1 native 5.28400137292e-7     d -5.19e-15 (-49063157 ulp)
+  propulsion/engine[0]/engine-rpm          row  32 native 10.0280644036        d -3.55e-15 (-2 ulp)
+  propulsion/engine[1]/engine-rpm          row  32 native 10.0280644036        d -3.55e-15 (-2 ulp)
+  propulsion/engine[0]/thrust-lbs          row  33 native 0.0119373574812      d -5.20e-18 (-3 ulp)
+  propulsion/engine[1]/thrust-lbs          row  33 native 0.0119373574812      d -5.20e-18 (-3 ulp)
+  propulsion/engine[0]/propeller-rpm       row  32 native 10.0280644036        d -3.55e-15 (-2 ulp)
+  propulsion/engine[0]/power-hp            row  32 native 0.0197963316303      d -1.04e-17 (-3 ulp)
+  propulsion/engine[1]/power-hp            row  32 native 0.0197963316303      d -1.04e-17 (-3 ulp)
+  moments/l-prop-lbsft                     row  32 native -431.876834780       d 2.27e-13 (4 ulp)
+  moments/n-prop-lbsft                     row  32 native 0.000771615115034    d 5.24e-17 (483 ulp)
+  moments/l-aero-lbsft                     row   1 native -2.60190446192e-8    d 2.56e-16 (77308980 ulp)
+  moments/n-aero-lbsft                     row   1 native 2.90604138407e-8     d -2.86e-16 (-86345615 ulp)
+  forces/fbx-prop-lbs                      row  33 native 0.0238747149623      d -1.04e-17 (-3 ulp)
+  propulsion/engine[0]/advance-ratio       row   1 native 1.27601988744e-7     d 1.01e-15 (37973428 ulp)
+  propulsion/engine[1]/advance-ratio       row   1 native 1.27601988738e-7     d 1.01e-15 (37973428 ulp)
+  propulsion/engine[0]/map-inhg            row  12 native 29.9010389584        d -1.39e-13 (-39 ulp)
+  propulsion/engine[1]/map-inhg            row  12 native 29.9010389584        d -1.39e-13 (-39 ulp)
+--- row 30, t=0.24999998999999998
+  propulsion/engine[0]/engine-rpm          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/engine-rpm          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[0]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/n-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-total-lbsft                    native -0.000697707970654834  wasm-native 2.50e-14
+  propulsion/engine[0]/advance-ratio       native 0.000642039725487097   wasm-native 1.33e-16
+  propulsion/engine[1]/advance-ratio       native 0.000642028894436464   wasm-native 1.33e-16
+  propulsion/engine[0]/power-hp            native -1.50000000000000      wasm-native 0.00e+0
+--- row 31, t=0.258333323
+  propulsion/engine[0]/engine-rpm          native 0.481491780760823      wasm-native 0.00e+0
+  propulsion/engine[1]/engine-rpm          native 0.481491780760823      wasm-native 0.00e+0
+  propulsion/engine[0]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native -2178.21782178218      wasm-native 0.00e+0
+  moments/n-prop-lbsft                     native 0.00000000000000       wasm-native 0.00e+0
+  moments/l-total-lbsft                    native -2178.28797039222      wasm-native 6.94e-2
+  propulsion/engine[0]/advance-ratio       native 0.000725637095255936   wasm-native 9.58e-16
+  propulsion/engine[1]/advance-ratio       native 0.000725624717776655   wasm-native 9.58e-16
+  propulsion/engine[0]/power-hp            native 0.0198019801980198     wasm-native 0.00e+0
+--- row 32, t=0.266666656
+  propulsion/engine[0]/engine-rpm          native 10.0280644036418       wasm-native -3.55e-15
+  propulsion/engine[1]/engine-rpm          native 10.0280644036418       wasm-native -3.55e-15
+  propulsion/engine[0]/thrust-lbs          native 0.0000275201505839259  wasm-native 0.00e+0
+  propulsion/engine[1]/thrust-lbs          native 0.0000275201505839259  wasm-native 0.00e+0
+  moments/l-prop-lbsft                     native -431.876834779703      wasm-native 2.27e-13
+  moments/n-prop-lbsft                     native 0.000771615115034115   wasm-native 5.24e-17
+  moments/l-total-lbsft                    native -430.667579475049      wasm-native 2.65e-4
+  propulsion/engine[0]/advance-ratio       native 0.000817865596593100   wasm-native -3.05e-9
+  propulsion/engine[1]/advance-ratio       native 0.000817524295724717   wasm-native 3.05e-9
+  propulsion/engine[0]/power-hp            native 0.0197963316303204     wasm-native -1.04e-17
+--- row 36, t=0.299999988
+  propulsion/engine[0]/engine-rpm          native 28.1624892853236       wasm-native -1.78e-14
+  propulsion/engine[1]/engine-rpm          native 28.1624892853236       wasm-native -1.78e-14
+  propulsion/engine[0]/thrust-lbs          native 0.0664271248912309     wasm-native -6.94e-17
+  propulsion/engine[1]/thrust-lbs          native 0.0664271248912309     wasm-native -6.94e-17
+  moments/l-prop-lbsft                     native -203.944332672234      wasm-native 1.71e-13
+  moments/n-prop-lbsft                     native 0.0519502444728953     wasm-native 9.22e-13
+  moments/l-total-lbsft                    native -201.586164608844      wasm-native 2.42e-4
+  propulsion/engine[0]/advance-ratio       native 0.00326235316648442    wasm-native -7.87e-9
+  propulsion/engine[1]/advance-ratio       native 0.00325974201764340    wasm-native 7.87e-9
+  propulsion/engine[0]/power-hp            native 0.459284565511832      wasm-native -6.11e-16
+native ensemble (start altitude +-1..4 last digits), first 1 s (121 rows), members with effect 8:
+  moments/l-total-lbsft        |wasm-native| 6.94e-2   native ensemble spread 3.49e-2   ratio 1.99
+  moments/n-total-lbsft        |wasm-native| 6.78e-3   native ensemble spread 3.41e-3   ratio 1.99
+  forces/fby-total-lbs         |wasm-native| 1.58e-5   native ensemble spread 7.97e-6   ratio 1.99
+  velocities/p-rad_sec         |wasm-native| 9.44e-8   native ensemble spread 4.75e-8   ratio 1.99
+  velocities/r-rad_sec         |wasm-native| 1.02e-8   native ensemble spread 5.15e-9   ratio 1.99
+  velocities/v-fps             |wasm-native| 1.41e-6   native ensemble spread 7.12e-7   ratio 1.99
+  attitude/phi-rad             |wasm-native| 4.51e-8   native ensemble spread 2.27e-8   ratio 1.99
+  moments/l-prop-lbsft         |wasm-native| 1.07e-11   native ensemble spread 2.42e-11   ratio 0.44
+===== mk82_script
+native: stage step, steps 2242, endCode 3, rows 2243: Step: state is not finite (NaN or infinity) after step 2242
+wasm: stage step, steps 2308, endCode 3, rows 2309: Step: state is not finite (NaN or infinity) after step 2308
+first 1 s (51 rows), Class S (information): pass rows 51; worst moments/m-total-lbsft: |d| 1.14e-13 at row 11, allowed 4.21e-4
+  row 0 t=0.00: native h-sl 6.594488e+3 h-agl 6.5945e+3 vt 3.5086e+2 | wasm-native h-sl 0.00e+0 q 0.00e+0
+  row 50 t=1.00: native h-sl 7.135796e+3 h-agl 7.1358e+3 vt 3.2859e+2 | wasm-native h-sl 0.00e+0 q 0.00e+0
+  row 500 t=10.00: native h-sl 1.033486e+4 h-agl 1.0335e+4 vt 1.6040e+2 | wasm-native h-sl 0.00e+0 q 4.61e-15
+  row 1000 t=20.00: native h-sl 1.072785e+4 h-agl 1.0728e+4 vt 1.2447e+2 | wasm-native h-sl 0.00e+0 q -4.31e-12
+  row 1500 t=30.00: native h-sl 8.276026e+3 h-agl 8.2760e+3 vt 2.0506e+2 | wasm-native h-sl 3.73e-9 q -4.39e-10
+  row 2000 t=40.00: native h-sl 3.729808e+3 h-agl 3.7298e+3 vt 2.5110e+2 | wasm-native h-sl 1.22e-4 q 1.48e-5
+  row 2100 t=42.00: native h-sl 3.021236e+3 h-agl 3.0212e+3 vt 2.0742e+2 | wasm-native h-sl -3.43e-1 q -1.14e+2
+  row 2200 t=44.00: native h-sl 2.365168e+3 h-agl 2.3652e+3 vt 1.8256e+2 | wasm-native h-sl -9.95e+0 q -6.26e+5
+  row 2230 t=44.60: native h-sl 2.184723e+3 h-agl 2.1847e+3 vt 1.7979e+2 | wasm-native h-sl -2.90e+1 q -6.28e+8
+  row 2240 t=44.80: native h-sl 2.126110e+3 h-agl 2.1261e+3 vt 1.7830e+2 | wasm-native h-sl -3.70e+1 q 1.19e+118
+  native second-to-last row 2241: t 44.82 h-sl 2.1203e+3 h-agl 2.1203e+3 vt 1.7865e+2 p 2.080e+155 q 3.079e+272
+  wasm second-to-last row 2307: t 46.14 h-sl 1.6560e+3 h-agl 1.6560e+3 vt 1.9480e+2 p -6.226e+206 q 1.468e+141

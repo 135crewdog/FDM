@@ -263,59 +263,161 @@ What this line is and is not:
 
 ## Part 3. Results
 
-**Status: stopped at criterion 4 on 2026-11-18. One frozen line failed (slope-rest run, Class A). Waiting for the
-user's decision. Criteria 6 to 10 have not been run.**
+**Status: stopped a second time, at criterion 7, on 2026-11-18.** Three scripts of the 59-script sweep fail a
+frozen line. The runs the prompt names (c1723, f16_test, NASA 01, 02, 03) all meet their lines. Waiting for the
+user's decision. Criteria 8, 9 and 10 have not been run.
 
-### The failed line (criterion 4, slope-rest run, Class A)
+| Criterion | State |
+|---|---|
+| 1 Pin and build | done, except committing the binaries |
+| 2 Answer key | done |
+| 3 Wrapper | done, all lines pass |
+| 4 Ground hook | done; one frozen line failed and is kept; the run passes the added Class N |
+| 5 Loop | done, all lines pass (browser Worker itself: criterion 9) |
+| 6 Load test | done, passes |
+| 7 Parity | named runs pass; sweep: 56 of 59 meet their line, **3 fail** (below) |
+| 8, 9, 10 | not started |
 
-Raw output: `results/ground.txt`. Test: `tests/ground.test.ts`.
+### Second stop: three sweep scripts fail a frozen line (criterion 7)
+
+Raw output: `results/parity.txt`, `results/parity-sweep.md`, `results/parity-detail.txt`. Diagnosis:
+`results/diag-sweep-failures.txt`, `results/diag-c3104-roll-moment.txt`,
+`results/diag-native-nudge-experiments.txt` (scripts in `tests/diag/`).
+
+| Script | Frozen line that failed | What was measured |
+|---|---|---|
+| `c3104` (c310, airborne in the first second) | Class S, first 1 s | roll moment differs by 7.1e-2 lb·ft at row 13 (allowed 2.2e-3); yaw moment 7.0e-3 (allowed 9.4e-6); roll rate, yaw rate, bank, side speed, side force follow. Positions agree to 9e-9 ft. |
+| `c3105` (c310, airborne in the first second) | Class S, first 1 s | the same pattern at row 31: roll moment 6.9e-2 lb·ft, yaw moment 6.8e-3 |
+| `mk82_script` (mk82 bomb) | "fails at the same stage and step" | both sides stop with a non-finite state, native at step 2242, wasm at step 2308 (both wasm builds). The first second agrees to 1.1e-13 (inside Class S). |
+
+Both wasm builds give identical traces in all three. **Supported.**
+
+**Cause of the c310 failures, traced and then reproduced in native alone.**
+- Both scripts start heading exactly north. After `RunIC`, native reports the heading as 6.283185307179586
+  (2π minus one last digit); wasm reports 8e-16. It is the same heading within one last digit, on either side of
+  the 0 / 2π seam. The comparator wraps angles, so the heading column itself passes.
+- At 0.25 s the script switches the c310 autopilot's heading hold on. At that step `ap/aileron_cmd` is
+  −0.00250 in native and 0.000001 in wasm, the aileron differs by 7.9e-4 rad, and the aerodynamic roll moment by
+  7.1e-2 lb·ft. Every other part of the roll moment (propeller, gear, external) is identical at that step.
+- Native-only experiment: the same script with native's start heading moved by one last digit (k × 2⁻⁵⁰ rad).
+  For k = +1 native reports 8.4e-16 instead of 2π, and it differs from unperturbed native by 7.12e-2 lb·ft at
+  row 13 (`c3104`) and 6.94e-2 at row 31 (`c3105`): the same numbers as wasm against native.
+- So the upstream c310 autopilot answers a last-digit change of heading across north with a different aileron
+  command, in native itself. **Supported** (native against native). Not a difference between the builds.
+- The frozen 8-run altitude ensemble does not show it in `c3104` (spread 6e-11 lb·ft): moving the altitude does
+  not move the heading across the seam there. In `c3105` it does for some members (spread 3.5e-2).
+
+**Cause of the mk82 failure.**
+- The bomb's pitch rate grows without limit in native: over 10 rad/s at 41.5 s, over 1e6 rad/s at 43.8 s, still
+  2100 ft above the ground, then the state becomes non-finite. This is upstream physics at JSBSim's default
+  settings. **Supported.**
+- Native-only experiment: the 8 native runs with the start altitude moved by one to four last digits stop at
+  steps 2404, 2200, 2199, 2280, 2199, 2240, 2330, 2201 (unperturbed: 2242). Wasm's 2308 is inside that range.
+  The step at which a blown-up state turns into NaN is decided by last digits. **Supported.**
+- The frozen rule ("same stage and step") was written wrongly for a failure of this kind. It stays, and the
+  result stays FAIL.
+
+**What these three results do and do not show.** They do not show a difference in how the two builds compute:
+in each case native differs from itself by the same amount after a one-last-digit change. They do show that
+"step-by-step parity" cannot be held to a fixed small number for a model that has a discontinuity (a heading
+seam, a blow-up) inside the judged rows.
+
+### Criterion 7: the runs the prompt names (all meet their lines)
+
+| Run | Line | Result |
+|---|---|---|
+| NASA 02 (as shipped), 3000 steps at 0.01 s | Class A, whole run | **pass**: largest difference 2.2e-16 rad (allowed 1.2e-9) |
+| NASA 01 (project fixture) | Class A, whole run | **pass**: largest difference 4.3e-19 rad |
+| NASA 03 (project fixture) | Class A, whole run | **pass**: largest difference 8.9e-16 rad |
+| c1723, first 1 s | frozen Class A | FAIL (ground contact: yaw moment 6.3e-6 lb·ft, allowed 6.3e-9); kept |
+| c1723, first 1 s | Class N (added) | **pass**: closest column at 0.24 of its allowance |
+| c1723, whole run (200 s) | Class B | **pass**: altitude 0.238 ft (cap 1), bank 0.0153 rad and heading 0.0146 rad (cap 0.05), pitch 0.0012 rad, airspeed 0.050 kt (cap 1) |
+| f16_test, first 1 s | frozen Class A | FAIL (ground contact: yaw moment 2.5e-2 lb·ft); kept |
+| f16_test, first 1 s | Class N (added) | **pass**: closest column at 0.36 of its allowance |
+| f16_test, to sim time 120 s | Class B | **pass**: altitude 6.0e-4 ft, attitude 5.9e-8 rad, airspeed 3.6e-6 kt |
+| all five | bit-for-bit checks | **pass**: wasm-EH = JS-EH; each side run twice identical; TypeScript-driven = C++ runner on NASA 02 and on the first 10 s of c1723 |
+| all five | turbulence read back | off on every row |
+
+All **Supported** (wasm against the native answer key built from the same host C++).
+
+For c1723 the native ensemble spreads as much as wasm differs (altitude 0.265 ft against 0.238 ft): the 200 s
+differences are the size that one last digit makes in native itself. Attempt 1 measured 0.24 ft and 0.015 rad.
+
+**Are the fixtures for cases 01 and 03 the NASA cases?** Information only (part 2). Our native run against
+NASA's published results (`tests/reference/nasa/`, 301 points each):
+- Case 01: altitude within 4.5e-4 to 1.6e-3 ft of each NASA simulation; NASA's simulations differ from each other
+  by 2.1e-3 ft. Angles and rates agree to 5e-8 deg or better. **Verified** (NASA data): the fixture is case 01.
+- Case 03: rates within 0.011 to 0.095 deg/s of each NASA simulation (NASA's own spread 0.017 to 0.074 deg/s);
+  Euler angles within 0.08 to 0.65 deg (NASA's own spread 0.34 to 0.65 deg); altitude within 1.6e-3 ft.
+  **Verified** (NASA data), as closely as NASA's simulations agree with each other.
+- Case 02 (JSBSim's own file) for scale: rates differ from NASA by 0.12 to 0.45 deg/s, 100 times NASA's own
+  spread. That is JSBSim's default rotational integrator at dt 0.01 s, the same figure attempt 1 measured. It is
+  upstream physics and not a baseline matter.
+
+### Criterion 7: the script sweep
+
+**Correction to what I told the user.** `jsbsim-data/scripts/` holds 63 files, not 63 scripts: 61 `.xml` and 2
+`.kml`. Three of the `.xml` files are helper files with no `<runscript>` (`kml_output`, `plotfile`,
+`unitconversions`). So there are 58 scripts. All 61 `.xml` files were run; the sweep is the 59 other than
+c1723 and f16_test.
+
+| Outcome | Count |
+|---|---|
+| Runs, and meets its line in the first second | 52 |
+| of these: no ground contact, frozen Class S passes | 25 |
+| of these: ground contact, judged on Class N (16 of them fail the frozen Class S; kept in the table) | 27 |
+| Fails in native and fails the same way in wasm (the 3 helper files at load; `737_cruise_steady_turn_simplex` at step 12: "No property simulation/do_simplex_trim") | 4 |
+| Not comparable (RNG) | 0 |
+| **Fails a frozen line** (`c3104`, `c3105`, `mk82_script`) | **3** |
+
+- Every script: wasm-EH = JS-EH bit for bit; each side run twice identical; turbulence off on every row.
+- Random elements were listed and committed before the sweep (`tests/rng-elements.md`, commit `c39c942`).
+- Table per script: `results/parity-sweep.md`. All **Supported.**
+
+### The first failed line (criterion 4, slope-rest run, Class A), and Class N on the same run
+
+Raw output: `results/ground.txt`, `results/diag-slope-first-difference.txt`. Test: `tests/ground.test.ts`.
 
 Run: c172x on a 5° slope rising north, brakes on, 1200 steps at 1/120 s. Read back from the run: the ground under
 the start point tilts 5° (4.83° from the geocentric vertical, which differs from the true vertical by 0.17° at
 this latitude), the aircraft starts in the middle of the grid, all three wheels are on the ground at 10 s, pitch
 is 7.1°, and it moves 0.012 ft in the last 5 s.
 
-| Group | Largest wasm − native difference | Class A allowance | Result |
-|---|---|---|---|
-| Positions (5 columns) | 1.4e-8 ft | 1e-6 ft | pass |
-| Contact flags (6 columns) | 0 | equal | pass |
-| Heading `psi` | 1.8e-11 rad | 6.3e-9 rad | pass |
-| Speeds u, v, w, vtrue | 6.5e-8 ft/s | 1e-9 ft/s | **FAIL** |
-| Rates p, q, r | 1.2e-8 rad/s | 3e-11 to 1.7e-10 rad/s | **FAIL** |
-| Angles `phi`, `theta` | 2.6e-9 rad | 9e-12 to 1.3e-10 rad | **FAIL** |
-| Forces | 1.3e-4 lb | 1.5e-7 to 2.7e-6 lb | **FAIL** |
-| Moments | 2.9e-4 lb·ft | 9.5e-8 to 2.3e-6 lb·ft | **FAIL** |
+| Group | Largest wasm − native difference | Class A allowance | Frozen Class A | Native ensemble spread S | Class N (added) |
+|---|---|---|---|---|---|
+| Positions (5 columns) | 1.4e-8 ft | 1e-6 ft | pass | 3.0e-8 ft | pass (not widened) |
+| Contact flags (6 columns) | 0 | equal | pass | 0 | pass |
+| Heading `psi` | 1.8e-11 rad | 6.3e-9 rad | pass | 4.1e-11 rad | pass |
+| Speeds u, v, w, vtrue | 6.5e-8 ft/s | 1e-9 ft/s | **FAIL** | 1.0e-7 ft/s | pass |
+| Rates p, q, r | 1.2e-8 rad/s | 3e-11 to 1.7e-10 rad/s | **FAIL** | 1.8e-8 rad/s | pass |
+| Angles `phi`, `theta` | 2.6e-9 rad | 9e-12 to 1.3e-10 rad | **FAIL** | 5.3e-9 rad | pass |
+| Forces | 1.3e-4 lb | 1.5e-7 to 2.7e-6 lb | **FAIL** | 1.7e-4 lb | pass |
+| Moments | 2.9e-4 lb·ft | 9.5e-8 to 2.3e-6 lb·ft | **FAIL** | 3.4e-4 lb·ft | pass |
 
-Both wasm builds give the same numbers. **Supported** (our test).
+Both wasm builds give the same numbers. Class N's closest column is the yaw moment at 0.41 of its allowance.
+**Supported.**
+
+The ensemble answers the question left open at the first stop: native with its start altitude moved by one last
+digit differs from itself by as much as wasm differs from native, in every group. **Supported.**
 
 The exact checks on the same run all pass (**Supported**): `-fwasm-exceptions` = `-fexceptions` bit for bit;
 TypeScript-driven = C++ runner bit for bit; each side run twice gives the same trace; the assert-enabled native
 build runs it with no assertion and gives the release build's trace.
 
-**Cause, as far as it was traced.** A diagnostic run recorded gear compression and gear force as well
-(`build/tmp/firstdiff.ts`, flat ground, same aircraft):
+**Cause, as traced** (flat ground, same aircraft, gear compression and gear force recorded):
 - At row 0 (after `RunIC`) the two builds differ only at rounding level: longitude by 1 unit in the last place,
   ECEF x by 4.2e-9 ft, forces by 1 to 300 units in the last place.
-- At row 1 the altitude differs by 3.7e-9 ft. That is exactly one unit in the last place of a number the size of
-  the Earth's radius (2⁻²⁸ ft): the smallest position difference a double can hold there.
+- At row 1 the altitude differs by 3.7e-9 ft: exactly one unit in the last place of a number the size of the
+  Earth's radius (2⁻²⁸ ft).
 - At row 2 the right main gear's compression differs by 3.26e-9 ft and the gear force by 1.76e-5 lb. The c172x
   main gear spring is 5400 lb/ft, and 3.26e-9 ft × 5400 lb/ft = 1.76e-5 lb.
 
-So one last-digit difference in position becomes about 2e-5 lb through the gear spring. The Class A allowance
-for forces here (about 2e-6 lb) is smaller than that. **Supported** for the arithmetic above; that the *whole*
-difference is rounding amplified by the gear, and nothing else, is **Reasoned** (the test that would settle it:
-perturb native's start position by one last digit and see the same size of difference in native against native).
+The frozen line was written wrongly by this session: on the ground it asks forces and speeds to agree more
+closely than the position limit in the same line allows through a spring. It stays as written, with its FAIL.
 
-**What this means for the frozen line.** The line was written wrongly by this session: on the ground it asks
-forces and speeds to agree more closely than the position limit in the same line allows through a spring. The
-line stays as written and its result stays FAIL. A new line needs the user's agreement before anything else runs.
-The same thing must be expected for the first second of `c1723` and `f16_test` (both start on their wheels) and
-for the script sweep (Class S is relative to each column's peak, and this difference does not scale with the
-peak): **Reasoned**, not run.
+### Results by criterion
 
-### Results so far, by criterion
-
-**1. Pin and build: done except the final committed binaries.**
+**1. Pin and build: done except committing the binaries.**
 - JSBSim v1.3.3 `66f7fafc`, unpatched (the build script refuses a clone with local changes). Emscripten 6.0.13.
   **Verified** (upstream tag; emcc version string).
 - `jsbsim-data/` has the same git tree ids as upstream for all five folders and `COPYING`
@@ -323,8 +425,17 @@ peak): **Reasoned**, not run.
 - Flags, read from `compile_commands.json` by `scripts/check-flags.mjs`: every one of 113 files (JSBSim, expat,
   MSIS, host) has `-O3`, the exception flag, `-ffp-contract=off`, no fast-math, in both wasm builds; the same for
   the two native builds. **Supported.**
-- Fixed memory 64 MB for now, growth off (`-sALLOW_MEMORY_GROWTH=0`). The final size waits for the load test.
-- Not done yet: build-failure self-test, repeat-build hash comparison, committing `dist-wasm/`.
+- Fixed memory **16 MiB**, growth off. Reason: loading all 61 aircraft twice in one module takes the heap to
+  3.34 MiB (`results/load-test.txt`); the test runner's longest trace needs about 7 MiB more. Whether this size
+  suits the iPhone is criterion 9. Stack 1 MiB, as attempt 1 used; its depth of use was not measured
+  (**Reasoned**; the test that would settle it: fill the stack with a pattern and read the high-water mark).
+- A deliberately broken source file: `build.sh` exits 1 and leaves `dist-wasm/` unchanged
+  (`results/build-selftest.txt`). **Supported.**
+- A clean build in another folder gives byte-identical `fdm-weh.wasm`, `fdm-weh.mjs`, `fdm-jseh.wasm`,
+  `fdm-jseh.mjs` (same file). **Supported.** The native answer key is not byte-identical between folders (not
+  shipped; not investigated).
+- Current binaries (not yet committed): `fdm-weh.wasm` 1,734,938 bytes `ab2357c8…`, `fdm-jseh.wasm` 2,236,922
+  bytes `5631da24…`.
 
 **2. Answer key: done.** `build/native/fdm_native` is built by the same `CMakeLists.txt` from the same `host/`
 files with g++ 13.3, including the scenario runner. **Supported.**
@@ -338,7 +449,7 @@ files with g++ 13.3, including the scenario runner. **Supported.**
   (`FGTable.cpp:650`, a table lookup fed NaN). Every check before it passes. That check needs NaN, so it cannot
   run with assertions on.
 
-**4. Ground hook: one line failed (above); the others pass.**
+**4. Ground hook: one frozen line failed (above) and the run passes the added Class N; the other lines pass.**
 - Flat grid = upstream default callback, bit for bit, natively, on the first 30 s of c1723 (3601 rows, rest and
   ground roll to 53 kt) and on NASA 02 (3001 rows). **Verified** (against upstream's own callback).
 - Slope grids against the separate calculation, 20 points each, both directions, 5 × 9 grid: height within
@@ -351,8 +462,16 @@ gives 8 steps and counts 9.93 s dropped; pause, 10 s, resume gives 0 catch-up st
 same handler passes the same protocol test in Node directly and in a `worker_threads` Worker, in both builds.
 **Supported.** Running in a real browser Worker is not tested yet (criterion 9).
 
-**Comparator self-test:** 16 tests on synthetic traces pass (`tests/compare-selftest.test.ts`), written and run
-before any native-against-wasm comparison. **Supported.**
+**6. Load test: passes.** `results/load-test.txt`, table `results/load-table.md`.
+- 61 folders. 59 load natively, in wasm-EH and in JS-EH. The same 2 fail on all three with the same message:
+  `LM` (the folder has no `LM.xml`) and `blank` (a template: "No metrics element was found"). No mismatch.
+  **Supported**; attempt 1 found the same two.
+- Information: 7 that load cannot run `RunIC` plus 10 steps with default initial conditions, identically on all
+  three: `L17`, `Pterosaur`, `dr1`, `f104`, `fokker100`, `fokker50` (a property the aircraft file expects from
+  FlightGear does not exist) and `ZLT-NT` (non-finite after 1 step).
+
+**Comparator self-test:** 17 tests on synthetic traces pass (`tests/compare-selftest.test.ts`), written and run
+before any native-against-wasm comparison; the Class N test was added with the Class N line. **Supported.**
 
 ### Mistakes made by this session so far (kept on record)
 
@@ -371,3 +490,7 @@ before any native-against-wasm comparison. **Supported.**
 4. **Property rule.** The wrapper first refused properties that have never been written (for example
    `external_reactions/f00/magnitude`), treating them as folders. JSBSim creates some inputs that way. Fixed: only
    a node with children is a folder; a native and a wasm test cover it.
+5. **Three frozen lines written wrongly** (all kept, with their results): Class A for ground contact (first
+   stop); and, in the sweep, Class S for a model with a discontinuity inside the judged second, and "same step"
+   for a script that ends in a numerical blow-up (second stop).
+6. **Script count.** I told the user there are 63 scripts. There are 63 files, of which 58 are scripts.

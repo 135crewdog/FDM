@@ -1,0 +1,874 @@
+c1723, weh, first 1 s, frozen Class A: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.25e-6 at row 71, allowed 6.33e-9, first over at row 4
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 5.12e-9 | 72 | 1.64e+6 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 3.73e-9 | 100 | 1.81e+7 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 85 | 1.03e+7 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 13 | 4.31e+0 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 100 | 4.31e+0 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.60e-8 | 113 | 3.95e-2 | 1.00e-9 | FAIL from row 14
+  velocities/v-fps | yes | 7.71e-9 | 98 | 1.20e-1 | 1.00e-9 | FAIL from row 5
+  velocities/w-fps | yes | 2.39e-8 | 110 | 1.88e-2 | 1.00e-9 | FAIL from row 5
+  velocities/vtrue-kts | yes | 4.65e-9 | 98 | 7.43e-2 | 1.00e-9 | FAIL from row 14
+  velocities/p-rad_sec | yes | 1.91e-9 | 98 | 2.80e-2 | 2.80e-11 | FAIL from row 5
+  velocities/q-rad_sec | yes | 3.57e-9 | 113 | 9.18e-3 | 9.18e-12 | FAIL from row 5
+  velocities/r-rad_sec | yes | 1.39e-11 | 113 | 1.00e-4 | 1.00e-12 | FAIL from row 5
+  attitude/phi-rad | yes | 1.17e-10 | 120 | 8.45e-3 | 8.45e-12 | FAIL from row 11
+  attitude/theta-rad | yes | 5.14e-10 | 120 | 5.18e-3 | 5.18e-12 | FAIL from row 11
+  attitude/psi-rad | yes | 5.98e-13 | 120 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 1.77e-5 | 107 | 3.89e+1 | 3.89e-8 | FAIL from row 4
+  forces/fby-total-lbs | yes | 3.07e-5 | 109 | 1.66e+2 | 1.66e-7 | FAIL from row 4
+  forces/fbz-total-lbs | yes | 7.25e-5 | 96 | 2.57e+3 | 2.57e-6 | FAIL from row 4
+  moments/l-total-lbsft | yes | 1.91e-4 | 83 | 9.05e+2 | 9.05e-7 | FAIL from row 4
+  moments/m-total-lbsft | yes | 7.99e-5 | 112 | 1.72e+2 | 1.72e-7 | FAIL from row 4
+  moments/n-total-lbsft | yes | 6.25e-6 | 71 | 6.33e+0 | 6.33e-9 | FAIL from row 4
+  aero/alpha-rad | info | 1.88e-6 | 112 | 3.13e+0 | - | -
+  aero/beta-rad | info | 2.90e-7 | 109 | 1.38e+0 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+c1723, weh, first 1 s, Class N with frozen Class A: pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 3.07e-5, allowed 1.28e-4 (frozen 1.66e-7, 3 x spread 1.28e-4), ratio 0.239
+  column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+  position/ecef-x-ft | yes | 5.12e-9 | 1.00e-6 | 2.56e-9 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 3.73e-9 | 1.00e-6 | 1.12e-8 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 1.00e-6 | 1.68e-8 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 1.00e-6 | 1.96e-8 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.60e-8 | 1.00e-9 | 5.66e-8 | 1.70e-7 | pass
+  velocities/v-fps | yes | 7.71e-9 | 1.00e-9 | 1.62e-8 | 4.85e-8 | pass
+  velocities/w-fps | yes | 2.39e-8 | 1.00e-9 | 8.16e-8 | 2.45e-7 | pass
+  velocities/vtrue-kts | yes | 4.65e-9 | 1.00e-9 | 2.28e-8 | 6.83e-8 | pass
+  velocities/p-rad_sec | yes | 1.91e-9 | 2.80e-11 | 3.36e-9 | 1.01e-8 | pass
+  velocities/q-rad_sec | yes | 3.57e-9 | 9.18e-12 | 1.30e-8 | 3.91e-8 | pass
+  velocities/r-rad_sec | yes | 1.39e-11 | 1.00e-12 | 8.40e-11 | 2.52e-10 | pass
+  attitude/phi-rad | yes | 1.17e-10 | 8.45e-12 | 4.58e-10 | 1.37e-9 | pass
+  attitude/theta-rad | yes | 5.14e-10 | 5.18e-12 | 2.65e-9 | 7.95e-9 | pass
+  attitude/psi-rad | yes | 5.98e-13 | 6.28e-9 | 1.51e-11 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 1.77e-5 | 3.89e-8 | 4.94e-5 | 1.48e-4 | pass
+  forces/fby-total-lbs | yes | 3.07e-5 | 1.66e-7 | 4.27e-5 | 1.28e-4 | pass
+  forces/fbz-total-lbs | yes | 7.25e-5 | 2.57e-6 | 1.70e-4 | 5.11e-4 | pass
+  moments/l-total-lbsft | yes | 1.91e-4 | 9.05e-7 | 3.04e-4 | 9.13e-4 | pass
+  moments/m-total-lbsft | yes | 7.99e-5 | 1.72e-7 | 2.50e-4 | 7.50e-4 | pass
+  moments/n-total-lbsft | yes | 6.25e-6 | 6.33e-9 | 1.20e-5 | 3.60e-5 | pass
+  aero/alpha-rad | info | 1.88e-6 | - | 4.99e-6 | - | -
+  aero/beta-rad | info | 2.90e-7 | - | 9.12e-7 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | - | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | - | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | - | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+c1723, jseh, first 1 s, frozen Class A: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.25e-6 at row 71, allowed 6.33e-9, first over at row 4
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 5.12e-9 | 72 | 1.64e+6 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 3.73e-9 | 100 | 1.81e+7 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 85 | 1.03e+7 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 13 | 4.31e+0 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 100 | 4.31e+0 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.60e-8 | 113 | 3.95e-2 | 1.00e-9 | FAIL from row 14
+  velocities/v-fps | yes | 7.71e-9 | 98 | 1.20e-1 | 1.00e-9 | FAIL from row 5
+  velocities/w-fps | yes | 2.39e-8 | 110 | 1.88e-2 | 1.00e-9 | FAIL from row 5
+  velocities/vtrue-kts | yes | 4.65e-9 | 98 | 7.43e-2 | 1.00e-9 | FAIL from row 14
+  velocities/p-rad_sec | yes | 1.91e-9 | 98 | 2.80e-2 | 2.80e-11 | FAIL from row 5
+  velocities/q-rad_sec | yes | 3.57e-9 | 113 | 9.18e-3 | 9.18e-12 | FAIL from row 5
+  velocities/r-rad_sec | yes | 1.39e-11 | 113 | 1.00e-4 | 1.00e-12 | FAIL from row 5
+  attitude/phi-rad | yes | 1.17e-10 | 120 | 8.45e-3 | 8.45e-12 | FAIL from row 11
+  attitude/theta-rad | yes | 5.14e-10 | 120 | 5.18e-3 | 5.18e-12 | FAIL from row 11
+  attitude/psi-rad | yes | 5.98e-13 | 120 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 1.77e-5 | 107 | 3.89e+1 | 3.89e-8 | FAIL from row 4
+  forces/fby-total-lbs | yes | 3.07e-5 | 109 | 1.66e+2 | 1.66e-7 | FAIL from row 4
+  forces/fbz-total-lbs | yes | 7.25e-5 | 96 | 2.57e+3 | 2.57e-6 | FAIL from row 4
+  moments/l-total-lbsft | yes | 1.91e-4 | 83 | 9.05e+2 | 9.05e-7 | FAIL from row 4
+  moments/m-total-lbsft | yes | 7.99e-5 | 112 | 1.72e+2 | 1.72e-7 | FAIL from row 4
+  moments/n-total-lbsft | yes | 6.25e-6 | 71 | 6.33e+0 | 6.33e-9 | FAIL from row 4
+  aero/alpha-rad | info | 1.88e-6 | 112 | 3.13e+0 | - | -
+  aero/beta-rad | info | 2.90e-7 | 109 | 1.38e+0 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+c1723, jseh, first 1 s, Class N with frozen Class A: pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 3.07e-5, allowed 1.28e-4 (frozen 1.66e-7, 3 x spread 1.28e-4), ratio 0.239
+  column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+  position/ecef-x-ft | yes | 5.12e-9 | 1.00e-6 | 2.56e-9 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 3.73e-9 | 1.00e-6 | 1.12e-8 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 1.00e-6 | 1.68e-8 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 1.00e-6 | 1.96e-8 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.60e-8 | 1.00e-9 | 5.66e-8 | 1.70e-7 | pass
+  velocities/v-fps | yes | 7.71e-9 | 1.00e-9 | 1.62e-8 | 4.85e-8 | pass
+  velocities/w-fps | yes | 2.39e-8 | 1.00e-9 | 8.16e-8 | 2.45e-7 | pass
+  velocities/vtrue-kts | yes | 4.65e-9 | 1.00e-9 | 2.28e-8 | 6.83e-8 | pass
+  velocities/p-rad_sec | yes | 1.91e-9 | 2.80e-11 | 3.36e-9 | 1.01e-8 | pass
+  velocities/q-rad_sec | yes | 3.57e-9 | 9.18e-12 | 1.30e-8 | 3.91e-8 | pass
+  velocities/r-rad_sec | yes | 1.39e-11 | 1.00e-12 | 8.40e-11 | 2.52e-10 | pass
+  attitude/phi-rad | yes | 1.17e-10 | 8.45e-12 | 4.58e-10 | 1.37e-9 | pass
+  attitude/theta-rad | yes | 5.14e-10 | 5.18e-12 | 2.65e-9 | 7.95e-9 | pass
+  attitude/psi-rad | yes | 5.98e-13 | 6.28e-9 | 1.51e-11 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 1.77e-5 | 3.89e-8 | 4.94e-5 | 1.48e-4 | pass
+  forces/fby-total-lbs | yes | 3.07e-5 | 1.66e-7 | 4.27e-5 | 1.28e-4 | pass
+  forces/fbz-total-lbs | yes | 7.25e-5 | 2.57e-6 | 1.70e-4 | 5.11e-4 | pass
+  moments/l-total-lbsft | yes | 1.91e-4 | 9.05e-7 | 3.04e-4 | 9.13e-4 | pass
+  moments/m-total-lbsft | yes | 7.99e-5 | 1.72e-7 | 2.50e-4 | 7.50e-4 | pass
+  moments/n-total-lbsft | yes | 6.25e-6 | 6.33e-9 | 1.20e-5 | 3.60e-5 | pass
+  aero/alpha-rad | info | 1.88e-6 | - | 4.99e-6 | - | -
+  aero/beta-rad | info | 2.90e-7 | - | 9.12e-7 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | - | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | - | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | - | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+f16_test, weh, first 1 s, frozen Class A: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-9, first over at row 0
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 3.73e-9 | 0 | 7.55e+6 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 5.59e-9 | 0 | 1.21e+7 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 0 | 1.53e+7 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 7.45e-9 | 0 | 5.50e+0 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 1.30e-8 | 3 | 5.50e+0 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.14e-8 | 9 | 4.15e-2 | 1.00e-9 | FAIL from row 2
+  velocities/v-fps | yes | 6.36e-8 | 3 | 6.18e-7 | 1.00e-9 | FAIL from row 2
+  velocities/w-fps | yes | 2.52e-8 | 21 | 1.83e-1 | 1.00e-9 | FAIL from row 1
+  velocities/vtrue-kts | yes | 1.57e-8 | 21 | 1.09e-1 | 1.00e-9 | FAIL from row 1
+  velocities/p-rad_sec | yes | 1.12e-8 | 3 | 1.19e-7 | 1.00e-12 | FAIL from row 1
+  velocities/q-rad_sec | yes | 7.72e-10 | 23 | 7.59e-3 | 7.59e-12 | FAIL from row 1
+  velocities/r-rad_sec | yes | 3.17e-9 | 9 | 7.16e-9 | 1.00e-12 | FAIL from row 1
+  attitude/phi-rad | yes | 1.53e-10 | 120 | 2.28e-8 | 1.00e-12 | FAIL from row 2
+  attitude/theta-rad | yes | 1.26e-10 | 57 | 3.75e-3 | 3.75e-12 | FAIL from row 6
+  attitude/psi-rad | yes | 1.32e-10 | 26 | 3.14e+0 | 3.14e-9 | pass
+  forces/fbx-total-lbs | yes | 8.90e-4 | 9 | 5.46e+2 | 5.46e-7 | FAIL from row 0
+  forces/fby-total-lbs | yes | 4.04e-3 | 2 | 7.77e-3 | 1.00e-9 | FAIL from row 1
+  forces/fbz-total-lbs | yes | 7.22e-4 | 0 | 2.11e+4 | 2.11e-5 | FAIL from row 0
+  moments/l-total-lbsft | yes | 2.33e-2 | 2 | 2.44e-2 | 1.00e-9 | FAIL from row 0
+  moments/m-total-lbsft | yes | 4.89e-3 | 18 | 5.86e+3 | 5.86e-6 | FAIL from row 0
+  moments/n-total-lbsft | yes | 2.49e-2 | 8 | 7.23e-2 | 1.00e-9 | FAIL from row 0
+  aero/alpha-rad | info | 1.42e-6 | 102 | 2.65e+0 | - | -
+  aero/beta-rad | info | 1.49e-6 | 96 | 2.30e-5 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+f16_test, weh, first 1 s, Class N with frozen Class A: pass rows 121, 8 members with effect; closest to its limit: velocities/u-fps: |d| 1.14e-8, allowed 3.21e-8 (frozen 1.00e-9, 3 x spread 3.21e-8), ratio 0.356
+  column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+  position/ecef-x-ft | yes | 3.73e-9 | 1.00e-6 | 5.59e-9 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 5.59e-9 | 1.00e-6 | 7.45e-9 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 1.00e-6 | 9.31e-9 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 7.45e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 1.30e-8 | 1.00e-6 | 1.63e-8 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.14e-8 | 1.00e-9 | 1.07e-8 | 3.21e-8 | pass
+  velocities/v-fps | yes | 6.36e-8 | 1.00e-9 | 6.40e-8 | 1.92e-7 | pass
+  velocities/w-fps | yes | 2.52e-8 | 1.00e-9 | 5.12e-8 | 1.54e-7 | pass
+  velocities/vtrue-kts | yes | 1.57e-8 | 1.00e-9 | 3.01e-8 | 9.03e-8 | pass
+  velocities/p-rad_sec | yes | 1.12e-8 | 1.00e-12 | 1.12e-8 | 3.36e-8 | pass
+  velocities/q-rad_sec | yes | 7.72e-10 | 7.59e-12 | 1.03e-9 | 3.09e-9 | pass
+  velocities/r-rad_sec | yes | 3.17e-9 | 1.00e-12 | 3.17e-9 | 9.50e-9 | pass
+  attitude/phi-rad | yes | 1.53e-10 | 1.00e-12 | 1.75e-10 | 5.24e-10 | pass
+  attitude/theta-rad | yes | 1.26e-10 | 3.75e-12 | 1.61e-10 | 4.84e-10 | pass
+  attitude/psi-rad | yes | 1.32e-10 | 3.14e-9 | 1.32e-10 | 3.14e-9 | pass
+  forces/fbx-total-lbs | yes | 8.90e-4 | 5.46e-7 | 8.56e-4 | 2.57e-3 | pass
+  forces/fby-total-lbs | yes | 4.04e-3 | 1.00e-9 | 4.04e-3 | 1.21e-2 | pass
+  forces/fbz-total-lbs | yes | 7.22e-4 | 2.11e-5 | 1.32e-3 | 3.97e-3 | pass
+  moments/l-total-lbsft | yes | 2.33e-2 | 1.00e-9 | 2.33e-2 | 6.99e-2 | pass
+  moments/m-total-lbsft | yes | 4.89e-3 | 5.86e-6 | 4.73e-3 | 1.42e-2 | pass
+  moments/n-total-lbsft | yes | 2.49e-2 | 1.00e-9 | 2.48e-2 | 7.45e-2 | pass
+  aero/alpha-rad | info | 1.42e-6 | - | 2.84e-6 | - | -
+  aero/beta-rad | info | 1.49e-6 | - | 2.63e-6 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | - | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | - | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | - | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+f16_test, jseh, first 1 s, frozen Class A: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-9, first over at row 0
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 3.73e-9 | 0 | 7.55e+6 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 5.59e-9 | 0 | 1.21e+7 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 0 | 1.53e+7 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 7.45e-9 | 0 | 5.50e+0 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 1.30e-8 | 3 | 5.50e+0 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.14e-8 | 9 | 4.15e-2 | 1.00e-9 | FAIL from row 2
+  velocities/v-fps | yes | 6.36e-8 | 3 | 6.18e-7 | 1.00e-9 | FAIL from row 2
+  velocities/w-fps | yes | 2.52e-8 | 21 | 1.83e-1 | 1.00e-9 | FAIL from row 1
+  velocities/vtrue-kts | yes | 1.57e-8 | 21 | 1.09e-1 | 1.00e-9 | FAIL from row 1
+  velocities/p-rad_sec | yes | 1.12e-8 | 3 | 1.19e-7 | 1.00e-12 | FAIL from row 1
+  velocities/q-rad_sec | yes | 7.72e-10 | 23 | 7.59e-3 | 7.59e-12 | FAIL from row 1
+  velocities/r-rad_sec | yes | 3.17e-9 | 9 | 7.16e-9 | 1.00e-12 | FAIL from row 1
+  attitude/phi-rad | yes | 1.53e-10 | 120 | 2.28e-8 | 1.00e-12 | FAIL from row 2
+  attitude/theta-rad | yes | 1.26e-10 | 57 | 3.75e-3 | 3.75e-12 | FAIL from row 6
+  attitude/psi-rad | yes | 1.32e-10 | 26 | 3.14e+0 | 3.14e-9 | pass
+  forces/fbx-total-lbs | yes | 8.90e-4 | 9 | 5.46e+2 | 5.46e-7 | FAIL from row 0
+  forces/fby-total-lbs | yes | 4.04e-3 | 2 | 7.77e-3 | 1.00e-9 | FAIL from row 1
+  forces/fbz-total-lbs | yes | 7.22e-4 | 0 | 2.11e+4 | 2.11e-5 | FAIL from row 0
+  moments/l-total-lbsft | yes | 2.33e-2 | 2 | 2.44e-2 | 1.00e-9 | FAIL from row 0
+  moments/m-total-lbsft | yes | 4.89e-3 | 18 | 5.86e+3 | 5.86e-6 | FAIL from row 0
+  moments/n-total-lbsft | yes | 2.49e-2 | 8 | 7.23e-2 | 1.00e-9 | FAIL from row 0
+  aero/alpha-rad | info | 1.42e-6 | 102 | 2.65e+0 | - | -
+  aero/beta-rad | info | 1.49e-6 | 96 | 2.30e-5 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+f16_test, jseh, first 1 s, Class N with frozen Class A: pass rows 121, 8 members with effect; closest to its limit: velocities/u-fps: |d| 1.14e-8, allowed 3.21e-8 (frozen 1.00e-9, 3 x spread 3.21e-8), ratio 0.356
+  column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+  position/ecef-x-ft | yes | 3.73e-9 | 1.00e-6 | 5.59e-9 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 5.59e-9 | 1.00e-6 | 7.45e-9 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 1.86e-9 | 1.00e-6 | 9.31e-9 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 7.45e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 1.30e-8 | 1.00e-6 | 1.63e-8 | 1.00e-6 | pass
+  velocities/u-fps | yes | 1.14e-8 | 1.00e-9 | 1.07e-8 | 3.21e-8 | pass
+  velocities/v-fps | yes | 6.36e-8 | 1.00e-9 | 6.40e-8 | 1.92e-7 | pass
+  velocities/w-fps | yes | 2.52e-8 | 1.00e-9 | 5.12e-8 | 1.54e-7 | pass
+  velocities/vtrue-kts | yes | 1.57e-8 | 1.00e-9 | 3.01e-8 | 9.03e-8 | pass
+  velocities/p-rad_sec | yes | 1.12e-8 | 1.00e-12 | 1.12e-8 | 3.36e-8 | pass
+  velocities/q-rad_sec | yes | 7.72e-10 | 7.59e-12 | 1.03e-9 | 3.09e-9 | pass
+  velocities/r-rad_sec | yes | 3.17e-9 | 1.00e-12 | 3.17e-9 | 9.50e-9 | pass
+  attitude/phi-rad | yes | 1.53e-10 | 1.00e-12 | 1.75e-10 | 5.24e-10 | pass
+  attitude/theta-rad | yes | 1.26e-10 | 3.75e-12 | 1.61e-10 | 4.84e-10 | pass
+  attitude/psi-rad | yes | 1.32e-10 | 3.14e-9 | 1.32e-10 | 3.14e-9 | pass
+  forces/fbx-total-lbs | yes | 8.90e-4 | 5.46e-7 | 8.56e-4 | 2.57e-3 | pass
+  forces/fby-total-lbs | yes | 4.04e-3 | 1.00e-9 | 4.04e-3 | 1.21e-2 | pass
+  forces/fbz-total-lbs | yes | 7.22e-4 | 2.11e-5 | 1.32e-3 | 3.97e-3 | pass
+  moments/l-total-lbsft | yes | 2.33e-2 | 1.00e-9 | 2.33e-2 | 6.99e-2 | pass
+  moments/m-total-lbsft | yes | 4.89e-3 | 5.86e-6 | 4.73e-3 | 1.42e-2 | pass
+  moments/n-total-lbsft | yes | 2.49e-2 | 1.00e-9 | 2.48e-2 | 7.45e-2 | pass
+  aero/alpha-rad | info | 1.42e-6 | - | 2.84e-6 | - | -
+  aero/beta-rad | info | 1.49e-6 | - | 2.63e-6 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | - | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | - | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | - | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | - | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | - | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+NASA 02, weh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 2.22e-16 at row 894, allowed 1.15e-9
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 4.40e+2 | 4.40e-7 | pass
+  velocities/v-fps | yes | 0 | 0 | 8.10e+2 | 8.10e-7 | pass
+  velocities/w-fps | yes | 0 | 0 | 8.13e+2 | 8.13e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 3.28e-1 | 3.28e-10 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 4.22e-1 | 4.22e-10 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 6.02e-1 | 6.02e-10 | pass
+  attitude/phi-rad | yes | 2.22e-16 | 894 | 1.15e+0 | 1.15e-9 | pass
+  attitude/theta-rad | yes | 1.11e-16 | 180 | 6.59e-1 | 6.59e-10 | pass
+  attitude/psi-rad | yes | 8.88e-16 | 664 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  aero/alpha-rad | info | 4.44e-16 | 135 | 2.28e+0 | - | -
+  aero/beta-rad | info | 2.22e-16 | 913 | 1.15e+0 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 3.28e-1 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 4.22e-1 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 6.02e-1 | - | -
+  
+NASA 02, jseh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 2.22e-16 at row 894, allowed 1.15e-9
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 4.40e+2 | 4.40e-7 | pass
+  velocities/v-fps | yes | 0 | 0 | 8.10e+2 | 8.10e-7 | pass
+  velocities/w-fps | yes | 0 | 0 | 8.13e+2 | 8.13e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 3.28e-1 | 3.28e-10 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 4.22e-1 | 4.22e-10 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 6.02e-1 | 6.02e-10 | pass
+  attitude/phi-rad | yes | 2.22e-16 | 894 | 1.15e+0 | 1.15e-9 | pass
+  attitude/theta-rad | yes | 1.11e-16 | 180 | 6.59e-1 | 6.59e-10 | pass
+  attitude/psi-rad | yes | 8.88e-16 | 664 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  aero/alpha-rad | info | 4.44e-16 | 135 | 2.28e+0 | - | -
+  aero/beta-rad | info | 2.22e-16 | 913 | 1.15e+0 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 3.28e-1 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 4.22e-1 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 6.02e-1 | - | -
+  
+NASA 01, weh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 4.34e-19 at row 2679, allowed 2.19e-12
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 2.13e-13 | 1.00e-9 | pass
+  velocities/v-fps | yes | 0 | 0 | 7.25e-4 | 1.00e-9 | pass
+  velocities/w-fps | yes | 0 | 0 | 9.60e+2 | 9.60e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 7.29e-5 | 1.00e-12 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 3.54e-23 | 1.00e-12 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 0 | 1.00e-12 | pass
+  attitude/phi-rad | yes | 4.34e-19 | 2679 | 2.19e-3 | 2.19e-12 | pass
+  attitude/theta-rad | yes | 0 | 0 | 2.22e-16 | 1.00e-12 | pass
+  attitude/psi-rad | yes | 0 | 0 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  aero/alpha-rad | info | 2.22e-16 | 1 | 1.57e+0 | - | -
+  aero/beta-rad | info | 1.06e-22 | 2583 | 7.55e-7 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 5.42e-20 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 1.62e-20 | - | -
+  
+NASA 01, jseh, whole run, frozen Class A: pass rows 3001; worst attitude/phi-rad: |d| 4.34e-19 at row 2679, allowed 2.19e-12
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 2.13e-13 | 1.00e-9 | pass
+  velocities/v-fps | yes | 0 | 0 | 7.25e-4 | 1.00e-9 | pass
+  velocities/w-fps | yes | 0 | 0 | 9.60e+2 | 9.60e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 7.29e-5 | 1.00e-12 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 3.54e-23 | 1.00e-12 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 0 | 1.00e-12 | pass
+  attitude/phi-rad | yes | 4.34e-19 | 2679 | 2.19e-3 | 2.19e-12 | pass
+  attitude/theta-rad | yes | 0 | 0 | 2.22e-16 | 1.00e-12 | pass
+  attitude/psi-rad | yes | 0 | 0 | 6.28e+0 | 6.28e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  aero/alpha-rad | info | 2.22e-16 | 1 | 1.57e+0 | - | -
+  aero/beta-rad | info | 1.06e-22 | 2583 | 7.55e-7 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 5.42e-20 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 1.62e-20 | - | -
+  
+NASA 03, weh, whole run, frozen Class A: pass rows 3001; worst attitude/psi-rad: |d| 8.88e-16 at row 1159, allowed 4.35e-9
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 5.99e+2 | 5.99e-7 | pass
+  velocities/v-fps | yes | 0 | 0 | 1.24e+2 | 1.24e-7 | pass
+  velocities/w-fps | yes | 0 | 0 | 7.47e+2 | 7.47e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 1.74e-1 | 1.74e-10 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 3.83e-1 | 3.83e-10 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 5.24e-1 | 5.24e-10 | pass
+  attitude/phi-rad | yes | 1.11e-16 | 202 | 8.22e-1 | 8.22e-10 | pass
+  attitude/theta-rad | yes | 1.11e-16 | 822 | 6.81e-1 | 6.81e-10 | pass
+  attitude/psi-rad | yes | 8.88e-16 | 1159 | 4.35e+0 | 4.35e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 4.14e-25 | 1713 | 6.64e-5 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 1.62e-27 | 2730 | 5.03e-4 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 6.78e-21 | 1713 | 3.60e-4 | 1.00e-9 | pass
+  aero/alpha-rad | info | 4.44e-16 | 144 | 2.17e+0 | - | -
+  aero/beta-rad | info | 1.11e-16 | 232 | 8.04e-1 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 1.75e-1 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 3.83e-1 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 5.24e-1 | - | -
+  
+NASA 03, jseh, whole run, frozen Class A: pass rows 3001; worst attitude/psi-rad: |d| 8.88e-16 at row 1159, allowed 4.35e-9
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 0 | 0 | 2.10e+7 | 1.00e-6 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 2.10e+1 | 1.00e-6 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 0 | 1.00e-6 | pass
+  position/h-sl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  position/h-agl-ft | yes | 0 | 0 | 3.00e+4 | 1.00e-6 | pass
+  velocities/u-fps | yes | 0 | 0 | 5.99e+2 | 5.99e-7 | pass
+  velocities/v-fps | yes | 0 | 0 | 1.24e+2 | 1.24e-7 | pass
+  velocities/w-fps | yes | 0 | 0 | 7.47e+2 | 7.47e-7 | pass
+  velocities/vtrue-kts | yes | 0 | 0 | 5.69e+2 | 5.69e-7 | pass
+  velocities/p-rad_sec | yes | 0 | 0 | 1.74e-1 | 1.74e-10 | pass
+  velocities/q-rad_sec | yes | 0 | 0 | 3.83e-1 | 3.83e-10 | pass
+  velocities/r-rad_sec | yes | 0 | 0 | 5.24e-1 | 5.24e-10 | pass
+  attitude/phi-rad | yes | 1.11e-16 | 202 | 8.22e-1 | 8.22e-10 | pass
+  attitude/theta-rad | yes | 1.11e-16 | 822 | 6.81e-1 | 6.81e-10 | pass
+  attitude/psi-rad | yes | 8.88e-16 | 1159 | 4.35e+0 | 4.35e-9 | pass
+  forces/fbx-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fby-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  forces/fbz-total-lbs | yes | 0 | 0 | 0 | 1.00e-9 | pass
+  moments/l-total-lbsft | yes | 4.14e-25 | 1713 | 6.64e-5 | 1.00e-9 | pass
+  moments/m-total-lbsft | yes | 1.62e-27 | 2730 | 5.03e-4 | 1.00e-9 | pass
+  moments/n-total-lbsft | yes | 6.78e-21 | 1713 | 3.60e-4 | 1.00e-9 | pass
+  aero/alpha-rad | info | 4.44e-16 | 144 | 2.17e+0 | - | -
+  aero/beta-rad | info | 1.11e-16 | 232 | 8.04e-1 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  velocities/pi-rad_sec | info | 0 | 0 | 1.75e-1 | - | -
+  velocities/qi-rad_sec | info | 0 | 0 | 3.83e-1 | - | -
+  velocities/ri-rad_sec | info | 0 | 0 | 5.24e-1 | - | -
+  
+sweep 737_cruise.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/m-total-lbsft: |d| 1.82e-11 at row 106, allowed 3.38e-2
+sweep 737_cruise.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/m-total-lbsft: |d| 1.82e-11 at row 106, allowed 3.38e-2
+sweep 737_cruise_steady_turn.xml, weh, first 1 s, frozen Class S: pass rows 121; worst velocities/w-fps: |d| 2.84e-13 at row 116, allowed 1.70e-6
+sweep 737_cruise_steady_turn.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst velocities/w-fps: |d| 2.84e-13 at row 116, allowed 1.70e-6
+sweep 737_cruise_steady_turn_linearize.xml, weh, first 1 s, frozen Class S: pass rows 121; worst velocities/p-rad_sec: |d| 3.61e-14 at row 120, allowed 1.00e-9
+sweep 737_cruise_steady_turn_linearize.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst velocities/p-rad_sec: |d| 3.61e-14 at row 120, allowed 1.00e-9
+sweep 737_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 1.32e-8 at row 7, allowed 1.31e-4
+sweep 737_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 1.32e-8 at row 7, allowed 1.31e-4
+sweep B737_Runway.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.27e-2 at row 3, allowed 1.77e-5, first over at row 3
+sweep B737_Runway.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 2.32e-3, allowed 1.13e-2 (frozen 1.56e-5, 3 x spread 1.13e-2), ratio 0.205
+sweep B737_Runway.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.27e-2 at row 3, allowed 1.77e-5, first over at row 3
+sweep B737_Runway.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 2.32e-3, allowed 1.13e-2 (frozen 1.56e-5, 3 x spread 1.13e-2), ratio 0.205
+sweep B747_script1.xml, weh, first 1 s, frozen Class S: pass rows 121; worst forces/fby-total-lbs: |d| 1.62e-8 at row 59, allowed 3.93e-4
+sweep B747_script1.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 3.07e-7, allowed 2.14e+0 (frozen 1.04e-2, 3 x spread 2.14e+0), ratio 0.000
+sweep B747_script1.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst forces/fby-total-lbs: |d| 1.62e-8 at row 59, allowed 3.93e-4
+sweep B747_script1.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 3.07e-7, allowed 2.14e+0 (frozen 1.04e-2, 3 x spread 2.14e+0), ratio 0.000
+sweep Concorde_rotate_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.52e-3 at row 18, allowed 4.32e-3
+sweep Concorde_rotate_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.52e-3, allowed 4.94e-3 (frozen 4.32e-3, 3 x spread 4.94e-3), ratio 0.308
+sweep Concorde_rotate_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.52e-3 at row 18, allowed 4.32e-3
+sweep Concorde_rotate_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.52e-3, allowed 4.94e-3 (frozen 4.32e-3, 3 x spread 4.94e-3), ratio 0.308
+sweep Concorde_runway_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.52e-3 at row 18, allowed 4.32e-3
+sweep Concorde_runway_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.52e-3, allowed 4.94e-3 (frozen 4.32e-3, 3 x spread 4.94e-3), ratio 0.308
+sweep Concorde_runway_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.52e-3 at row 18, allowed 4.32e-3
+sweep Concorde_runway_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.52e-3, allowed 4.94e-3 (frozen 4.32e-3, 3 x spread 4.94e-3), ratio 0.308
+sweep F4N_runway_test.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.06e-3 at row 120, allowed 1.56e-6, first over at row 31
+sweep F4N_runway_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 2.06e-3, allowed 5.87e-3 (frozen 1.56e-6, 3 x spread 5.87e-3), ratio 0.351
+sweep F4N_runway_test.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.06e-3 at row 120, allowed 1.56e-6, first over at row 31
+sweep F4N_runway_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 2.06e-3, allowed 5.87e-3 (frozen 1.56e-6, 3 x spread 5.87e-3), ratio 0.351
+sweep J2460.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/phi-rad: |d| 2.22e-16 at row 3, allowed 1.57e-6
+sweep J2460.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/phi-rad: |d| 2.22e-16 at row 3, allowed 1.57e-6
+sweep J2461.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/phi-rad: |d| 2.22e-16 at row 3, allowed 1.57e-6
+sweep J2461.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/phi-rad: |d| 2.22e-16 at row 3, allowed 1.57e-6
+sweep L410.xml, weh, first 1 s, frozen Class S: FAIL rows 1001; worst moments/n-total-lbsft: |d| 4.51e-1 at row 322, allowed 1.00e-6, first over at row 3
+sweep L410.xml, weh, first 1 s, Class N with frozen Class S: pass rows 1001, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.12e-1, allowed 9.95e-1 (frozen 1.00e-6, 3 x spread 9.95e-1), ratio 0.314
+sweep L410.xml, jseh, first 1 s, frozen Class S: FAIL rows 1001; worst moments/n-total-lbsft: |d| 4.51e-1 at row 322, allowed 1.00e-6, first over at row 3
+sweep L410.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 1001, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.12e-1, allowed 9.95e-1 (frozen 1.00e-6, 3 x spread 9.95e-1), ratio 0.314
+sweep L4102.xml, weh, first 1 s, frozen Class S: FAIL rows 1001; worst moments/n-total-lbsft: |d| 3.41e+2 at row 112, allowed 1.25e-3, first over at row 4
+sweep L4102.xml, weh, first 1 s, Class N with frozen Class S: pass rows 1001, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 3.41e+2, allowed 2.38e+3 (frozen 1.25e-3, 3 x spread 2.38e+3), ratio 0.143
+sweep L4102.xml, jseh, first 1 s, frozen Class S: FAIL rows 1001; worst moments/n-total-lbsft: |d| 3.41e+2 at row 112, allowed 1.25e-3, first over at row 4
+sweep L4102.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 1001, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 3.41e+2, allowed 2.38e+3 (frozen 1.25e-3, 3 x spread 2.38e+3), ratio 0.143
+sweep Short_S23_1.xml, weh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 1.19e-6 at row 24, allowed 2.04e-5
+sweep Short_S23_1.xml, weh, first 1 s, Class N with frozen Class S: pass rows 960, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.19e-6, allowed 6.67e-5 (frozen 2.04e-5, 3 x spread 6.67e-5), ratio 0.018
+sweep Short_S23_1.xml, jseh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 1.19e-6 at row 24, allowed 2.04e-5
+sweep Short_S23_1.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 960, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.19e-6, allowed 6.67e-5 (frozen 2.04e-5, 3 x spread 6.67e-5), ratio 0.018
+sweep Short_S23_2.xml, weh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 1.39e-11 at row 457, allowed 5.71e-4
+sweep Short_S23_2.xml, jseh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 1.39e-11 at row 457, allowed 5.71e-4
+sweep Short_S23_3.xml, weh, first 1 s, frozen Class S: pass rows 960; worst position/h-agl-ft: |d| 9.76e-9 at row 375, allowed 1.00e-3
+sweep Short_S23_3.xml, jseh, first 1 s, frozen Class S: pass rows 960; worst position/h-agl-ft: |d| 9.76e-9 at row 375, allowed 1.00e-3
+sweep Short_S23_4.xml, weh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 3.64e-12 at row 270, allowed 2.55e-3
+sweep Short_S23_4.xml, jseh, first 1 s, frozen Class S: pass rows 960; worst moments/n-total-lbsft: |d| 3.64e-12 at row 270, allowed 2.55e-3
+sweep Submarine_Scout_1.xml, weh, first 1 s, frozen Class S: pass rows 481; worst moments/m-total-lbsft: |d| 2.27e-13 at row 295, allowed 1.03e-3
+sweep Submarine_Scout_1.xml, jseh, first 1 s, frozen Class S: pass rows 481; worst moments/m-total-lbsft: |d| 2.27e-13 at row 295, allowed 1.03e-3
+sweep T37.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 4.44e-16 at row 20, allowed 2.62e-6
+sweep T37.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 4.44e-16, allowed 2.62e-6 (frozen 2.62e-6, 3 x spread 3.99e-10), ratio 0.000
+sweep T37.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 4.44e-16 at row 20, allowed 2.62e-6
+sweep T37.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 4.44e-16, allowed 2.62e-6 (frozen 2.62e-6, 3 x spread 3.99e-10), ratio 0.000
+sweep T38.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.81e-10 at row 54, allowed 1.86e-6
+sweep T38.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.81e-10, allowed 2.67e-4 (frozen 1.86e-6, 3 x spread 2.67e-4), ratio 0.000
+sweep T38.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 1.81e-10 at row 54, allowed 1.86e-6
+sweep T38.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 1.81e-10, allowed 2.67e-4 (frozen 1.86e-6, 3 x spread 2.67e-4), ratio 0.000
+sweep Test_F450_Launch.xml, weh, first 1 s, frozen Class S: FAIL rows 501; worst velocities/q-rad_sec: |d| 2.27e-7 at row 26, allowed 1.00e-9, first over at row 2
+sweep Test_F450_Launch.xml, weh, first 1 s, Class N with frozen Class S: pass rows 501, 7 members with effect; closest to its limit: attitude/theta-rad: |d| 9.48e-9, allowed 1.53e-8 (frozen 5.77e-9, 3 x spread 1.53e-8), ratio 0.621
+sweep Test_F450_Launch.xml, jseh, first 1 s, frozen Class S: FAIL rows 501; worst velocities/q-rad_sec: |d| 2.27e-7 at row 26, allowed 1.00e-9, first over at row 2
+sweep Test_F450_Launch.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 501, 7 members with effect; closest to its limit: attitude/theta-rad: |d| 9.48e-9, allowed 1.53e-8 (frozen 5.77e-9, 3 x spread 1.53e-8), ratio 0.621
+sweep ZLT-NT-moored-1.xml, weh, first 1 s, frozen Class S: pass rows 960; worst moments/l-total-lbsft: |d| 7.80e-9 at row 43, allowed 4.20e-3
+sweep ZLT-NT-moored-1.xml, weh, first 1 s, Class N with frozen Class S: pass rows 960, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.81e-17, allowed 6.39e-9 (frozen 1.00e-9, 3 x spread 6.39e-9), ratio 0.000
+sweep ZLT-NT-moored-1.xml, jseh, first 1 s, frozen Class S: pass rows 960; worst moments/l-total-lbsft: |d| 7.80e-9 at row 43, allowed 4.20e-3
+sweep ZLT-NT-moored-1.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 960, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.81e-17, allowed 6.39e-9 (frozen 1.00e-9, 3 x spread 6.39e-9), ratio 0.000
+sweep ah1s_flight_test.xml, weh, first 1 s, frozen Class S: FAIL rows 134; worst moments/l-total-lbsft: |d| 2.41e-4 at row 71, allowed 1.00e-6, first over at row 3
+sweep ah1s_flight_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 134, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.25e-9, allowed 6.76e-9 (frozen 1.00e-9, 3 x spread 6.76e-9), ratio 0.185
+sweep ah1s_flight_test.xml, jseh, first 1 s, frozen Class S: FAIL rows 134; worst moments/l-total-lbsft: |d| 2.41e-4 at row 71, allowed 1.00e-6, first over at row 3
+sweep ah1s_flight_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 134, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.25e-9, allowed 6.76e-9 (frozen 1.00e-9, 3 x spread 6.76e-9), ratio 0.185
+sweep b171.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 9.16e-11 at row 105, allowed 1.00e-6
+sweep b171.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 5.41e-12, allowed 1.25e-5 (frozen 1.00e-6, 3 x spread 1.25e-5), ratio 0.000
+sweep b171.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 9.16e-11 at row 105, allowed 1.00e-6
+sweep b171.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fby-total-lbs: |d| 5.41e-12, allowed 1.25e-5 (frozen 1.00e-6, 3 x spread 1.25e-5), ratio 0.000
+sweep b737_runway_new.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.27e-2 at row 3, allowed 1.75e-5, first over at row 3
+sweep b737_runway_new.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 9.82e-10, allowed 1.84e-9 (frozen 1.00e-9, 3 x spread 1.84e-9), ratio 0.533
+sweep b737_runway_new.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.27e-2 at row 3, allowed 1.75e-5, first over at row 3
+sweep b737_runway_new.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 9.82e-10, allowed 1.84e-9 (frozen 1.00e-9, 3 x spread 1.84e-9), ratio 0.533
+sweep ball.xml, weh, first 1 s, frozen Class S: pass rows 101; worst attitude/psi-rad: |d| 2.22e-16 at row 5, allowed 1.57e-6
+sweep ball.xml, jseh, first 1 s, frozen Class S: pass rows 101; worst attitude/psi-rad: |d| 2.22e-16 at row 5, allowed 1.57e-6
+sweep ball_chute.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.11e-16 at row 7, allowed 6.98e-7
+sweep ball_chute.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.11e-16 at row 7, allowed 6.98e-7
+sweep ball_orbit.xml, weh, first 1 s, frozen Class S: pass rows 201; worst position/ecef-x-ft: |d| 0 at row 0, allowed 1.00e-3
+sweep ball_orbit.xml, jseh, first 1 s, frozen Class S: pass rows 201; worst position/ecef-x-ft: |d| 0 at row 0, allowed 1.00e-3
+sweep ball_orbit_g_torque.xml, weh, first 1 s, frozen Class S: pass rows 201; worst position/ecef-x-ft: |d| 0 at row 0, allowed 1.00e-3
+sweep ball_orbit_g_torque.xml, jseh, first 1 s, frozen Class S: pass rows 201; worst position/ecef-x-ft: |d| 0 at row 0, allowed 1.00e-3
+sweep ball_orbit_phase.xml, weh, first 1 s, frozen Class S: pass rows 201; worst attitude/psi-rad: |d| 2.22e-16 at row 21, allowed 1.57e-6
+sweep ball_orbit_phase.xml, jseh, first 1 s, frozen Class S: pass rows 201; worst attitude/psi-rad: |d| 2.22e-16 at row 21, allowed 1.57e-6
+sweep c1721.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.27e-4 at row 119, allowed 1.00e-6, first over at row 1
+sweep c1721.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 1.65e-5, allowed 4.98e-5 (frozen 1.37e-5, 3 x spread 4.98e-5), ratio 0.331
+sweep c1721.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.27e-4 at row 119, allowed 1.00e-6, first over at row 1
+sweep c1721.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 1.65e-5, allowed 4.98e-5 (frozen 1.37e-5, 3 x spread 4.98e-5), ratio 0.331
+sweep c1722.xml, weh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 6.52e-9 at row 57, allowed 1.00e-3
+sweep c1722.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 6.52e-9 at row 57, allowed 1.00e-3
+sweep c1724.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.91e-6 at row 37, allowed 6.33e-6, first over at row 37
+sweep c1724.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 2.04e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 6.76e-4), ratio 0.225
+sweep c1724.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.91e-6 at row 37, allowed 6.33e-6, first over at row 37
+sweep c1724.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 2.04e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 6.76e-4), ratio 0.225
+sweep c172_cross_wind.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.58e-5 at row 69, allowed 6.33e-6, first over at row 65
+sweep c172_cross_wind.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.50e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 8.97e-4), ratio 0.386
+sweep c172_cross_wind.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.58e-5 at row 69, allowed 6.33e-6, first over at row 65
+sweep c172_cross_wind.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.50e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 8.97e-4), ratio 0.386
+sweep c172_cruise_8K.xml, weh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.78e-9 at row 49, allowed 1.00e-3
+sweep c172_cruise_8K.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.78e-9 at row 49, allowed 1.00e-3
+sweep c172_elevation_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 6.28e-6 at row 71, allowed 6.33e-6
+sweep c172_elevation_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 1.91e-4, allowed 9.24e-4 (frozen 9.05e-4, 3 x spread 9.24e-4), ratio 0.207
+sweep c172_elevation_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/n-total-lbsft: |d| 6.28e-6 at row 71, allowed 6.33e-6
+sweep c172_elevation_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 1.91e-4, allowed 9.24e-4 (frozen 9.05e-4, 3 x spread 9.24e-4), ratio 0.207
+sweep c172_elevator_doublet.xml, weh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 1.63e-8 at row 47, allowed 1.00e-3
+sweep c172_elevator_doublet.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 1.63e-8 at row 47, allowed 1.00e-3
+sweep c172_head_wind.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.58e-5 at row 69, allowed 6.33e-6, first over at row 65
+sweep c172_head_wind.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.50e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 8.97e-4), ratio 0.386
+sweep c172_head_wind.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.58e-5 at row 69, allowed 6.33e-6, first over at row 65
+sweep c172_head_wind.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/l-total-lbsft: |d| 3.50e-4, allowed 9.05e-4 (frozen 9.05e-4, 3 x spread 8.97e-4), ratio 0.386
+sweep c172_runway_at_rest_cg_shift.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.07e+2 at row 64, allowed 8.69e-4, first over at row 26
+sweep c172_runway_at_rest_cg_shift.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 1.77e-6, allowed 6.28e-6 (frozen 6.28e-6, 3 x spread 3.03e-6), ratio 0.282
+sweep c172_runway_at_rest_cg_shift.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 2.07e+2 at row 64, allowed 8.69e-4, first over at row 26
+sweep c172_runway_at_rest_cg_shift.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 1.77e-6, allowed 6.28e-6 (frozen 6.28e-6, 3 x spread 3.03e-6), ratio 0.282
+sweep c3101.xml, weh, first 1 s, frozen Class S: pass rows 121; worst forces/fby-total-lbs: |d| 2.43e-12 at row 42, allowed 6.59e-5
+sweep c3101.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 7.02e-12, allowed 4.87e-4 (frozen 1.93e-4, 3 x spread 4.87e-4), ratio 0.000
+sweep c3101.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst forces/fby-total-lbs: |d| 2.43e-12 at row 42, allowed 6.59e-5
+sweep c3101.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 7.02e-12, allowed 4.87e-4 (frozen 1.93e-4, 3 x spread 4.87e-4), ratio 0.000
+sweep c3104.xml, weh, first 1 s, frozen Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 8.85e-9 | 50 | 1.64e+6 | 1.00e-3 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 1.81e+7 | 1.00e-3 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 1.03e+7 | 1.00e-3 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 6 | 5.55e+1 | 1.00e-3 | pass
+  position/h-agl-ft | yes | 3.26e-9 | 18 | 2.95e+1 | 1.00e-3 | pass
+  velocities/u-fps | yes | 2.67e-9 | 50 | 1.37e+0 | 1.37e-6 | pass
+  velocities/v-fps | yes | 3.37e-6 | 50 | 1.73e-1 | 1.00e-6 | FAIL from row 34
+  velocities/w-fps | yes | 2.29e-8 | 50 | 3.15e+1 | 3.15e-5 | pass
+  velocities/vtrue-kts | yes | 2.65e-9 | 50 | 1.87e+1 | 1.87e-5 | pass
+  velocities/p-rad_sec | yes | 2.27e-7 | 50 | 1.13e-2 | 1.13e-8 | FAIL from row 14
+  velocities/q-rad_sec | yes | 1.73e-10 | 50 | 1.30e-1 | 1.30e-7 | pass
+  velocities/r-rad_sec | yes | 2.46e-8 | 50 | 4.04e-4 | 1.00e-9 | FAIL from row 14
+  attitude/phi-rad | yes | 1.07e-7 | 50 | 5.59e-3 | 5.59e-9 | FAIL from row 17
+  attitude/theta-rad | yes | 8.05e-11 | 50 | 3.82e-2 | 3.82e-8 | pass
+  attitude/psi-rad | yes | 1.27e-8 | 50 | 6.28e+0 | 6.28e-6 | pass
+  forces/fbx-total-lbs | yes | 1.03e-7 | 50 | 6.29e+1 | 6.29e-5 | pass
+  forces/fby-total-lbs | yes | 3.78e-5 | 50 | 1.92e+0 | 1.92e-6 | FAIL from row 24
+  forces/fbz-total-lbs | yes | 2.75e-6 | 50 | 2.24e+2 | 2.24e-4 | pass
+  moments/l-total-lbsft | yes | 7.12e-2 | 13 | 2.18e+3 | 2.18e-3 | FAIL from row 13
+  moments/m-total-lbsft | yes | 1.93e-6 | 50 | 5.10e+2 | 5.10e-4 | pass
+  moments/n-total-lbsft | yes | 6.96e-3 | 13 | 9.41e+0 | 9.41e-6 | FAIL from row 13
+  aero/alpha-rad | info | 5.31e-11 | 50 | 1.57e+0 | - | -
+  aero/beta-rad | info | 1.07e-7 | 50 | 5.49e-3 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+sweep c3104.xml, jseh, first 1 s, frozen Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 8.85e-9 | 50 | 1.64e+6 | 1.00e-3 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 1.81e+7 | 1.00e-3 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 1.03e+7 | 1.00e-3 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 6 | 5.55e+1 | 1.00e-3 | pass
+  position/h-agl-ft | yes | 3.26e-9 | 18 | 2.95e+1 | 1.00e-3 | pass
+  velocities/u-fps | yes | 2.67e-9 | 50 | 1.37e+0 | 1.37e-6 | pass
+  velocities/v-fps | yes | 3.37e-6 | 50 | 1.73e-1 | 1.00e-6 | FAIL from row 34
+  velocities/w-fps | yes | 2.29e-8 | 50 | 3.15e+1 | 3.15e-5 | pass
+  velocities/vtrue-kts | yes | 2.65e-9 | 50 | 1.87e+1 | 1.87e-5 | pass
+  velocities/p-rad_sec | yes | 2.27e-7 | 50 | 1.13e-2 | 1.13e-8 | FAIL from row 14
+  velocities/q-rad_sec | yes | 1.73e-10 | 50 | 1.30e-1 | 1.30e-7 | pass
+  velocities/r-rad_sec | yes | 2.46e-8 | 50 | 4.04e-4 | 1.00e-9 | FAIL from row 14
+  attitude/phi-rad | yes | 1.07e-7 | 50 | 5.59e-3 | 5.59e-9 | FAIL from row 17
+  attitude/theta-rad | yes | 8.05e-11 | 50 | 3.82e-2 | 3.82e-8 | pass
+  attitude/psi-rad | yes | 1.27e-8 | 50 | 6.28e+0 | 6.28e-6 | pass
+  forces/fbx-total-lbs | yes | 1.03e-7 | 50 | 6.29e+1 | 6.29e-5 | pass
+  forces/fby-total-lbs | yes | 3.78e-5 | 50 | 1.92e+0 | 1.92e-6 | FAIL from row 24
+  forces/fbz-total-lbs | yes | 2.75e-6 | 50 | 2.24e+2 | 2.24e-4 | pass
+  moments/l-total-lbsft | yes | 7.12e-2 | 13 | 2.18e+3 | 2.18e-3 | FAIL from row 13
+  moments/m-total-lbsft | yes | 1.93e-6 | 50 | 5.10e+2 | 5.10e-4 | pass
+  moments/n-total-lbsft | yes | 6.96e-3 | 13 | 9.41e+0 | 9.41e-6 | FAIL from row 13
+  aero/alpha-rad | info | 5.31e-11 | 50 | 1.57e+0 | - | -
+  aero/beta-rad | info | 1.07e-7 | 50 | 5.49e-3 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+sweep c3105.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 6.75e-9 | 117 | 1.64e+6 | 1.00e-3 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 1.81e+7 | 1.00e-3 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 1.03e+7 | 1.00e-3 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 12 | 5.55e+1 | 1.00e-3 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 107 | 2.95e+1 | 1.00e-3 | pass
+  velocities/u-fps | yes | 1.11e-9 | 120 | 1.41e+0 | 1.41e-6 | pass
+  velocities/v-fps | yes | 1.41e-6 | 120 | 1.41e-1 | 1.00e-6 | FAIL from row 107
+  velocities/w-fps | yes | 8.15e-9 | 120 | 3.15e+1 | 3.15e-5 | pass
+  velocities/vtrue-kts | yes | 1.12e-9 | 120 | 1.87e+1 | 1.87e-5 | pass
+  velocities/p-rad_sec | yes | 9.44e-8 | 120 | 9.89e-3 | 9.89e-9 | FAIL from row 32
+  velocities/q-rad_sec | yes | 7.90e-11 | 120 | 1.29e-1 | 1.29e-7 | pass
+  velocities/r-rad_sec | yes | 1.02e-8 | 120 | 3.95e-4 | 1.00e-9 | FAIL from row 32
+  attitude/phi-rad | yes | 4.51e-8 | 120 | 4.55e-3 | 4.55e-9 | FAIL from row 45
+  attitude/theta-rad | yes | 3.36e-11 | 120 | 3.92e-2 | 3.92e-8 | pass
+  attitude/psi-rad | yes | 5.37e-9 | 120 | 6.28e+0 | 6.28e-6 | pass
+  forces/fbx-total-lbs | yes | 4.39e-8 | 120 | 6.37e+1 | 6.37e-5 | pass
+  forces/fby-total-lbs | yes | 1.58e-5 | 120 | 1.56e+0 | 1.56e-6 | FAIL from row 67
+  forces/fbz-total-lbs | yes | 1.18e-6 | 120 | 2.24e+2 | 2.24e-4 | pass
+  moments/l-total-lbsft | yes | 6.94e-2 | 31 | 2.18e+3 | 2.18e-3 | FAIL from row 31
+  moments/m-total-lbsft | yes | 7.77e-7 | 120 | 5.04e+2 | 5.04e-4 | pass
+  moments/n-total-lbsft | yes | 6.78e-3 | 31 | 1.08e+1 | 1.08e-5 | FAIL from row 31
+  aero/alpha-rad | info | 2.37e-11 | 120 | 1.57e+0 | - | -
+  aero/beta-rad | info | 4.48e-8 | 120 | 4.46e-3 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+sweep c3105.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
+  column | judged | max |d| | row | peak |native| | allowed | result
+  position/ecef-x-ft | yes | 6.75e-9 | 117 | 1.64e+6 | 1.00e-3 | pass
+  position/ecef-y-ft | yes | 0 | 0 | 1.81e+7 | 1.00e-3 | pass
+  position/ecef-z-ft | yes | 0 | 0 | 1.03e+7 | 1.00e-3 | pass
+  position/h-sl-ft | yes | 3.73e-9 | 12 | 5.55e+1 | 1.00e-3 | pass
+  position/h-agl-ft | yes | 9.79e-9 | 107 | 2.95e+1 | 1.00e-3 | pass
+  velocities/u-fps | yes | 1.11e-9 | 120 | 1.41e+0 | 1.41e-6 | pass
+  velocities/v-fps | yes | 1.41e-6 | 120 | 1.41e-1 | 1.00e-6 | FAIL from row 107
+  velocities/w-fps | yes | 8.15e-9 | 120 | 3.15e+1 | 3.15e-5 | pass
+  velocities/vtrue-kts | yes | 1.12e-9 | 120 | 1.87e+1 | 1.87e-5 | pass
+  velocities/p-rad_sec | yes | 9.44e-8 | 120 | 9.89e-3 | 9.89e-9 | FAIL from row 32
+  velocities/q-rad_sec | yes | 7.90e-11 | 120 | 1.29e-1 | 1.29e-7 | pass
+  velocities/r-rad_sec | yes | 1.02e-8 | 120 | 3.95e-4 | 1.00e-9 | FAIL from row 32
+  attitude/phi-rad | yes | 4.51e-8 | 120 | 4.55e-3 | 4.55e-9 | FAIL from row 45
+  attitude/theta-rad | yes | 3.36e-11 | 120 | 3.92e-2 | 3.92e-8 | pass
+  attitude/psi-rad | yes | 5.37e-9 | 120 | 6.28e+0 | 6.28e-6 | pass
+  forces/fbx-total-lbs | yes | 4.39e-8 | 120 | 6.37e+1 | 6.37e-5 | pass
+  forces/fby-total-lbs | yes | 1.58e-5 | 120 | 1.56e+0 | 1.56e-6 | FAIL from row 67
+  forces/fbz-total-lbs | yes | 1.18e-6 | 120 | 2.24e+2 | 2.24e-4 | pass
+  moments/l-total-lbsft | yes | 6.94e-2 | 31 | 2.18e+3 | 2.18e-3 | FAIL from row 31
+  moments/m-total-lbsft | yes | 7.77e-7 | 120 | 5.04e+2 | 5.04e-4 | pass
+  moments/n-total-lbsft | yes | 6.78e-3 | 31 | 1.08e+1 | 1.08e-5 | FAIL from row 31
+  aero/alpha-rad | info | 2.37e-11 | 120 | 1.57e+0 | - | -
+  aero/beta-rad | info | 4.48e-8 | 120 | 4.46e-3 | - | -
+  atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+  atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+  gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[6]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[7]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[8]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  contact/unit[9]/WOW | yes | 0 | 0 | 0 | 0 | pass
+  
+sweep cannonball.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.11e-16 at row 14, allowed 6.98e-7
+sweep cannonball.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.11e-16 at row 14, allowed 6.98e-7
+sweep f16_runway_test.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-6, first over at row 0
+sweep f16_runway_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 8.90e-4, allowed 2.57e-3 (frozen 5.46e-4, 3 x spread 2.57e-3), ratio 0.346
+sweep f16_runway_test.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.49e-2 at row 8, allowed 1.00e-6, first over at row 0
+sweep f16_runway_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 8.90e-4, allowed 2.57e-3 (frozen 5.46e-4, 3 x spread 2.57e-3), ratio 0.346
+sweep ov10_runway.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.22e-3 at row 32, allowed 1.31e-6, first over at row 31
+sweep ov10_runway.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 1.43e-4, allowed 5.76e-4 (frozen 4.02e-4, 3 x spread 5.76e-4), ratio 0.249
+sweep ov10_runway.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/l-total-lbsft: |d| 3.22e-3 at row 32, allowed 1.31e-6, first over at row 31
+sweep ov10_runway.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: forces/fbx-total-lbs: |d| 1.43e-4, allowed 5.76e-4 (frozen 4.02e-4, 3 x spread 5.76e-4), ratio 0.249
+sweep p51_start_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.39e-17 at row 1, allowed 9.08e-8
+sweep p51_start_test.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 1.39e-17, allowed 9.08e-8 (frozen 9.08e-8, 3 x spread 2.44e-10), ratio 0.000
+sweep p51_start_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst attitude/psi-rad: |d| 1.39e-17 at row 1, allowed 9.08e-8
+sweep p51_start_test.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: attitude/psi-rad: |d| 1.39e-17, allowed 9.08e-8 (frozen 9.08e-8, 3 x spread 2.44e-10), ratio 0.000
+sweep p51d_tail_wind.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst velocities/p-rad_sec: |d| 1.19e-9 at row 3, allowed 1.00e-9, first over at row 3
+sweep p51d_tail_wind.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.19e-9, allowed 4.15e-9 (frozen 1.00e-9, 3 x spread 4.15e-9), ratio 0.286
+sweep p51d_tail_wind.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst velocities/p-rad_sec: |d| 1.19e-9 at row 3, allowed 1.00e-9, first over at row 3
+sweep p51d_tail_wind.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: velocities/p-rad_sec: |d| 1.19e-9, allowed 4.15e-9 (frozen 1.00e-9, 3 x spread 4.15e-9), ratio 0.286
+sweep paraglider_rotate_test.xml, weh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 1.03e-8 at row 55, allowed 1.54e-4
+sweep paraglider_rotate_test.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst moments/l-total-lbsft: |d| 1.03e-8 at row 55, allowed 1.54e-4
+sweep rudder_kick.xml, weh, first 1 s, frozen Class S: pass rows 121; worst velocities/q-rad_sec: |d| 3.42e-18 at row 117, allowed 1.00e-9
+sweep rudder_kick.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst velocities/q-rad_sec: |d| 3.42e-18 at row 117, allowed 1.00e-9
+sweep sim_primer.xml, weh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.28e-4 at row 46, allowed 9.56e-5, first over at row 42
+sweep sim_primer.xml, weh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 2.28e-4, allowed 7.39e-4 (frozen 9.56e-5, 3 x spread 7.39e-4), ratio 0.308
+sweep sim_primer.xml, jseh, first 1 s, frozen Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 2.28e-4 at row 46, allowed 9.56e-5, first over at row 42
+sweep sim_primer.xml, jseh, first 1 s, Class N with frozen Class S: pass rows 121, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 2.28e-4, allowed 7.39e-4 (frozen 9.56e-5, 3 x spread 7.39e-4), ratio 0.308
+sweep weather-balloon.xml, weh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.77e-9 at row 42, allowed 1.00e-3
+sweep weather-balloon.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.77e-9 at row 42, allowed 1.00e-3
+sweep x151.xml, weh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.63e-9 at row 92, allowed 1.00e-3
+sweep x151.xml, jseh, first 1 s, frozen Class S: pass rows 121; worst position/h-agl-ft: |d| 9.63e-9 at row 92, allowed 1.00e-3
+sweep x152.xml, weh, first 1 s, frozen Class S: pass rows 101; worst moments/n-total-lbsft: |d| 1.00e-10 at row 95, allowed 9.74e-6
+sweep x152.xml, jseh, first 1 s, frozen Class S: pass rows 101; worst moments/n-total-lbsft: |d| 1.00e-10 at row 95, allowed 9.74e-6
+sweep x153.xml, weh, first 1 s, frozen Class S: pass rows 101; worst moments/l-total-lbsft: |d| 6.58e-10 at row 100, allowed 1.83e-6
+sweep x153.xml, jseh, first 1 s, frozen Class S: pass rows 101; worst moments/l-total-lbsft: |d| 6.58e-10 at row 100, allowed 1.83e-6

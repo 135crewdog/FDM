@@ -1,0 +1,25 @@
+== c3104: native, start heading nudged by k * 2^-50 rad; rows 51
+   unperturbed native psi at row 0: 6.283185307179586
+   k= 1: done; psi at row 0 8.4427228925053608e-16; max |d l-total| 7.12e-2 at row 13; max |d n-total| 6.96e-3; max |d ap/aileron_cmd| 2.50e-3
+   k=-1: done; psi at row 0 6.2831853071795853; max |d l-total| 1.22e-11 at row 43; max |d n-total| 1.22e-12; max |d ap/aileron_cmd| 5.12e-14
+   k= 2: done; psi at row 0 1.7408893183838625e-15; max |d l-total| 7.12e-2 at row 13; max |d n-total| 6.96e-3; max |d ap/aileron_cmd| 2.50e-3
+   k=-2: done; psi at row 0 6.2831853071795845; max |d l-total| 3.62e-2 at row 13; max |d n-total| 3.53e-3; max |d ap/aileron_cmd| 1.27e-3
+   k= 3: done; psi at row 0 2.6892450161930071e-15; max |d l-total| 7.12e-2 at row 13; max |d n-total| 6.96e-3; max |d ap/aileron_cmd| 2.50e-3
+   k=-3: done; psi at row 0 6.2831853071795836; max |d l-total| 3.62e-2 at row 13; max |d n-total| 3.53e-3; max |d ap/aileron_cmd| 1.27e-3
+   k= 4: done; psi at row 0 3.4540230611520962e-15; max |d l-total| 7.12e-2 at row 13; max |d n-total| 6.96e-3; max |d ap/aileron_cmd| 2.50e-3
+   k=-4: done; psi at row 0 6.2831853071795827; max |d l-total| 3.62e-2 at row 13; max |d n-total| 3.53e-3; max |d ap/aileron_cmd| 1.27e-3
+== c3105: native, start heading nudged by k * 2^-50 rad; rows 121
+   unperturbed native psi at row 0: 6.283185307179586
+   k= 1: done; psi at row 0 8.4427228925053608e-16; max |d l-total| 6.94e-2 at row 31; max |d n-total| 6.78e-3; max |d ap/aileron_cmd| 2.47e-3
+   k=-1: done; psi at row 0 6.2831853071795853; max |d l-total| 3.49e-2 at row 31; max |d n-total| 3.41e-3; max |d ap/aileron_cmd| 1.24e-3
+   k= 2: done; psi at row 0 1.7408893183838625e-15; max |d l-total| 6.94e-2 at row 31; max |d n-total| 6.78e-3; max |d ap/aileron_cmd| 2.47e-3
+   k=-2: done; psi at row 0 6.2831853071795845; max |d l-total| 7.00e-2 at row 31; max |d n-total| 6.83e-3; max |d ap/aileron_cmd| 2.49e-3
+   k= 3: done; psi at row 0 2.6892450161930071e-15; max |d l-total| 6.94e-2 at row 31; max |d n-total| 6.78e-3; max |d ap/aileron_cmd| 2.47e-3
+   k=-3: done; psi at row 0 6.2831853071795836; max |d l-total| 7.00e-2 at row 31; max |d n-total| 6.83e-3; max |d ap/aileron_cmd| 2.49e-3
+   k= 4: done; psi at row 0 3.4540230611520962e-15; max |d l-total| 6.94e-2 at row 31; max |d n-total| 6.78e-3; max |d ap/aileron_cmd| 2.47e-3
+   k=-4: done; psi at row 0 6.2831853071795827; max |d l-total| 7.00e-2 at row 31; max |d n-total| 6.83e-3; max |d ap/aileron_cmd| 2.49e-3
+== mk82_script, native: unperturbed stops at step 2242 (step, code 3)
+   8 native runs with the start altitude nudged by +-1..4 last digits stop at steps: 2404, 2200, 2199, 2280, 2199, 2240, 2330, 2201
+   native pitch rate first exceeds 10 rad/s at step 2073 (t = 41.46 s)
+   native pitch rate first exceeds 100 rad/s at step 2100 (t = 42.00 s)
+   native pitch rate first exceeds 1000000 rad/s at step 2190 (t = 43.80 s)

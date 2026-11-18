@@ -1,0 +1,278 @@
+done  done 
+--- row 0
+  position/ecef-x-ft                 native -1636359.0618882647      d   -4.19e-9  = -18.0 ulp
+  attitude/phi-rad                   native -4.1835377588355656e-17  d   6.97e-17  = 11308167076888128.0 ulp
+  attitude/theta-rad                 native -8.3266726846886741e-17  d   1.39e-16  = 11258999068426240.0 ulp
+  attitude/psi-rad                   native 1.1064018066517950e-16   d    6.28e+0  = 5.0975255206344924e+32 ulp
+  forces/fbx-total-lbs               native -38.901954331456501      d   2.49e-13  = 35.0 ulp
+  forces/fby-total-lbs               native -0.000043219440464259352 d  -4.35e-13  = -64160528.0 ulp
+  forces/fbz-total-lbs               native -2569.3613036748152      d   4.55e-13  = 1.0 ulp
+  moments/l-total-lbsft              native 905.14439740081195       d   2.27e-12  = 20.0 ulp
+  moments/m-total-lbsft              native 171.73781565491214       d   8.24e-13  = 29.0 ulp
+  moments/n-total-lbsft              native 6.3288064036998346       d   2.92e-13  = 329.0 ulp
+  position/long-gc-rad               native -1.6609223193877880      d  -2.22e-16  = -1.0 ulp
+  gear/unit[0]/compression-ft        native 0.31391755765945112      d  -5.55e-17  = -1.0 ulp
+  gear/unit[1]/compression-ft        native 0.18558416293701188      d  -2.78e-17  = -1.0 ulp
+  gear/unit[2]/compression-ft        native 0.18558429995877648      d  -2.78e-17  = -1.0 ulp
+  forces/fbz-gear-lbs                native -2569.3613036748152      d   4.55e-13  = 1.0 ulp
+  forces/fbx-gear-lbs                native -38.901954331456501      d   2.49e-13  = 35.0 ulp
+  accelerations/udot-ft_sec2         native -0.50458482677041294     d  -2.11e-15  = -19.0 ulp
+  accelerations/wdot-ft_sec2         native -1.2040113398848287      d   1.40e-14  = 63.0 ulp
+--- row 1
+  position/ecef-x-ft                 native -1636359.0618885667      d   -4.19e-9  = -18.0 ulp
+  position/h-sl-ft                   native 67.938724014908075       d    3.73e-9  = 262144.0 ulp
+  velocities/u-fps                   native -0.0044000187131484972   d  -1.99e-17  = -23.0 ulp
+  velocities/v-fps                   native -1.1292665317630003e-8   d   1.10e-18  = 667702.0 ulp
+  velocities/w-fps                   native -0.010033427809682549    d   1.04e-17  = 6.0 ulp
+  velocities/vtrue-kts               native 0.0064911417270467706    d  -8.67e-19  = -1.0 ulp
+  velocities/p-rad_sec               native 0.0036041776798040178    d   9.54e-18  = 22.0 ulp
+  velocities/q-rad_sec               native 0.00097674142453089930   d   4.55e-18  = 21.0 ulp
+  velocities/r-rad_sec               native -4.1727694022818899e-10  d   7.25e-19  = 14024704.0 ulp
+  attitude/phi-rad                   native -1.5979657395477838e-16  d   8.35e-17  = 3385894388605061.5 ulp
+  attitude/theta-rad                 native -8.0074835651089415e-14  d   1.67e-16  = 13194139533312.0 ulp
+  attitude/psi-rad                   native 1.7655967275229454e-16   d  -1.77e-16  = -7162111204497346.0 ulp
+  forces/fbx-total-lbs               native -23.054245490666965      d   3.80e-13  = 107.0 ulp
+  forces/fby-total-lbs               native 165.86531735052770       d   2.84e-14  = 1.0 ulp
+  moments/l-total-lbsft              native 140.31004098164362       d  -1.02e-12  = -36.0 ulp
+  moments/m-total-lbsft              native 111.98118019713446       d   8.53e-14  = 6.0 ulp
+  moments/n-total-lbsft              native 1.2087106253566502       d  -3.51e-13  = -1583.0 ulp
+  aero/alpha-rad                     native -1.9840759492615698      d  -2.22e-15  = -10.0 ulp
+  aero/beta-rad                      native -0.0000010307464473121231 d   1.01e-16  = 476132.0 ulp
+  position/long-gc-rad               native -1.6609223193877880      d  -2.22e-16  = -1.0 ulp
+  position/radius-to-vehicle-ft      native 20908537.856905110       d    3.73e-9  = 1.0 ulp
+  gear/unit[0]/compression-ft        native 0.31391464105200079      d  -1.11e-16  = -2.0 ulp
+  gear/unit[1]/compression-ft        native 0.18558124959228614      d   2.78e-17  = 1.0 ulp
+  forces/fbx-gear-lbs                native -23.037562403355128      d   3.77e-13  = 106.0 ulp
+  forces/fbz-aero-lbs                native 0.0073170759232924279    d  -2.45e-15  = -2827.0 ulp
+  accelerations/udot-ft_sec2         native -0.29897625219388851     d  -3.89e-16  = -7.0 ulp
+  accelerations/wdot-ft_sec2         native -0.70445890372534825     d  -2.18e-14  = -196.0 ulp
+--- row 2
+  position/ecef-x-ft                 native -1636359.0619039764      d   -4.19e-9  = -18.0 ulp
+  velocities/u-fps                   native -0.0060348031902405109   d   8.67e-17  = 100.0 ulp
+  velocities/v-fps                   native 0.026897535624891056     d   3.47e-18  = 1.0 ulp
+  velocities/w-fps                   native -0.013823267648742709    d  -5.03e-17  = -29.0 ulp
+  velocities/vtrue-kts               native 0.018270984308176520     d   3.47e-18  = 1.0 ulp
+  velocities/p-rad_sec               native 0.0041653069785099446    d   5.20e-18  = 6.0 ulp
+  velocities/q-rad_sec               native 0.0016008085984673247    d   5.20e-18  = 24.0 ulp
+  velocities/r-rad_sec               native -4.2399253247606735e-10  d  -1.83e-19  = -3538944.0 ulp
+  attitude/phi-rad                   native 0.000030034812768829894  d   7.66e-17  = 22616.0 ulp
+  attitude/theta-rad                 native 0.0000081395130126860339 d   8.33e-17  = 49154.0 ulp
+  attitude/psi-rad                   native 1.1661034940977740e-10   d  -1.97e-16  = -7628166121.0 ulp
+  forces/fbx-total-lbs               native -22.021856223285301      d   -2.17e-6  = -611340870.0 ulp
+  forces/fby-total-lbs               native 29.361591677903679       d    6.49e-6  = 1826503483.0 ulp
+  forces/fbz-total-lbs               native -2513.3801879992793      d    1.76e-5  = 38738883.0 ulp
+  moments/l-total-lbsft              native 709.15186353102865       d    3.96e-5  = 348614080.0 ulp
+  moments/m-total-lbsft              native 60.329311533045029       d    9.28e-6  = 1306659238.0 ulp
+  moments/n-total-lbsft              native 4.7542578117893459       d   -6.18e-8  = -69584811.0 ulp
+  aero/alpha-rad                     native -1.9824246498806180      d   6.44e-15  = 29.0 ulp
+  aero/beta-rad                      native 1.0597269889118361       d  -2.22e-16  = -1.0 ulp
+  position/long-gc-rad               native -1.6609223193877880      d  -4.44e-16  = -2.0 ulp
+  gear/unit[1]/compression-ft        native 0.18529568317473089      d   8.53e-14  = 3073.0 ulp
+  gear/unit[2]/compression-ft        native 0.18554737266808247      d   -3.26e-9  = -117541121.0 ulp
+  forces/fbz-gear-lbs                native -2513.3850032972305      d    1.76e-5  = 38738883.0 ulp
+  forces/fbx-gear-lbs                native -22.010793230266174      d   -2.17e-6  = -611340869.0 ulp
+  forces/fbz-aero-lbs                native 0.0048152979513691740    d   2.23e-15  = 2570.0 ulp
+  accelerations/udot-ft_sec2         native -0.28583378232544715     d   -2.82e-8  = -507595189.0 ulp
+  accelerations/wdot-ft_sec2         native -0.47787066773354286     d    2.29e-7  = 4117096678.0 ulp
+--- row 3
+  position/ecef-x-ft                 native -1636359.0614867613      d   -4.19e-9  = -18.0 ulp
+  position/h-sl-ft                   native 67.938991140574217       d    3.73e-9  = 262144.0 ulp
+  position/h-agl-ft                  native 4.3052700360414420       d    3.26e-9  = 3673152.0 ulp
+  velocities/u-fps                   native -0.0083620211896218381   d  -3.52e-10  = -203059733.0 ulp
+  velocities/v-fps                   native 0.022704588666344776     d    1.05e-9  = 303372501.0 ulp
+  velocities/w-fps                   native -0.016860514360820925    d    2.86e-9  = 823407708.0 ulp
+  velocities/vtrue-kts               native 0.017472734945821952     d  -4.28e-10  = -123479272.0 ulp
+  velocities/p-rad_sec               native 0.0069869507867735825    d   1.58e-10  = 182011033.0 ulp
+  velocities/q-rad_sec               native 0.0019550709497224319    d   5.25e-11  = 121152306.0 ulp
+  velocities/r-rad_sec               native -2.3261484665893146e-9   d  -9.09e-13  = -2198046457856.0 ulp
+  attitude/phi-rad                   native 0.000064745681736371285  d   6.28e-17  = 4631.0 ulp
+  attitude/theta-rad                 native 0.000021479587604725737  d   8.33e-17  = 24578.0 ulp
+  attitude/psi-rad                   native 7.5347664069457580e-10   d  -2.01e-16  = -1940570291.0 ulp
+  forces/fbx-total-lbs               native -12.958041692976241      d   -1.92e-6  = -1078208609.0 ulp
+  forces/fby-total-lbs               native 115.55986019267324       d   -1.77e-6  = -124692526.0 ulp
+  forces/fbz-total-lbs               native -2497.1381519079591      d   -6.47e-6  = -14216829.0 ulp
+  moments/l-total-lbsft              native 299.53994766530468       d    1.05e-5  = 184573787.0 ulp
+  moments/m-total-lbsft              native 55.122513021516326       d    1.39e-5  = 1958974660.0 ulp
+  moments/n-total-lbsft              native 2.0931693246166829       d    4.47e-7  = 1006963505.0 ulp
+  aero/alpha-rad                     native -2.0312010267512299      d   -8.42e-8  = -189626078.0 ulp
+  aero/beta-rad                      native 0.87867030052670958      d    8.55e-8  = 770158000.0 ulp
+  position/long-gc-rad               native -1.6609223193641578      d  -2.22e-16  = -1.0 ulp
+  position/geod-alt-ft               native 67.938707552904276       d    3.26e-9  = 229572.0 ulp
+  position/radius-to-vehicle-ft      native 20908537.857172567       d    3.73e-9  = 1.0 ulp
+  gear/unit[0]/compression-ft        native 0.31353109812232394      d  -1.11e-16  = -2.0 ulp
+  gear/unit[2]/compression-ft        native 0.18558531826391908      d  -5.55e-17  = -2.0 ulp
+  forces/fbz-gear-lbs                native -2497.1112451503313      d   -6.41e-6  = -14095522.0 ulp
+  forces/fbx-gear-lbs                native -13.012259166780160      d   -2.02e-6  = -1134362198.0 ulp
+  forces/fbz-aero-lbs                native -0.026906757627755427    d   -5.52e-8  = -15899929654.0 ulp
+  accelerations/udot-ft_sec2         native -0.16866269823387975     d   -2.49e-8  = -895407485.0 ulp
+  accelerations/wdot-ft_sec2         native -0.26720893975480009     d   -8.39e-8  = -1511158291.0 ulp
+--- row 10
+  position/ecef-x-ft                 native -1636359.0585693517      d   -4.19e-9  = -18.0 ulp
+  velocities/u-fps                   native -0.014257502546503424    d  -6.38e-10  = -367710386.0 ulp
+  velocities/v-fps                   native 0.078338081277746358     d  -7.03e-10  = -50672507.0 ulp
+  velocities/w-fps                   native -0.013862618481690977    d   4.70e-10  = 270989993.0 ulp
+  velocities/vtrue-kts               native 0.047886121148469948     d  -3.85e-10  = -55476071.0 ulp
+  velocities/p-rad_sec               native 0.018088701658754643     d  -1.52e-10  = -43737809.0 ulp
+  velocities/q-rad_sec               native 0.0033150237657742290    d   1.33e-10  = 306071195.0 ulp
+  velocities/r-rad_sec               native 6.2283581772133072e-7    d  -8.59e-15  = -81083520.0 ulp
+  attitude/phi-rad                   native 0.00075720462087987641   d  -3.27e-12  = -30153512.0 ulp
+  attitude/theta-rad                 native 0.00017376812601740089   d   8.33e-12  = 307277841.0 ulp
+  attitude/psi-rad                   native 7.1405451361114251e-8    d   2.04e-15  = 153875786.0 ulp
+  forces/fbx-total-lbs               native -7.1689892782871336      d    4.14e-7  = 465708441.0 ulp
+  forces/fby-total-lbs               native 49.179482309527103       d    4.53e-7  = 63795924.0 ulp
+  forces/fbz-total-lbs               native -2461.4946933884235      d   -3.30e-7  = -725612.0 ulp
+  moments/l-total-lbsft              native 348.39914214018205       d   -1.12e-7  = -1962372.0 ulp
+  moments/m-total-lbsft              native 31.944118195902874       d    9.91e-7  = 278951170.0 ulp
+  moments/n-total-lbsft              native 2.3471652965644800       d    2.82e-9  = 6358707.0 ulp
+  aero/alpha-rad                     native -2.3702363255942931      d   -3.93e-8  = -88517646.0 ulp
+  aero/beta-rad                      native 1.3222002264151860       d   -3.70e-9  = -16642371.0 ulp
+  position/long-gc-rad               native -1.6609223191970108      d  -4.44e-16  = -2.0 ulp
+  gear/unit[0]/compression-ft        native 0.31161239654401923      d  -3.89e-16  = -7.0 ulp
+  gear/unit[1]/compression-ft        native 0.18104944809180346      d  -2.22e-16  = -8.0 ulp
+  gear/unit[2]/compression-ft        native 0.18739117830370958      d  -2.50e-16  = -9.0 ulp
+  forces/fbz-gear-lbs                native -2461.0155787633798      d   -3.11e-7  = -683602.0 ulp
+  forces/fbx-gear-lbs                native -7.6344857376683954      d    4.32e-7  = 486023267.0 ulp
+  forces/fbz-aero-lbs                native -0.47911462504372770     d   -1.91e-8  = -344145870.0 ulp
+  accelerations/udot-ft_sec2         native -0.098442885031958388    d    5.10e-9  = 367417954.0 ulp
+  accelerations/wdot-ft_sec2         native 0.19390218340303683      d   -4.26e-9  = -153486346.0 ulp
+--- row 100
+  position/ecef-x-ft                 native -1636359.0498358519      d   -4.42e-9  = -19.0 ulp
+  velocities/u-fps                   native -0.015559796932721547    d  -2.57e-10  = -147931414.0 ulp
+  velocities/v-fps                   native -0.025742283778416933    d   5.62e-10  = 161914166.0 ulp
+  velocities/w-fps                   native -0.010475790961056752    d   1.73e-10  = 99702935.0 ulp
+  velocities/vtrue-kts               native 0.018871466162649213     d  -2.28e-10  = -65837726.0 ulp
+  velocities/p-rad_sec               native -0.0059728097776066092   d   3.90e-10  = 449689236.0 ulp
+  velocities/q-rad_sec               native 0.0036234934956937926    d   1.69e-10  = 389187365.0 ulp
+  velocities/r-rad_sec               native -0.000039498457378909601 d  -2.85e-12  = -420964863.0 ulp
+  attitude/phi-rad                   native 0.0031364361245248772    d  -1.22e-10  = -282369881.0 ulp
+  attitude/theta-rad                 native 0.0047061587582486403    d   3.29e-10  = 379761590.0 ulp
+  attitude/psi-rad                   native 6.2831738782150941       d  -1.20e-12  = -1352.0 ulp
+  forces/fbx-total-lbs               native 13.295327457610012       d    7.46e-6  = 4201333951.0 ulp
+  forces/fby-total-lbs               native 26.413395318594578       d   -7.54e-7  = -212107371.0 ulp
+  forces/fbz-total-lbs               native -2474.3001828939546      d   -4.44e-6  = -9759483.0 ulp
+  moments/l-total-lbsft              native 217.16061928861257       d   -7.25e-5  = -2549973054.0 ulp
+  moments/m-total-lbsft              native -8.7564065047152102      d   -4.92e-5  = -27674907514.0 ulp
+  moments/n-total-lbsft              native 2.9921838911264791       d   -7.32e-7  = -1648544838.0 ulp
+  aero/alpha-rad                     native -2.5490392225050731      d   -1.53e-8  = -34428074.0 ulp
+  aero/beta-rad                      native -0.94108621696260464     d    1.33e-8  = 120127500.0 ulp
+  position/long-gc-rad               native -1.6609223186574014      d  -4.44e-16  = -2.0 ulp
+  gear/unit[0]/compression-ft        native 0.28883903084005258      d   -6.52e-9  = -117539108.0 ulp
+  gear/unit[1]/compression-ft        native 0.17286377371583805      d   2.02e-13  = 7262.0 ulp
+  gear/unit[2]/compression-ft        native 0.19913165678314171      d    3.26e-9  = 117554438.0 ulp
+  forces/fbz-gear-lbs                native -2474.2837666527353      d   -4.79e-6  = -10523096.0 ulp
+  forces/fbx-gear-lbs                native 13.284292648255230       d    7.70e-6  = 4333149956.0 ulp
+  forces/fbz-aero-lbs                native -0.016416241219248093    d    3.47e-7  = 100088262458.0 ulp
+  accelerations/udot-ft_sec2         native 0.021427264584594142     d    8.62e-8  = 24856866908.0 ulp
+  accelerations/wdot-ft_sec2         native 0.028535052536139780     d   -5.76e-8  = -16603491479.0 ulp
+--- row 600
+  position/ecef-x-ft                 native -1636359.0435801912      d   9.31e-10  = 4.0 ulp
+  position/ecef-y-ft                 native -18107163.853514783      d    3.73e-9  = 1.0 ulp
+  position/ecef-z-ft                 native 10325691.353189521       d    3.73e-9  = 2.0 ulp
+  position/h-sl-ft                   native 67.946851737797260       d   -3.73e-9  = -262144.0 ulp
+  position/h-agl-ft                  native 4.3131305994122968       d   -6.52e-9  = -7346480.0 ulp
+  velocities/u-fps                   native -0.00082995827301086326  d    2.30e-9  = 21217312066.0 ulp
+  velocities/v-fps                   native -0.00053981787463503600  d  -9.38e-10  = -8653602162.0 ulp
+  velocities/w-fps                   native -0.00027208646044092654  d   -7.74e-9  = -142693735942.0 ulp
+  velocities/vtrue-kts               native 0.00060834703979722494   d   4.05e-10  = 3736125995.0 ulp
+  velocities/p-rad_sec               native -0.00012512010921041954  d  -3.34e-10  = -12309982372.0 ulp
+  velocities/q-rad_sec               native 0.00019300211121995198   d  -5.23e-10  = -19311531473.0 ulp
+  velocities/r-rad_sec               native -0.0000022371030064944939 d  -6.65e-13  = -1570504304.0 ulp
+  attitude/phi-rad                   native 0.0049093675859500857    d  -5.43e-11  = -62587797.0 ulp
+  attitude/theta-rad                 native 0.010306384014863232     d  -5.52e-10  = -318430029.0 ulp
+  attitude/psi-rad                   native 6.2831828674283949       d  -3.02e-12  = -3399.0 ulp
+  forces/fbx-total-lbs               native 25.590869503315350       d    6.29e-6  = 1769343844.0 ulp
+  forces/fby-total-lbs               native -12.526183414603095      d    1.88e-5  = 10591175524.0 ulp
+  forces/fbz-total-lbs               native -2476.4101729958334      d   -2.80e-6  = -6161356.0 ulp
+  moments/l-total-lbsft              native -2.2497577588335211      d    1.50e-4  = 336658138102.0 ulp
+  moments/m-total-lbsft              native -0.31687810831275876     d   -3.37e-5  = -607485105476.0 ulp
+  moments/n-total-lbsft              native -0.046910747288614114    d    3.56e-6  = 513006300919.0 ulp
+  aero/beta-rad                      native -0.55358668879223127     d   -6.63e-7  = -5968750943.0 ulp
+  position/lat-geod-rad              native 0.51940170201836311      d   2.22e-16  = 2.0 ulp
+  position/geod-alt-ft               native 67.946568116275131       d   -6.52e-9  = -459155.0 ulp
+  position/radius-to-vehicle-ft      native 20908537.865161013       d   -3.73e-9  = -1.0 ulp
+  gear/unit[0]/compression-ft        native 0.25886458926049455      d  -1.60e-12  = -28813.0 ulp
+  gear/unit[1]/compression-ft        native 0.16580195077010107      d    6.52e-9  = 235064523.0 ulp
+  gear/unit[2]/compression-ft        native 0.20691838988584116      d   -3.26e-9  = -117595250.0 ulp
+  forces/fbz-gear-lbs                native -2476.4101725460782      d   -2.80e-6  = -6161357.0 ulp
+  forces/fbx-gear-lbs                native 25.590869506625772       d    6.29e-6  = 1769343837.0 ulp
+  forces/fbz-aero-lbs                native -4.4975527416235444e-7   d   7.21e-13  = 13621203762.0 ulp
+  accelerations/udot-ft_sec2         native 0.00097526105616356409   d    9.93e-8  = 915869973798.0 ulp
+  accelerations/wdot-ft_sec2         native -0.00021115873071253979  d   -3.62e-8  = -1333979547991.0 ulp
+--- row 1200
+  position/ecef-x-ft                 native -1636359.0437656797      d   -1.40e-9  = -6.0 ulp
+  position/ecef-y-ft                 native -18107163.854271818      d   -3.73e-9  = -1.0 ulp
+  position/ecef-z-ft                 native 10325691.352341477       d   -3.73e-9  = -2.0 ulp
+  position/h-sl-ft                   native 67.947099823504686       d    3.73e-9  = 262144.0 ulp
+  position/h-agl-ft                  native 4.3133786799503824       d    3.26e-9  = 3673152.0 ulp
+  velocities/u-fps                   native -0.000020937290666612263 d   -1.22e-8  = -3606516666303.0 ulp
+  velocities/v-fps                   native 0.0000060984283497116205 d    9.61e-9  = 11341073183676.0 ulp
+  velocities/w-fps                   native -0.0000036637476061326744 d    1.58e-8  = 37340417398148.0 ulp
+  velocities/vtrue-kts               native 0.000013101584201153791  d    6.88e-9  = 4059390042707.0 ulp
+  velocities/p-rad_sec               native 0.0000014205699544572975 d    2.02e-9  = 9516704462528.0 ulp
+  velocities/q-rad_sec               native 0.0000048624318928123888 d    2.93e-9  = 3456638248164.0 ulp
+  velocities/r-rad_sec               native -8.7628969111752620e-9   d   9.72e-12  = 5877417189376.0 ulp
+  attitude/phi-rad                   native 0.0048817669556500227    d  -2.36e-10  = -272364358.0 ulp
+  attitude/theta-rad                 native 0.010566532972246389     d   3.91e-10  = 225629129.0 ulp
+  attitude/psi-rad                   native 6.2831825829940406       d  -5.47e-12  = -6163.0 ulp
+  forces/fbx-total-lbs               native 26.160791180217736       d   -8.05e-6  = -2266818588.0 ulp
+  forces/fby-total-lbs               native -12.088607321256868      d   -5.39e-6  = -3034476253.0 ulp
+  forces/fbz-total-lbs               native -2476.3868528031899      d    2.31e-5  = 50771764.0 ulp
+  moments/l-total-lbsft              native 0.0033390895832064943    d    1.03e-5  = 23814059680166.0 ulp
+  moments/m-total-lbsft              native -0.0038521028479973421   d    1.53e-5  = 35256862818624.0 ulp
+  moments/n-total-lbsft              native 0.00011283118740894030   d   -1.39e-6  = -102668466682580.0 ulp
+  position/lat-geod-rad              native 0.51940170196467406      d  -3.33e-16  = -3.0 ulp
+  position/long-gc-rad               native -1.6609223182385029      d  -2.22e-16  = -1.0 ulp
+  position/geod-alt-ft               native 67.946816196813216       d    3.26e-9  = 229572.0 ulp
+  position/radius-to-vehicle-ft      native 20908537.865412328       d    3.73e-9  = 1.0 ulp
+  gear/unit[0]/compression-ft        native 0.25748135723209908      d   8.39e-13  = 15114.0 ulp
+  gear/unit[1]/compression-ft        native 0.16594361193171961      d   -3.26e-9  = -117528949.0 ulp
+  gear/unit[2]/compression-ft        native 0.20682889105948699      d   -3.26e-9  = -117527886.0 ulp
+  forces/fbz-gear-lbs                native -2476.3868528029507      d    2.31e-5  = 50771765.0 ulp
+  forces/fbx-gear-lbs                native 26.160791180221331       d   -8.05e-6  = -2266818588.0 ulp
+  forces/fbz-aero-lbs                native -2.3938329417281505e-10  d  -2.68e-13  = -5179123039498.0 ulp
+  accelerations/udot-ft_sec2         native 0.000011030335463578175  d   -1.17e-7  = -69097126464216.0 ulp
+  accelerations/wdot-ft_sec2         native 0.0000086774032268509079 d    2.99e-7  = 176756452627408.0 ulp
+--- first differing row per column
+  simulation/sim-time-sec            never
+  position/ecef-x-ft                 0
+  position/ecef-y-ft                 144
+  position/ecef-z-ft                 67
+  position/h-sl-ft                   1
+  position/h-agl-ft                  3
+  velocities/u-fps                   1
+  velocities/v-fps                   1
+  velocities/w-fps                   1
+  velocities/vtrue-kts               1
+  velocities/p-rad_sec               1
+  velocities/q-rad_sec               1
+  velocities/r-rad_sec               1
+  attitude/phi-rad                   0
+  attitude/theta-rad                 0
+  attitude/psi-rad                   0
+  forces/fbx-total-lbs               0
+  forces/fby-total-lbs               0
+  forces/fbz-total-lbs               0
+  moments/l-total-lbsft              0
+  moments/m-total-lbsft              0
+  moments/n-total-lbsft              0
+  aero/alpha-rad                     1
+  aero/beta-rad                      1
+  position/lat-geod-rad              9
+  position/long-gc-rad               0
+  position/geod-alt-ft               3
+  position/radius-to-vehicle-ft      1
+  gear/unit[0]/compression-ft        0
+  gear/unit[1]/compression-ft        0
+  gear/unit[2]/compression-ft        0
+  forces/fbz-gear-lbs                0
+  forces/fbx-gear-lbs                0
+  forces/fbz-aero-lbs                1
+  forces/fbz-prop-lbs                never
+  accelerations/udot-ft_sec2         0
+  accelerations/wdot-ft_sec2         0
+  gear/unit[0]/WOW                   never
+  gear/unit[1]/WOW                   never
+  gear/unit[2]/WOW                   never
+  contact/unit[3]/WOW                never
+  contact/unit[4]/WOW                never
+  contact/unit[5]/WOW                never
