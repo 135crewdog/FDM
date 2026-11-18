@@ -1,7 +1,7 @@
 # FDM: notes for every session
 
 Flight dynamics model for an iPhone PWA flight sim. **Attempt 2.** Read `README.md` (branches) and `PLAN.md`
-(where we are) first. Attempt 1 is on branch `archive/attempt-1`: reference only.
+(where we are) first. **Read `RESEARCH.md` before any baseline work.** Attempt 1 is on branch `archive/attempt-1`: reference only.
 
 ## Rules that keep us out of the loop
 1. **One goal per session.** Take the goal and its done-criteria from the session's prompt and write them at the
@@ -33,6 +33,16 @@ Flight dynamics model for an iPhone PWA flight sim. **Attempt 2.** Read `README.
 - Setting a property by name costs about 1 µs per call through embind. For many per-step values, use handles or
   a bulk array.
 - Native JSBSim silently ignores writes to read-only properties. Read back every value a test depends on.
+- **Safari 26.0 caveat:** a `-fwasm-exceptions` + `-O3` build crashed at startup on Safari 26.0 (WebKit bug
+  299629, fixed in a later 26.x; Verified upstream). The user's Safari 27.2 ran attempt 1's build. Always ship an
+  `-fexceptions` fallback build too.
+
+## Decisions (user, 2026-11-18)
+- JSBSim runs in a **Web Worker**. Also time it on the main thread.
+- The JSBSim baseline includes a **C++ ground hook** (`FGGroundCallback` reading a height grid). It is host
+  layer, not a physics change.
+- **Commit** JSBSim's data files under `jsbsim-data/` at the pinned JSBSim commit. The build session (prompt 01)
+  commits them. `jsbsim-data/` is no longer in `.gitignore`.
 
 ## Git
 - Push only to the branch the session's prompt names. The GitHub Pages environment allows `main` by default;

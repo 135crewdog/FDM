@@ -13,4 +13,8 @@ The repository is the project's memory. A chat is only where one piece of work h
 
 | Chat name | Prompt | Branch | Report |
 |---|---|---|---|
+| FDM2 00 Work: JSBSim research and baseline prompt (done) | (pasted in chat) | `main` | `RESEARCH.md` |
 | **FDM2 01 Work: JSBSim baseline** (next) | `01-jsbsim-baseline.md` | `baseline/jsbsim` | `REPORT.md` on that branch |
+
+Prompt 01 was rewritten on 2026-11-18 after the research session (00). Its old "ask me first" questions are
+answered in `CLAUDE.md` (Decisions) and in the prompt itself.
