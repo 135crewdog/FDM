@@ -95,7 +95,8 @@ if(EMSCRIPTEN)
     -sEXPORTED_FUNCTIONS=_main,_malloc,_free
     "-sEXPORTED_RUNTIME_METHODS=FS,HEAPF64,HEAP32,HEAPU8,UTF8ToString,stringToUTF8,lengthBytesUTF8")
 else()
-  add_executable(fdm_native ${FDM_HOST_SOURCES} host/native_main.cpp tests/native/ground_oracle.cpp)
+  add_executable(fdm_native ${FDM_HOST_SOURCES} host/native_main.cpp tests/native/ground_oracle.cpp
+    tests/native/host_selftest.cpp)
   target_include_directories(fdm_native PRIVATE host "${JSBSIM_SOURCE_DIR}/src")
   target_link_libraries(fdm_native PRIVATE libJSBSim)
 endif()

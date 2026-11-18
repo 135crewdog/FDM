@@ -1,0 +1,16 @@
+{
+  "name": "fdm-jsbsim-baseline",
+  "private": true,
+  "type": "module",
+  "description": "JSBSim WebAssembly baseline: host layer, tests and iPhone test page",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bash scripts/run-all-tests.sh",
+    "build-page": "node scripts/build-page.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

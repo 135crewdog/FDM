@@ -5,6 +5,8 @@
 //   fdm_native --ground-probe <grid file> <points file> <output file>
 //       points: x y z (ECEF ft) per point; output: 7 doubles per point from the installed ground callback,
 //       then 7 doubles per point from the independent calculation in tests/native/ground_oracle.cpp
+//   fdm_native --selftest <jsbsim-data dir> <fixtures dir> <scratch dir>
+//       wrapper self-test (tests/native/host_selftest.cpp)
 //   fdm_native --version
 #include <cstdio>
 #include <cstdlib>
@@ -20,6 +22,8 @@
 namespace fdmtest {
 // tests/native/ground_oracle.cpp: shares no code with host/grid_ground.cpp.
 void GroundOracle(const fdmhost::HeightGrid& grid, double a, double b, double x, double y, double z, double* out7);
+// tests/native/host_selftest.cpp
+int HostSelfTest(const std::string& data, const std::string& fix, const std::string& out);
 }
 
 namespace {
@@ -79,6 +83,7 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (argc == 5 && std::strcmp(argv[1], "--ground-probe") == 0) return GroundProbe(argv[2], argv[3], argv[4]);
+  if (argc == 5 && std::strcmp(argv[1], "--selftest") == 0) return fdmtest::HostSelfTest(argv[2], argv[3], argv[4]);
   if (argc < 3 || (argc - 1) % 2 != 0) {
     std::fprintf(stderr, "usage: fdm_native <scenario> <out prefix> [...] | --ground-probe <grid> <points> <out>\n");
     return 2;

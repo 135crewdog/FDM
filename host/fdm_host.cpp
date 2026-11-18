@@ -27,6 +27,12 @@ const char* const kIntegratorProps[4] = {
     "simulation/integrator/position/rotational",
     "simulation/integrator/position/translational",
 };
+std::string Trim(const std::string& s) {
+  const char* ws = " \t\r\n";
+  const size_t b = s.find_first_not_of(ws);
+  if (b == std::string::npos) return std::string();
+  return s.substr(b, s.find_last_not_of(ws) - b + 1);
+}
 const int kLevelWarn = static_cast<int>(JSBSim::LogLevel::WARN);
 const int kLevelError = static_cast<int>(JSBSim::LogLevel::ERROR);
 }  // namespace
@@ -57,10 +63,13 @@ bool FdmHost::Guard(const char* what, F&& body) {
   }
   if (ok && !threw) return true;
   // The exception object is gone now; a LogException has replayed its record into the logger.
-  std::string logged = logger_->TextSince(mark, kLevelError);
+  std::string logged = Trim(logger_->TextSince(mark, kLevelError));
+  text = Trim(text);
   std::string message = std::string(what) + (threw ? " threw: " : " failed");
   if (threw) message += text;
-  if (!logged.empty() && logged != text) message += (threw ? "\n" : ": ") + logged;
+  // Add the logged errors unless they only repeat the exception text (a LogException replays itself).
+  if (!logged.empty() && logged.find(text) == std::string::npos) message += (threw ? "\n" : ": ") + logged;
+  else if (!logged.empty() && logged.size() > text.size()) message = std::string(what) + (threw ? " threw: " : " failed: ") + logged;
   lastError_ = message;
   return false;
 }
@@ -245,8 +254,10 @@ int FdmHost::Prop(const std::string& name) {
     SGPropertyNode* node = fdm_->GetPropertyManager()->GetNode(name, false);
     if (!node) throw std::string("unknown property: ") + name;
     const simgear::props::Type type = node->getType();
-    if (type == simgear::props::NONE)
-      throw std::string("not a value (a folder or an unset node): ") + name;
+    // A node with children and no value of its own is a folder. A leaf that has never been written
+    // (JSBSim creates some inputs that way, e.g. external_reactions/<name>/magnitude) is a value: it reads 0.
+    if (type == simgear::props::NONE && node->nChildren() > 0)
+      throw std::string("not a value (a folder): ") + name;
     int flags = 0;
     if (node->getAttribute(SGPropertyNode::READ)) flags |= FDM_PROP_READ;
     if (node->getAttribute(SGPropertyNode::WRITE)) flags |= FDM_PROP_WRITE;
