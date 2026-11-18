@@ -1,0 +1,97 @@
+Flat grid vs upstream default ground callback (native, bit for bit)
+  c1723 first 30 s (rest and ground roll): rows 3601, columns 30: identical
+    ground-callback calls: default run 0, grid run 50448; SetTerrainElevation calls ignored in the grid run: 1
+  NASA 02 (30 s): rows 3001, columns 24: identical
+    ground-callback calls: default run 0, grid run 18022; SetTerrainElevation calls ignored in the grid run: 0
+  c1723 row 0: nose gear WOW 1; airspeed at 30 s 53.0 kt
+
+Slope grids vs an independent calculation (tests/native/ground_oracle.cpp), 20 points each
+  limits: height 1e-6 ft, contact 1e-6 ft per coordinate, normal 1e-6 per component, |normal| - 1 within 1e-12, normal points up
+  rising north (5 x 9), native release: max |d height| 7.11e-15 ft, max |d normal| 1.61e-9, max |d contact| 0.00e+0 ft, max ||n|-1| 2.22e-16, min n.up 0.996195
+    tilt of the normal from vertical at point 0: 5.0000 deg (grid built for 5)
+  rising north (5 x 9), native assert-enabled: max |d height| 7.11e-15 ft, max |d normal| 1.61e-9, max |d contact| 0.00e+0 ft, max ||n|-1| 2.22e-16, min n.up 0.996195
+  rising east (5 x 9), native release: max |d height| 2.84e-14 ft, max |d normal| 1.43e-9, max |d contact| 0.00e+0 ft, max ||n|-1| 2.22e-16, min n.up 0.996195
+    tilt of the normal from vertical at point 0: 4.9999 deg (grid built for 5)
+  rising east (5 x 9), native assert-enabled: max |d height| 2.84e-14 ft, max |d normal| 1.43e-9, max |d contact| 0.00e+0 ft, max ||n|-1| 2.22e-16, min n.up 0.996195
+
+  weh, rising north: wasm hook vs native hook over 20 points: max |d height| 2.02e-10 ft, max |d normal| 2.22e-16, max |d contact| 4.42e-9 ft
+  weh, rising east: wasm hook vs native hook over 20 points: max |d height| 3.53e-10 ft, max |d normal| 2.22e-16, max |d contact| 4.42e-9 ft
+  weh: ground-callback calls after load 26, after RunIC 51, after one step 63
+  jseh, rising north: wasm hook vs native hook over 20 points: max |d height| 2.02e-10 ft, max |d normal| 2.22e-16, max |d contact| 4.42e-9 ft
+  jseh, rising east: wasm hook vs native hook over 20 points: max |d height| 3.53e-10 ft, max |d normal| 2.22e-16, max |d contact| 4.42e-9 ft
+  jseh: ground-callback calls after load 26, after RunIC 51, after one step 63
+Slope-rest run: c172x on a 5 degree slope rising north, brakes on, 1200 steps at 1/120 s
+  native run twice: identical
+  assert-enabled native build: slope-rest, c1723 30 s on a flat grid and NASA 02 on a flat grid ran with no assertion failure; slope-rest trace identical to the release native trace
+  weh vs native, Class A: FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
+      column | judged | max |d| | row | peak |native| | allowed | result
+      position/ecef-x-ft | yes | 9.55e-9 | 79 | 1.64e+6 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 3.73e-9 | 105 | 1.81e+7 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.30e-8 | 542 | 1.03e+7 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 7.45e-9 | 136 | 4.30e+0 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 1.37e-8 | 970 | 4.34e+0 | 1.00e-6 | pass
+      velocities/u-fps | yes | 5.08e-8 | 231 | 6.86e-1 | 1.00e-9 | FAIL from row 3
+      velocities/v-fps | yes | 2.02e-8 | 549 | 1.28e-1 | 1.00e-9 | FAIL from row 5
+      velocities/w-fps | yes | 6.45e-8 | 225 | 4.19e-1 | 1.00e-9 | FAIL from row 1
+      velocities/vtrue-kts | yes | 2.41e-8 | 231 | 4.73e-1 | 1.00e-9 | FAIL from row 5
+      velocities/p-rad_sec | yes | 4.78e-9 | 550 | 2.99e-2 | 2.99e-11 | FAIL from row 5
+      velocities/q-rad_sec | yes | 1.18e-8 | 231 | 1.68e-1 | 1.68e-10 | FAIL from row 6
+      velocities/r-rad_sec | yes | 1.58e-10 | 550 | 2.58e-3 | 2.58e-12 | FAIL from row 1
+      attitude/phi-rad | yes | 6.03e-10 | 520 | 8.71e-3 | 8.71e-12 | FAIL from row 7
+      attitude/theta-rad | yes | 2.57e-9 | 210 | 1.25e-1 | 1.25e-10 | FAIL from row 30
+      attitude/psi-rad | yes | 1.75e-11 | 693 | 6.28e+0 | 6.28e-9 | pass
+      forces/fbx-total-lbs | yes | 4.34e-5 | 249 | 4.90e+2 | 4.90e-7 | FAIL from row 0
+      forces/fby-total-lbs | yes | 4.95e-5 | 122 | 1.50e+2 | 1.50e-7 | FAIL from row 1
+      forces/fbz-total-lbs | yes | 1.28e-4 | 689 | 2.69e+3 | 2.69e-6 | FAIL from row 0
+      moments/l-total-lbsft | yes | 2.88e-4 | 1052 | 7.92e+2 | 7.92e-7 | FAIL from row 0
+      moments/m-total-lbsft | yes | 2.01e-4 | 253 | 2.31e+3 | 2.31e-6 | FAIL from row 0
+      moments/n-total-lbsft | yes | 8.43e-5 | 19 | 9.51e+1 | 9.51e-8 | FAIL from row 0
+      aero/alpha-rad | info | 3.26e-5 | 938 | 3.14e+0 | - | -
+      aero/beta-rad | info | 8.32e-6 | 926 | 5.02e-1 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
+  weh: run twice identical; TypeScript-driven vs C++ runner identical
+  jseh vs native, Class A: FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
+      column | judged | max |d| | row | peak |native| | allowed | result
+      position/ecef-x-ft | yes | 9.55e-9 | 79 | 1.64e+6 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 3.73e-9 | 105 | 1.81e+7 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.30e-8 | 542 | 1.03e+7 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 7.45e-9 | 136 | 4.30e+0 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 1.37e-8 | 970 | 4.34e+0 | 1.00e-6 | pass
+      velocities/u-fps | yes | 5.08e-8 | 231 | 6.86e-1 | 1.00e-9 | FAIL from row 3
+      velocities/v-fps | yes | 2.02e-8 | 549 | 1.28e-1 | 1.00e-9 | FAIL from row 5
+      velocities/w-fps | yes | 6.45e-8 | 225 | 4.19e-1 | 1.00e-9 | FAIL from row 1
+      velocities/vtrue-kts | yes | 2.41e-8 | 231 | 4.73e-1 | 1.00e-9 | FAIL from row 5
+      velocities/p-rad_sec | yes | 4.78e-9 | 550 | 2.99e-2 | 2.99e-11 | FAIL from row 5
+      velocities/q-rad_sec | yes | 1.18e-8 | 231 | 1.68e-1 | 1.68e-10 | FAIL from row 6
+      velocities/r-rad_sec | yes | 1.58e-10 | 550 | 2.58e-3 | 2.58e-12 | FAIL from row 1
+      attitude/phi-rad | yes | 6.03e-10 | 520 | 8.71e-3 | 8.71e-12 | FAIL from row 7
+      attitude/theta-rad | yes | 2.57e-9 | 210 | 1.25e-1 | 1.25e-10 | FAIL from row 30
+      attitude/psi-rad | yes | 1.75e-11 | 693 | 6.28e+0 | 6.28e-9 | pass
+      forces/fbx-total-lbs | yes | 4.34e-5 | 249 | 4.90e+2 | 4.90e-7 | FAIL from row 0
+      forces/fby-total-lbs | yes | 4.95e-5 | 122 | 1.50e+2 | 1.50e-7 | FAIL from row 1
+      forces/fbz-total-lbs | yes | 1.28e-4 | 689 | 2.69e+3 | 2.69e-6 | FAIL from row 0
+      moments/l-total-lbsft | yes | 2.88e-4 | 1052 | 7.92e+2 | 7.92e-7 | FAIL from row 0
+      moments/m-total-lbsft | yes | 2.01e-4 | 253 | 2.31e+3 | 2.31e-6 | FAIL from row 0
+      moments/n-total-lbsft | yes | 8.43e-5 | 19 | 9.51e+1 | 9.51e-8 | FAIL from row 0
+      aero/alpha-rad | info | 3.26e-5 | 938 | 3.14e+0 | - | -
+      aero/beta-rad | info | 8.32e-6 | 926 | 5.02e-1 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
+  jseh: run twice identical; TypeScript-driven vs C++ runner identical
+  -fwasm-exceptions vs -fexceptions: identical
+  read back at the start point: height above ground 4.305 ft, ground normal 4.83 deg from the geocentric vertical, grid row position 2.000 of 0..4
+  information (upstream physics):
+    weight on wheels at 10 s: gear/unit[0]/WOW=1, gear/unit[1]/WOW=1, gear/unit[2]/WOW=1, contact/unit[3]/WOW=0, contact/unit[4]/WOW=0, contact/unit[5]/WOW=0
+    pitch at 10 s: 7.146 deg; moved 0.533 ft in 10 s, 0.0117 ft in the last 5 s; speed at 10 s 1.30e-4 kt
+

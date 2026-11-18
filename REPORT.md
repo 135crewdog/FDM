@@ -229,4 +229,111 @@ The result is kept and reported with evidence, no threshold is edited, and the s
 
 ## Part 3. Results
 
-(Filled in as the work proceeds.)
+**Status: stopped at criterion 4 on 2026-11-18. One frozen line failed (slope-rest run, Class A). Waiting for the
+user's decision. Criteria 6 to 10 have not been run.**
+
+### The failed line (criterion 4, slope-rest run, Class A)
+
+Raw output: `results/ground.txt`. Test: `tests/ground.test.ts`.
+
+Run: c172x on a 5° slope rising north, brakes on, 1200 steps at 1/120 s. Read back from the run: the ground under
+the start point tilts 5° (4.83° from the geocentric vertical, which differs from the true vertical by 0.17° at
+this latitude), the aircraft starts in the middle of the grid, all three wheels are on the ground at 10 s, pitch
+is 7.1°, and it moves 0.012 ft in the last 5 s.
+
+| Group | Largest wasm − native difference | Class A allowance | Result |
+|---|---|---|---|
+| Positions (5 columns) | 1.4e-8 ft | 1e-6 ft | pass |
+| Contact flags (6 columns) | 0 | equal | pass |
+| Heading `psi` | 1.8e-11 rad | 6.3e-9 rad | pass |
+| Speeds u, v, w, vtrue | 6.5e-8 ft/s | 1e-9 ft/s | **FAIL** |
+| Rates p, q, r | 1.2e-8 rad/s | 3e-11 to 1.7e-10 rad/s | **FAIL** |
+| Angles `phi`, `theta` | 2.6e-9 rad | 9e-12 to 1.3e-10 rad | **FAIL** |
+| Forces | 1.3e-4 lb | 1.5e-7 to 2.7e-6 lb | **FAIL** |
+| Moments | 2.9e-4 lb·ft | 9.5e-8 to 2.3e-6 lb·ft | **FAIL** |
+
+Both wasm builds give the same numbers. **Supported** (our test).
+
+The exact checks on the same run all pass (**Supported**): `-fwasm-exceptions` = `-fexceptions` bit for bit;
+TypeScript-driven = C++ runner bit for bit; each side run twice gives the same trace; the assert-enabled native
+build runs it with no assertion and gives the release build's trace.
+
+**Cause, as far as it was traced.** A diagnostic run recorded gear compression and gear force as well
+(`build/tmp/firstdiff.ts`, flat ground, same aircraft):
+- At row 0 (after `RunIC`) the two builds differ only at rounding level: longitude by 1 unit in the last place,
+  ECEF x by 4.2e-9 ft, forces by 1 to 300 units in the last place.
+- At row 1 the altitude differs by 3.7e-9 ft. That is exactly one unit in the last place of a number the size of
+  the Earth's radius (2⁻²⁸ ft): the smallest position difference a double can hold there.
+- At row 2 the right main gear's compression differs by 3.26e-9 ft and the gear force by 1.76e-5 lb. The c172x
+  main gear spring is 5400 lb/ft, and 3.26e-9 ft × 5400 lb/ft = 1.76e-5 lb.
+
+So one last-digit difference in position becomes about 2e-5 lb through the gear spring. The Class A allowance
+for forces here (about 2e-6 lb) is smaller than that. **Supported** for the arithmetic above; that the *whole*
+difference is rounding amplified by the gear, and nothing else, is **Reasoned** (the test that would settle it:
+perturb native's start position by one last digit and see the same size of difference in native against native).
+
+**What this means for the frozen line.** The line was written wrongly by this session: on the ground it asks
+forces and speeds to agree more closely than the position limit in the same line allows through a spring. The
+line stays as written and its result stays FAIL. A new line needs the user's agreement before anything else runs.
+The same thing must be expected for the first second of `c1723` and `f16_test` (both start on their wheels) and
+for the script sweep (Class S is relative to each column's peak, and this difference does not scale with the
+peak): **Reasoned**, not run.
+
+### Results so far, by criterion
+
+**1. Pin and build: done except the final committed binaries.**
+- JSBSim v1.3.3 `66f7fafc`, unpatched (the build script refuses a clone with local changes). Emscripten 6.0.13.
+  **Verified** (upstream tag; emcc version string).
+- `jsbsim-data/` has the same git tree ids as upstream for all five folders and `COPYING`
+  (`scripts/check-data.sh`, also `--committed`). **Verified** (upstream tree ids).
+- Flags, read from `compile_commands.json` by `scripts/check-flags.mjs`: every one of 113 files (JSBSim, expat,
+  MSIS, host) has `-O3`, the exception flag, `-ffp-contract=off`, no fast-math, in both wasm builds; the same for
+  the two native builds. **Supported.**
+- Fixed memory 64 MB for now, growth off (`-sALLOW_MEMORY_GROWTH=0`). The final size waits for the load test.
+- Not done yet: build-failure self-test, repeat-build hash comparison, committing `dist-wasm/`.
+
+**2. Answer key: done.** `build/native/fdm_native` is built by the same `CMakeLists.txt` from the same `host/`
+files with g++ 13.3, including the scenario runner. **Supported.**
+
+**3. Wrapper: all frozen lines pass.**
+- Native: `fdm_native --selftest`, 41 checks pass. Both wasm builds: `tests/wrapper.test.ts`, 22 tests pass.
+  **Supported.**
+- 20 create/load/step/destroy cycles: heap in use is 21,888 bytes after every cycle, growth 0
+  (`results/wrapper-memory.txt`). **Supported.**
+- The assert-enabled native build stops in the deliberate "non-finite state" check on an upstream assertion
+  (`FGTable.cpp:650`, a table lookup fed NaN). Every check before it passes. That check needs NaN, so it cannot
+  run with assertions on.
+
+**4. Ground hook: one line failed (above); the others pass.**
+- Flat grid = upstream default callback, bit for bit, natively, on the first 30 s of c1723 (3601 rows, rest and
+  ground roll to 53 kt) and on NASA 02 (3001 rows). **Verified** (against upstream's own callback).
+- Slope grids against the separate calculation, 20 points each, both directions, 5 × 9 grid: height within
+  1.4e-14 ft, contact identical, normal within 1.7e-9, unit length within 2.2e-16, pointing up. **Supported.**
+- The hook's call counter rises after load, after `RunIC` and after one step (26, 51, 63). **Supported.**
+- Assert-enabled native build: the ground scenarios run with no assertion failure. **Supported.**
+
+**5. Loop: all frozen lines pass.** `tests/loop.test.ts`, 10 tests: 120 steps for 1 s at 60 Hz; a 10 s frame
+gives 8 steps and counts 9.93 s dropped; pause, 10 s, resume gives 0 catch-up steps; `prev`/`curr`/`alpha`; the
+same handler passes the same protocol test in Node directly and in a `worker_threads` Worker, in both builds.
+**Supported.** Running in a real browser Worker is not tested yet (criterion 9).
+
+**Comparator self-test:** 16 tests on synthetic traces pass (`tests/compare-selftest.test.ts`), written and run
+before any native-against-wasm comparison. **Supported.**
+
+### Mistakes made by this session so far (kept on record)
+
+1. **Slope grid in the wrong place.** The first slope-rest run was not on a slope: c172x's start latitude in
+   `reset00.xml` is geocentric, the grid uses geodetic latitude, so the grid was centred about 10 nm south and
+   the aircraft stood on the grid's flat clamped edge. An information line (pitch 0.6° on a "5° slope") showed
+   it. The grid position was corrected, and the test now reads back the ground tilt and grid position under the
+   aircraft. The first run also failed Class A, in the same way.
+2. **An extra check with a wrong limit.** A check I added (not a frozen line) compared the hook's output in wasm
+   with native at 1e-12 relative. It failed at 1.5e-11: a last-digit difference in latitude moves the point by
+   about 1e-11 of a grid cell. It now uses the frozen hook limits (1e-6 ft, 1e-6); the measured differences are
+   3.5e-10 ft in height, 2.5e-16 in the normal and 4.2e-9 ft in the contact point.
+3. **Two wrong expectations in my loop test** (not frozen lines): I assumed the start altitude reads exactly
+   4000 ft (it reads 4000.016) and that the untrimmed aircraft descends in the first second (it climbs 7.6 ft).
+   Both were sanity checks on the test itself and were corrected to "close to 4000 ft".
+4. **Property rule.** The wrapper first refused properties that have never been written (for example
+   `external_reactions/f00/magnitude`), treating them as folders. JSBSim creates some inputs that way. Fixed: only
+   a node with children is a folder; a native and a wasm test cover it.
