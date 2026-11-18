@@ -32,6 +32,9 @@ if [ "$MODE" = "all" ]; then
 else
   PARITY_QUICK=1 run parity-quick node --test tests/parity.test.ts
 fi
+# The committed page must be the one the build script produces from the committed binaries and sources.
+run page-is-current bash -c 'cp test-page/build-id.txt build/tmp/page-id.before && node scripts/build-page.mjs && cmp test-page/build-id.txt build/tmp/page-id.before && git diff --quiet -- test-page'
+run page-chromium node tests/page.chromium.mjs
 run typecheck npx tsc --noEmit
 echo
 kept="$(grep -c '^  sweep ' results/parity.txt || true)"

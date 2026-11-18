@@ -111,3 +111,29 @@ export function benchSteps(module: FdmModule, o: BenchOptions): BenchResult {
   const sorted = all.slice().sort((a, b) => a - b);
   return { dt: o.dt, forces: o.forces, usPerStep: sorted[Math.floor(sorted.length / 2)], all, batchSteps: batch, endAltitudeFt, endAirspeedKt };
 }
+
+export interface CyclesResult {
+  /** Bytes in use on the C heap after each create / load / step / destroy cycle. */
+  heap: number[];
+  heapTop: number;
+  memoryBytes: number;
+}
+
+/** Creates, loads, steps and destroys one instance `count` times in the same module (the memory check). */
+export function runCycles(module: FdmModule, count: number, model: string, ic: string, steps: number): CyclesResult {
+  const heap: number[] = [];
+  for (let i = 0; i < count; i++) {
+    const fdm = Fdm.create(module);
+    try {
+      fdm.loadModel(model);
+      fdm.loadIC(ic);
+      fdm.bindOutputs(BENCH_OUTPUTS);
+      fdm.runIC();
+      if (fdm.step(steps) !== StepResult.OK) throw new Error(`cycle ${i}: step failed`);
+    } finally {
+      fdm.dispose();
+    }
+    heap.push(module.heapInUse());
+  }
+  return { heap, heapTop: module.heapTop(), memoryBytes: module.memoryBytes() };
+}

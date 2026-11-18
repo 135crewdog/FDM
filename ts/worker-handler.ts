@@ -4,7 +4,7 @@
 // Every request carries an id and gets exactly one reply with the same id:
 //   { id, ok: true, ...result }   or   { id, ok: false, error: string, crash: boolean }
 // Unasked messages from the worker have no id: { type: "event", event } and { type: "log", record }.
-import { type BenchOptions, benchSteps } from "./bench.ts";
+import { type BenchOptions, benchSteps, runCycles } from "./bench.ts";
 import { StepResult } from "./codes.ts";
 import { Fdm, FdmCrash, type FdmEvent, type FdmFactory, type FdmModule, type GroundGrid, loadFdmModule } from "./core.ts";
 import { readPack, writeFiles } from "./files.ts";
@@ -100,23 +100,8 @@ export function createHandler(post: Post): (request: Request) => Promise<void> {
         return {};
       case "bench":
         return { result: benchSteps(need(), req.options) };
-      case "cycles": {
-        const m = need();
-        const heap: number[] = [];
-        for (let i = 0; i < req.count; i++) {
-          const f = Fdm.create(m);
-          try {
-            f.loadModel(req.model);
-            f.loadIC(req.ic);
-            f.runIC();
-            if (f.step(req.steps) !== StepResult.OK) throw new Error("cycle step failed");
-          } finally {
-            f.dispose();
-          }
-          heap.push(m.heapInUse());
-        }
-        return { heap, heapTop: m.heapTop(), memoryBytes: m.memoryBytes() };
-      }
+      case "cycles":
+        return { ...runCycles(need(), req.count, req.model, req.ic, req.steps) };
       case "tryload": {
         const f = Fdm.create(need(), { paths: req.paths });
         try {
