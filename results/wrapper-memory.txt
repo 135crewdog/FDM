@@ -1,6 +1,6 @@
-weh: heap bytes in use after each of 20 create/load/step/destroy cycles (fixed memory 67108864 bytes):
+weh: heap bytes in use after each of 20 create/load/step/destroy cycles (fixed memory 16777216 bytes):
   21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888
   growth from cycle 2 to cycle 20: 0 bytes; heap top 1884160 bytes
-jseh: heap bytes in use after each of 20 create/load/step/destroy cycles (fixed memory 67108864 bytes):
+jseh: heap bytes in use after each of 20 create/load/step/destroy cycles (fixed memory 16777216 bytes):
   21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888 21888
   growth from cycle 2 to cycle 20: 0 bytes; heap top 1884160 bytes

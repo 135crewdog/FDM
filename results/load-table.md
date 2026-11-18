@@ -1,0 +1,63 @@
+| Aircraft | Native | wasm-EH | JS-EH | After load: RunIC + 10 steps (native / wasm-EH / JS-EH) | JSBSim's message when it does not load |
+|---|---|---|---|---|---|
+| 737 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| 787-8 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| A320 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| A4 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| B17 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| B747 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Boeing314 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| C130 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Camel | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Concorde | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| DHC6 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| F450 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| F4N | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| F80C | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| J246 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| J3Cub | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| L17 | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| L410 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| LM | fails | fails | fails | - / - / - | LoadModel failed: Could not open file: Path "<data>/aircraft/LM/LM.xml" JSBSim failed to open the configuration file: Path "<data>/aircraft/LM/LM.xml" |
+| MD11 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| OV10 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Pterosaur | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| SGS | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Short_S23 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Shuttle | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| Submarine_Scout | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| T37 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| T38 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| X15 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| XB-70 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| ZLT-NT | loads | loads | loads | stopped after 1 / stopped after 1 / stopped after 1 |  |
+| ah1s | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| ball | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| ballx | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| blank | fails | fails | fails | - / - / - | LoadModel failed: YOU HAVE AN INCOMPATIBLE CFG FILE FOR THIS AIRCRAFT. RESULTS WILL BE UNPREDICTABLE !! Current version needed is: 2.0 You have version: No metrics element was found in the aircraft config file. |
+| c172p | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| c172r | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| c172x | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| c182 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| c310 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| dr1 | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| f104 | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| f15 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| f16 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| f22 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| fokker100 | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| fokker50 | loads | loads | loads | RunIC failed / RunIC failed / RunIC failed |  |
+| global5000 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| minisgs | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| mk82 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| p51d | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| pa28 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| paraglider | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| pc7 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| pogo-jsbsim | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| sgs126 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| sgs233 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| t6texan2 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| weather-balloon | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| wrightFlyer1903 | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |
+| x24b | loads | loads | loads | 10 steps / 10 steps / 10 steps |  |

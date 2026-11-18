@@ -1,0 +1,12 @@
+== 1. injected compile error
+build.sh exit code with the broken file: 1
+dist-wasm/ afterwards: marker.txt 
+5:/home/user/FDM/build/selftest/src/host/grid_ground.cpp:92:1: error: expected unqualified-id before 'this'
+ok: the build stops on an error and leaves dist-wasm/ unchanged
+== 2. clean build in another folder
+same      fdm-weh.wasm ab2357c849ba72d8e9e26a42b071ff9009e12a1756307a3aa53acd32e26353eb
+same      fdm-weh.mjs ef1fc74eb7bdac8d086567234dbc12bb01539a7d7c0e533cec90e6d1a6d99acc
+same      fdm-jseh.wasm 5631da24f912a5104e394f2356a1dba4fa6854aa2011c881fa017957e4c4185d
+same      fdm-jseh.mjs 130ccb9f9e6c04afa8fb2eede03de67e6185574c9b266137555155ed7f40e874
+different fdm_native (native answer key; not shipped)
+ok: both WebAssembly builds are byte-identical when rebuilt in another folder
