@@ -225,6 +225,40 @@ lines in headless Chromium here.
 ### If a line fails
 The result is kept and reported with evidence, no threshold is edited, and the session stops for the user.
 
+### Added lines
+
+Nothing above this heading has been changed since the first commit of this file (`31ec289`).
+
+#### Added 2026-11-18, after the slope-rest Class A line failed, with the user's agreement: Class N
+
+Committed before any further parity run. Reason: Class A (and Class S) ask forces and speeds to agree more
+closely than a last-digit position difference allows once a gear spring is in the loop (part 3, "The failed
+line"). The failed line and its result stay.
+
+**Class N (noise-relative), for runs that touch the ground.**
+- *Applies to* every judged run in which any wheel or contact flag is 1 on any judged row of the native trace:
+  the slope-rest run, the first 1 s of `c1723` and of `f16_test`, and each such script in the sweep. Runs that
+  never touch the ground keep their frozen class only.
+- *Native ensemble* (the one frozen for Class B): 8 native runs with `ic/h-sl-ft` moved by k × 2⁻²⁸ ft,
+  k = ±1, ±2, ±3, ±4, before `RunIC`. A member whose row 0 is bit-identical to the unperturbed native run had no
+  effect. If fewer than 4 members differ from it, the line is **refused** (a failure, not a pass).
+- *Pass, per judged column:* largest |wasm − native| over the judged rows ≤ max(F, 3 × S), where F is that run's
+  frozen allowance (Class A, or Class S in the sweep) and S is the largest |member − native| over the judged rows
+  and all members.
+- *Not widened:* position columns keep F only (1e-6 ft; 1e-3 ft in the sweep). Contact flags must be equal.
+- Angles are wrapped. The comparator's refusals (column lists, row counts, NaN or Inf, sim time) apply to every
+  trace, the members included.
+- *Reporting:* for each such run both results are shown: the frozen class (which may fail) and Class N.
+- *What counts from here:* a ground-contact run meets its criterion on Class N. If Class N fails or is refused,
+  or any other frozen line fails, the result is kept and the session stops again.
+
+What this line is and is not:
+- For the slope-rest run it was written after that run's wasm-native difference had been seen, but before any
+  ensemble had been run. For every other run it was written before the run.
+- The ensemble shows how large a difference one last digit makes in native itself. A pass says the wasm-native
+  difference is of that size. It is not proof that the build is correct. The independent evidence is the
+  position agreement, the bit-for-bit checks, and the airborne Class A runs.
+
 ---
 
 ## Part 3. Results

@@ -212,6 +212,109 @@ export function classB(native: Trace, test: Trace, ensemble: Trace[], untilSimTi
   return { pass, rowsJudged: rows, columns: out };
 }
 
+// --- Class N: noise-relative, for runs that touch the ground (REPORT.md part 2, "Added lines") --------------
+
+const POSITION_OR_CONTACT = (column: string): boolean => POSITION.test(column) || CONTACT.test(column);
+
+/** True when any wheel or contact flag is 1 on any judged row. */
+export function touchesGround(t: Trace, rows: number): boolean {
+  const n = t.columns.length;
+  const idx = t.columns.map((c, i) => (CONTACT.test(c) ? i : -1)).filter((i) => i >= 0);
+  for (let r = 0; r < rows; r++) for (const i of idx) if (t.data[r * n + i] !== 0) return true;
+  return false;
+}
+
+export interface ClassNColumn extends ColumnResult {
+  frozenAllowed: number; // F
+  spread: number; // S
+}
+
+export interface ClassNResult {
+  refused?: string;
+  pass: boolean;
+  rowsJudged: number;
+  membersWithEffect: number;
+  columns: ClassNColumn[];
+}
+
+/**
+ * Class N. `frozen` is the run's frozen class (classA or classS). The ensemble members are native runs with
+ * the start altitude moved by k * 2^-28 ft. Pass per column: max |test - native| <= max(F, 3 S); positions
+ * and contact flags keep F only.
+ */
+export function classN(native: Trace, test: Trace, ensemble: Trace[], opt: CompareOptions): ClassNResult {
+  const none = (refused: string): ClassNResult => ({ refused, pass: false, rowsJudged: 0, membersWithEffect: 0, columns: [] });
+  const base = compareTraces(native, test, opt);
+  if (base.refused) return none(`wasm vs native: ${base.refused}`);
+  const rows = base.rowsJudged;
+  const n = native.columns.length;
+  // Each member is checked like any trace: same shape, finite, same sim time. (Info tolerance: nothing is judged.)
+  let membersWithEffect = 0;
+  for (const [i, m] of ensemble.entries()) {
+    const check = compareTraces(native, m, { ...opt, tolerance: () => ({ kind: "info" }) });
+    if (check.refused) return none(`ensemble member ${i}: ${check.refused}`);
+    let differs = false;
+    for (let c = 0; c < n && !differs; c++) if (m.data[c] !== native.data[c]) differs = true;
+    if (differs) membersWithEffect++;
+  }
+  if (membersWithEffect < 4) return none(`only ${membersWithEffect} of ${ensemble.length} ensemble members differ from native at row 0`);
+
+  const tc = native.columns.indexOf(TIME_COLUMN);
+  const columns: ClassNColumn[] = [];
+  let pass = true;
+  for (const col of base.columns) {
+    const c = native.columns.indexOf(col.column);
+    if (c === tc) continue;
+    const angle = isAngle(col.column);
+    let spread = 0;
+    for (const m of ensemble) {
+      for (let r = 0; r < rows; r++) {
+        let d = m.data[r * n + c] - native.data[r * n + c];
+        if (angle) d = wrapAngle(d);
+        spread = Math.max(spread, Math.abs(d));
+      }
+    }
+    const frozenAllowed = col.allowed;
+    const allowed = !col.judged ? NaN : POSITION_OR_CONTACT(col.column) ? frozenAllowed : Math.max(frozenAllowed, 3 * spread);
+    let firstRowOver = -1;
+    if (col.judged) {
+      for (let r = 0; r < rows && firstRowOver < 0; r++) {
+        let d = test.data[r * n + c] - native.data[r * n + c];
+        if (angle) d = wrapAngle(d);
+        if (Math.abs(d) > allowed) firstRowOver = r;
+      }
+    }
+    const ok = !col.judged || firstRowOver < 0;
+    if (!ok) pass = false;
+    columns.push({ ...col, allowed, pass: ok, firstRowOver, frozenAllowed, spread });
+  }
+  return { pass, rowsJudged: rows, membersWithEffect, columns };
+}
+
+export function describeN(r: ClassNResult): string {
+  if (r.refused) return `REFUSED: ${r.refused}`;
+  let worst: ClassNColumn | undefined;
+  let worstRatio = -1;
+  for (const c of r.columns) {
+    if (!c.judged) continue;
+    const ratio = c.allowed > 0 ? c.maxAbs / c.allowed : c.maxAbs > 0 ? Infinity : 0;
+    if (ratio > worstRatio) { worstRatio = ratio; worst = c; }
+  }
+  if (!worst) return `${r.pass ? "pass" : "FAIL"} (no judged columns)`;
+  return `${r.pass ? "pass" : "FAIL"} rows ${r.rowsJudged}, ${r.membersWithEffect} members with effect; closest to its limit: ${worst.column}: |d| ${fmt(worst.maxAbs)}, ` +
+    `allowed ${fmt(worst.allowed)} (frozen ${fmt(worst.frozenAllowed)}, 3 x spread ${fmt(3 * worst.spread)}), ratio ${worstRatio.toFixed(3)}` +
+    (worst.firstRowOver >= 0 ? `, first over at row ${worst.firstRowOver}` : "");
+}
+
+export function tableN(r: ClassNResult): string {
+  if (r.refused) return `REFUSED: ${r.refused}\n`;
+  let s = "column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result\n";
+  for (const c of r.columns) {
+    s += `${c.column} | ${c.judged ? "yes" : "info"} | ${fmt(c.maxAbs)} | ${fmt(c.frozenAllowed)} | ${fmt(c.spread)} | ${fmt(c.allowed)} | ${c.judged ? (c.pass ? "pass" : `FAIL from row ${c.firstRowOver}`) : "-"}\n`;
+  }
+  return s;
+}
+
 // --- reporting ---------------------------------------------------------------------------------------------
 
 export function fmt(x: number): string {

@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { type Trace, bitEqual, classA, classB, classS, compareTraces } from "./lib/compare.ts";
+import { type Trace, bitEqual, classA, classB, classN, classS, compareTraces, touchesGround } from "./lib/compare.ts";
 
 const COLS = ["simulation/sim-time-sec", "position/h-sl-ft", "velocities/u-fps", "velocities/p-rad_sec", "attitude/psi-rad", "forces/fbz-total-lbs", "gear/unit[0]/WOW", "aero/alpha-rad", "position/ecef-x-ft", "attitude/phi-rad", "attitude/theta-rad", "velocities/vtrue-kts"];
 const N = COLS.length;
@@ -131,4 +131,58 @@ test("Class B: caps, ensemble spread, refusals", () => {
   assert.ok(classB(native, within, [nan]).refused);
   // The window: a late difference is not judged when the run is cut at 1.5 s.
   assert.equal(classB(native, over, [], 1.5).pass, true);
+});
+
+test("Class N: allowance is max(frozen, 3 x ensemble spread); positions and contact are not widened", () => {
+  const native = make();
+  // Members differ from native at row 0 (they had an effect) and spread forces by 1e-4 lb, speeds by 1e-8.
+  const member = (scale: number) => make(300, (r, c, v) =>
+    c === "position/ecef-x-ft" ? v + 3.7e-9 * scale : c === "forces/fbz-total-lbs" ? v + 1e-4 * scale : c === "velocities/u-fps" ? v + 1e-8 * scale : v);
+  const ensemble = [1, -1, 0.5, -0.5, 0.25, -0.25, 0.75, -0.75].map(member);
+  const A = { tolerance: classA };
+  assert.equal(touchesGround(native, native.rows), true);
+  assert.equal(touchesGround(make(300, (r, c, v) => (c.endsWith("/WOW") ? 0 : v)), 300), false);
+
+  // A wasm trace off by 2e-4 lb fails Class A but is inside 3 x 1e-4.
+  const noisy = make(300, (r, c, v) => (c === "forces/fbz-total-lbs" ? v + 2e-4 : c === "velocities/u-fps" ? v + 2.5e-8 : v));
+  assert.equal(compareTraces(native, noisy, A).pass, false);
+  const ok = classN(native, noisy, ensemble, A);
+  assert.equal(ok.refused, undefined);
+  assert.equal(ok.pass, true);
+  assert.equal(ok.membersWithEffect, 8);
+  const fz = ok.columns.find((x) => x.column === "forces/fbz-total-lbs")!;
+  assert.ok(Math.abs(fz.spread - 1e-4) < 1e-9 && Math.abs(fz.allowed - 3e-4) < 1e-9);
+
+  // Beyond 3 x spread: fails.
+  const tooFar = make(300, (r, c, v) => (c === "forces/fbz-total-lbs" && r === 150 ? v + 4e-4 : v));
+  const bad = classN(native, tooFar, ensemble, A);
+  assert.equal(bad.pass, false);
+  assert.equal(bad.columns.find((x) => x.column === "forces/fbz-total-lbs")!.firstRowOver, 150);
+
+  // A column the ensemble does not spread keeps the frozen allowance.
+  const rate = make(300, (r, c, v) => (c === "velocities/p-rad_sec" && r === 10 ? v + 1e-9 : v));
+  assert.equal(classN(native, rate, ensemble, A).pass, false);
+
+  // Positions are never widened, however much the ensemble spreads them.
+  const wide = ensemble.map((m, i) => make(300, (r, c, v) => (c === "position/h-sl-ft" ? v + 1e-3 : m.data[r * N + COLS.indexOf(c)])));
+  const pos = make(300, (r, c, v) => (c === "position/h-sl-ft" ? v + 2e-6 : v));
+  assert.equal(classN(native, pos, wide, A).pass, false);
+  // Contact flags must be equal even if a member's flag differs.
+  const wowMembers = ensemble.map((m) => make(300, (r, c, v) => (c === "gear/unit[0]/WOW" && r === 100 ? 1 : m.data[r * N + COLS.indexOf(c)])));
+  const wow = make(300, (r, c, v) => (c === "gear/unit[0]/WOW" && r === 100 ? 1 : v));
+  assert.equal(classN(native, wow, wowMembers, A).pass, false);
+
+  // Refusals: members with no effect, NaN in a member, wrong shape, NaN in the tested trace.
+  assert.match(classN(native, noisy, Array.from({ length: 8 }, () => make()), A).refused ?? "", /only 0 of 8/);
+  assert.match(classN(native, noisy, [...ensemble.slice(0, 3), make(), make(), make(), make(), make()], A).refused ?? "", /only 3 of 8/);
+  const nanMember = make(300, (r, c, v) => (c === "velocities/u-fps" && r === 7 ? NaN : v));
+  assert.match(classN(native, noisy, [...ensemble.slice(0, 7), nanMember], A).refused ?? "", /ensemble member 7: NaN/);
+  assert.match(classN(native, noisy, [...ensemble.slice(0, 7), make(299)], A).refused ?? "", /ensemble member 7: row counts/);
+  assert.match(classN(native, nanMember, ensemble, A).refused ?? "", /wasm vs native: NaN/);
+
+  // The window is respected: a late excess is not judged in the first second.
+  assert.equal(classN(native, tooFar, ensemble, { tolerance: classA, windowSeconds: 1 }).pass, true);
+  // With the Class S allowance as the frozen class, a larger frozen floor applies.
+  const s = classN(native, rate, ensemble, { tolerance: classS });
+  assert.equal(s.pass, true);
 });
