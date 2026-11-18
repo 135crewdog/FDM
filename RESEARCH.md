@@ -30,6 +30,13 @@ written.
   place), and a gear spring turns that into about 1e-5 to 1e-4 lb. **Supported** [session 01].
 - **The c310 autopilot and the mk82 bomb amplify a last-digit difference in native itself** (heading on the
   0 / 2π seam; a pitch-rate blow-up). **Supported** [session 01, native-only experiments].
+- **Open questions of section 5, as far as session 01 settled them:** 1 (pin): v1.3.3 builds unpatched with
+  Emscripten 6.0.13. 2 (deploy branch): the page deploys from `main` through a workflow that uploads a committed
+  folder. 3 (memory size): a fixed 16 MiB survives 20 create/destroy cycles, 20 fresh modules and 20 fresh
+  Workers on the iPhone (**Verified**, the user's device). 4 (`-flto`): not done. 5 to 7: unchanged.
+- **iPhone timing, session 01** (Safari 27.2, **Verified** on the user's device): about 8 µs per step with
+  `-fwasm-exceptions` and about 18 µs with `-fexceptions`, the same in a Worker and on the main thread and at
+  1/120 to 1/1000 s; 20 external forces through a bulk array cost about 1 µs per step.
 - Not checked: whether `emcmake` would have given `-O2` for a Release build. The build sets `-O3` itself and
   checks every file's command line.
 
