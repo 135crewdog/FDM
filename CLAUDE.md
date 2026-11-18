@@ -37,6 +37,20 @@ Flight dynamics model for an iPhone PWA flight sim. **Attempt 2.** Read `README.
   299629, fixed in a later 26.x; Verified upstream). The user's Safari 27.2 ran attempt 1's build. Always ship an
   `-fexceptions` fallback build too.
 
+## Lessons from attempt 2, session 01 (Supported there unless marked)
+- **Write parity lines relative to noise, not as fixed tiny numbers.** WebAssembly and native differ in the last
+  digit from the first row. A gear spring, a heading on the 0 / 2π seam, an autopilot or a numerical blow-up
+  amplifies that, in native against native too. The useful line is: no more than 3 times what native differs from
+  itself after a one-last-digit nudge. Keep position limits fixed.
+- **Read back that a scenario is what its name says** (on the slope, on the ground, engine running). A JSBSim
+  initial-condition latitude is geocentric; a grid laid out in geodetic latitude ended up 10 nm away.
+- When a frozen line fails: keep it, find the cause, try to reproduce it in native alone, report, stop.
+- JSBSim script `<property>` and `<event>` elements must be inside `<run>` (Verified upstream).
+- A never-written JSBSim property has no type but is a valid value; only a node with children is a folder.
+- Node 22 runs TypeScript files directly if they use only erasable syntax (no enums, no parameter properties).
+- The git proxy accepted pushes to `baseline/jsbsim` and to `main`. Pages published `main` about 30 s after the
+  push.
+
 ## Decisions (user, 2026-11-18)
 - JSBSim runs in a **Web Worker**. Also time it on the main thread.
 - The JSBSim baseline includes a **C++ ground hook** (`FGGroundCallback` reading a height grid). It is host

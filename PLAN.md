@@ -5,28 +5,39 @@ Update this file at the end of every session: mark what is done, link the report
 ## Done
 
 - **Session 00 (research), 2026-11-18:** `RESEARCH.md` on `main`. User decisions recorded in `CLAUDE.md`.
+- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim`, report `REPORT.md` on that branch.
+  Built, tested against native, test page published. **Open:** the user's iPhone results and the tag (below).
 
 ## Stage 1: JSBSim baseline (`baseline/jsbsim`)
 
-**Status:** next (`prompts/01-jsbsim-baseline.md`). Read `RESEARCH.md` first: research done 2026-11-18
-(session 00), and prompt 01 was rewritten from it.
+**Status:** built and tested; waiting for the iPhone results, then the tag `jsbsim-baseline-v1`.
 
-**Goal:** JSBSim compiled to WebAssembly from scratch, upstream physics, no patches, plus a thin host layer
-(wrapper, C++ ground hook, fixed-step loop in a Worker and in Node).
+**What exists** (details and evidence labels in `REPORT.md` on the branch):
+- JSBSim v1.3.3 (`66f7fafc`), unpatched, built with Emscripten 6.0.13: `dist-wasm/fdm-weh` (`-fwasm-exceptions`)
+  and `dist-wasm/fdm-jseh` (`-fexceptions`), `-O3`, fixed memory 16 MiB. A rebuild in another folder is
+  byte-identical.
+- Host layer: C++ wrapper with plain C exports, height-grid ground callback, logger; TypeScript wrapper, fixed-step
+  loop, Worker handler. Native answer key built from the same C++.
+- Test page: `test-page/` on `main`, published at `https://135crewdog.github.io/FDM/` by
+  `.github/workflows/pages.yml` (uploads the folder as it is).
 
-**Done when** (full list in `prompts/01-jsbsim-baseline.md`):
-- The build is reproducible with pinned versions (`-fwasm-exceptions` build plus `-fexceptions` fallback).
-- Native JSBSim from the same commit, with the same wrapper C++, is the answer key.
-- Every aircraft that loads natively loads in WebAssembly.
-- The ground hook matches native on flat ground and a slope.
-- Parity step by step on c1723, an f16 script and NASA check cases 01, 02 and one more.
-- External forces can be set from TypeScript and match native.
-- An iPhone test page runs (Worker and main thread); the user pastes results.
-- The result is tagged `jsbsim-baseline-v1`.
+**Results against the done-criteria:**
+- Wrapper, loop, load test (59 of 61 aircraft load everywhere; the same 2 fail everywhere), external forces: pass.
+- Ground hook: passes, except one frozen line (slope run, Class A) that was written too tight for ground contact.
+  It is kept as failed; the run passes the line added with the user's agreement (Class N).
+- Parity: c1723, f16_test and NASA cases 01, 02, 03 meet their lines. In the wider sweep of the other 59 script
+  files, 56 meet their line and **3 fail a frozen line and are kept as failed** (`c3104`, `c3105`,
+  `mk82_script`). In all three, native differs from itself by the same amount after a one-last-digit change
+  (user decision 2026-11-18: record, add no new line, continue).
+- iPhone page: passes in headless Chromium, including from the live address. The iPhone run is the open item.
+
+**To close the stage:** the user runs the page on the iPhone and pastes the results; they go into `REPORT.md`;
+then tag `jsbsim-baseline-v1` on the branch's last commit (if the tag push is refused, the commit is recorded
+here and the user creates the tag on GitHub).
 
 ## Stage 2: YASim baseline (`baseline/yasim`)
 
-**Status:** not started.
+**Status:** next (`prompts/02-yasim-baseline.md`).
 
 **Goal:** FlightGear's YASim compiled to WebAssembly the same way, with only the minimum glue it needs to run
 outside FlightGear (YASim depends on SimGear's property tree and XML parsing).

@@ -279,7 +279,8 @@ What this line is and is not:
 | 6 Load test | done, passes |
 | 7 Parity | named runs pass; sweep: 56 of 59 meet their line, **3 fail and stay failed** (below) |
 | 8 External forces | done, passes |
-| 9, 10 | in progress |
+| 9 iPhone page | built, passes in headless Chromium, published from `main`; **the iPhone run by the user is pending** |
+| 10 Finish | after the iPhone results |
 
 ### Second stop: three sweep scripts fail a frozen line (criterion 7)
 
@@ -495,6 +496,27 @@ same handler passes the same protocol test in Node directly and in a `worker_thr
   | JS-EH | 1/1000 | 26.7 µs | 30.5 µs | 34.5 µs |
 
   The iPhone figures come from criterion 9.
+
+**9. iPhone page: built and published; the iPhone result is pending.**
+- Source `web/`, build script `scripts/build-page.mjs`, built page `test-page/` (page build `30f1c44d37`). The
+  page loads the committed binaries unchanged. `main` holds a copy of `test-page/` and
+  `.github/workflows/pages.yml`, which uploads that folder as it is.
+- What the page does, for each build, on the main thread and in a Web Worker: user agent and timer resolution;
+  time per step at 1/120, 1/240, 1/480 and 1/1000 s with and without 20 forces; a broken aircraft caught and
+  shown; one instance created and destroyed 20 times; 20 fresh modules and 20 fresh Workers; the fixed-step loop
+  driven by display frames, then pause and resume. If the `-fwasm-exceptions` build kills the page while
+  starting (the Safari 26.0 bug), the next load runs the `-fexceptions` build only.
+- Headless Chromium 157, served under `/FDM/` like on GitHub Pages (`tests/page.chromium.mjs`,
+  `results/page-chromium.txt`): both builds PASS every page line; 0 uncaught errors; the fallback path and
+  `?build=` behave as designed. **Supported** (Chromium is not Safari).
+- In Chromium: Worker and main thread both about 11 to 18 µs per step with `-fwasm-exceptions`, 17 to 29 µs with
+  `-fexceptions`; 239 steps in 2 s of 60 Hz frames; 0 steps while paused and 0 on the first frame after resume;
+  heap growth 0 over 20 cycles. Information only; the iPhone figures are what count.
+- The live address `https://135crewdog.github.io/FDM/` served page build `30f1c44d37` about 30 s after the push
+  to `main`, with the `.wasm` as `application/wasm`; the live page run in headless Chromium: both builds PASS.
+  **Verified** (the deployed site).
+- Not yet known (**Reasoned** until the user's run): that either build starts on the user's Safari; the timings
+  on the iPhone; that 20 fresh 16 MiB modules and 20 Workers survive there.
 
 **Comparator self-test:** 17 tests on synthetic traces pass (`tests/compare-selftest.test.ts`), written and run
 before any native-against-wasm comparison; the Class N test was added with the Class N line. **Supported.**
