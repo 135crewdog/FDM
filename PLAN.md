@@ -5,12 +5,12 @@ Update this file at the end of every session: mark what is done, link the report
 ## Done
 
 - **Session 00 (research), 2026-11-18:** `RESEARCH.md` on `main`. User decisions recorded in `CLAUDE.md`.
-- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim`, report `REPORT.md` on that branch.
-  Built, tested against native, test page published. **Open:** the user's iPhone results and the tag (below).
+- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim`, tag `jsbsim-baseline-v1`, report
+  `REPORT.md` on that branch.
 
 ## Stage 1: JSBSim baseline (`baseline/jsbsim`)
 
-**Status:** built and tested; waiting for the iPhone results, then the tag `jsbsim-baseline-v1`.
+**Status:** done. Tag `jsbsim-baseline-v1` on the last commit of the branch (the hash is in `PLAN.md` on `main`).
 
 **What exists** (details and evidence labels in `REPORT.md` on the branch):
 - JSBSim v1.3.3 (`66f7fafc`), unpatched, built with Emscripten 6.0.13: `dist-wasm/fdm-weh` (`-fwasm-exceptions`)
@@ -29,11 +29,13 @@ Update this file at the end of every session: mark what is done, link the report
   files, 56 meet their line and **3 fail a frozen line and are kept as failed** (`c3104`, `c3105`,
   `mk82_script`). In all three, native differs from itself by the same amount after a one-last-digit change
   (user decision 2026-11-18: record, add no new line, continue).
-- iPhone page: passes in headless Chromium, including from the live address. The iPhone run is the open item.
+- iPhone (Safari 27.2, the user's device): both builds pass every page line. About 8 µs per step with
+  `-fwasm-exceptions` and 18 µs with `-fexceptions`, in the Worker and on the main thread, at every step size;
+  20 forces cost about 1 µs; no heap growth over 20 create/destroy cycles; 20 fresh modules and 20 Workers
+  complete.
 
-**To close the stage:** the user runs the page on the iPhone and pastes the results; they go into `REPORT.md`;
-then tag `jsbsim-baseline-v1` on the branch's last commit (if the tag push is refused, the commit is recorded
-here and the user creates the tag on GitHub).
+**Left open on purpose** (not baseline work): `-flto`, Emscripten 7, stack depth, the fallback on a real
+Safari 26.0, a real page-hidden event on the device. Listed in `REPORT.md` with the test that would settle each.
 
 ## Stage 2: YASim baseline (`baseline/yasim`)
 

@@ -263,11 +263,21 @@ What this line is and is not:
 
 ## Part 3. Results
 
-**Status (2026-11-18): work continues after two stops.**
+**Status (2026-11-18): finished. All ten criteria are closed.** The work stopped twice on a failed frozen line;
+both times the result was kept and the user decided how to go on.
 - First stop, criterion 4: the slope-rest Class A line failed. The user agreed to the added Class N line.
 - Second stop, criterion 7: three scripts of the 59-script sweep fail a frozen line. **User decision
   (2026-11-18): record the three as failed with their causes, add no new pass/fail line, and continue.**
-  They stay FAILED below.
+- The user ran the test page on the iPhone and pasted the results: both builds pass every page line.
+- **User decision (2026-11-18): tag `jsbsim-baseline-v1` with the failed lines on record.**
+
+**Frozen lines that failed and stay failed** (each with its cause, further down):
+1. Slope-rest run, Class A (criterion 4). The run passes the added Class N.
+2. First second of `c1723` and of `f16_test`, Class A (criterion 7): ground contact, same cause as 1. Both pass
+   the added Class N, and both pass Class B on the whole run.
+3. Sweep scripts `c3104` and `c3105`, Class S (criterion 7): no added line covers them.
+4. Sweep script `mk82_script`, "fails at the same stage and step" (criterion 7): no added line covers it.
+5. 16 ground-contact sweep scripts fail the frozen Class S and pass the added Class N (`results/parity-sweep.md`).
 
 | Criterion | State |
 |---|---|
@@ -279,8 +289,8 @@ What this line is and is not:
 | 6 Load test | done, passes |
 | 7 Parity | named runs pass; sweep: 56 of 59 meet their line, **3 fail and stay failed** (below) |
 | 8 External forces | done, passes |
-| 9 iPhone page | built, passes in headless Chromium, published from `main`; **the iPhone run by the user is pending** |
-| 10 Finish | after the iPhone results |
+| 9 iPhone page | done: passes on the user's iPhone in both builds |
+| 10 Finish | done: tag `jsbsim-baseline-v1`, `prompts/02-yasim-baseline.md`, `PLAN.md`, `prompts/README.md` |
 
 ### Second stop: three sweep scripts fail a frozen line (criterion 7)
 
@@ -497,26 +507,74 @@ same handler passes the same protocol test in Node directly and in a `worker_thr
 
   The iPhone figures come from criterion 9.
 
-**9. iPhone page: built and published; the iPhone result is pending.**
-- Source `web/`, build script `scripts/build-page.mjs`, built page `test-page/` (page build `30f1c44d37`). The
-  page loads the committed binaries unchanged. `main` holds a copy of `test-page/` and
-  `.github/workflows/pages.yml`, which uploads that folder as it is.
-- What the page does, for each build, on the main thread and in a Web Worker: user agent and timer resolution;
-  time per step at 1/120, 1/240, 1/480 and 1/1000 s with and without 20 forces; a broken aircraft caught and
-  shown; one instance created and destroyed 20 times; 20 fresh modules and 20 fresh Workers; the fixed-step loop
-  driven by display frames, then pause and resume. If the `-fwasm-exceptions` build kills the page while
-  starting (the Safari 26.0 bug), the next load runs the `-fexceptions` build only.
-- Headless Chromium 157, served under `/FDM/` like on GitHub Pages (`tests/page.chromium.mjs`,
-  `results/page-chromium.txt`): both builds PASS every page line; 0 uncaught errors; the fallback path and
-  `?build=` behave as designed. **Supported** (Chromium is not Safari).
-- In Chromium: Worker and main thread both about 11 to 18 µs per step with `-fwasm-exceptions`, 17 to 29 µs with
-  `-fexceptions`; 239 steps in 2 s of 60 Hz frames; 0 steps while paused and 0 on the first frame after resume;
-  heap growth 0 over 20 cycles. Information only; the iPhone figures are what count.
-- The live address `https://135crewdog.github.io/FDM/` served page build `30f1c44d37` about 30 s after the push
-  to `main`, with the `.wasm` as `application/wasm`; the live page run in headless Chromium: both builds PASS.
-  **Verified** (the deployed site).
-- Not yet known (**Reasoned** until the user's run): that either build starts on the user's Safari; the timings
-  on the iPhone; that 20 fresh 16 MiB modules and 20 Workers survive there.
+**9. iPhone page: passes on the user's iPhone, in both builds.** Pasted output, unchanged:
+`results/page-iphone.txt`.
+- Device: iPhone, Safari 27.2 (the user-agent string freezes the iOS number at 18_7), screen 393×852 @3, 4 cores,
+  in a Safari tab. Page build `30f1c44d37`, binaries `ab2357c8…` and `5631da24…` as committed.
+- The four page lines (part 2), each for `-fwasm-exceptions` and for `-fexceptions`. **Verified** (the user's
+  device):
+
+  | Line | Result |
+  |---|---|
+  | Every section finishes with no uncaught error | yes, both builds; uncaught errors 0 |
+  | The broken aircraft shows an `Error` carrying JSBSim's message | yes, on the main thread and in the Worker: `FdmError: LoadModel threw: In file …/broken_xml.xml: line 8 XML parse error: mismatched tag` |
+  | 20 create/destroy cycles complete in the Worker and on the main thread | 20 of 20 in both, both builds |
+  | Every timing cell reports a number | 16 of 16, both builds |
+
+- Time per step on the iPhone, microseconds (c172x airborne; median of 5 fresh instances × 3000 single steps;
+  one call into WebAssembly per step; 16 outputs read per step). Information only; **Verified** (the user's
+  device):
+
+  | dt | `-fwasm-exceptions`: Worker, no forces / 20 forces | main thread, no forces / 20 forces | `-fexceptions`: Worker, no forces / 20 forces | main thread, no forces / 20 forces |
+  |---|---|---|---|---|
+  | 1/120 s | 7.7 / 9.7 | 9.0 / 9.3 | 17.0 / 18.3 | 18.3 / 19.3 |
+  | 1/240 s | 8.0 / 8.7 | 7.7 / 9.0 | 18.0 / 19.0 | 18.7 / 20.0 |
+  | 1/480 s | 8.0 / 8.7 | 8.0 / 9.0 | 18.0 / 18.7 | 18.7 / 20.0 |
+  | 1/1000 s | 8.0 / 9.0 | 8.3 / 9.0 | 18.0 / 19.3 | 19.3 / 20.3 |
+
+  With all 140 values of the 20 forces written every step at 1/120 s: 10.0 (Worker) and 10.7 (main thread) with
+  `-fwasm-exceptions`; 21.7 and 23.0 with `-fexceptions`.
+- What these figures say:
+  - About 8 µs per step with `-fwasm-exceptions`, the same in the Worker and on the main thread and at every
+    step size. At 120 steps per second that is about 1 ms of computing per second of flight.
+  - `-fexceptions` takes about 18 µs: 2.2 times as long. Attempt 1 measured about 2 times.
+  - 20 forces through the bulk path cost about 1 µs per step (20 values) to 2 µs (140 values).
+  - The timer's resolution is 1 ms, as expected, so each figure is one batch of 3000 steps, about 24 ms long.
+    A figure is therefore good to about ±0.3 µs.
+- Memory on the iPhone (**Verified**, the user's device): C heap in use is 17,384 bytes after cycle 1, 2 and 20
+  (growth 0); heap top 1.80 MiB of the fixed 16 MiB. 20 fresh 16 MiB modules on the main thread: 20 of 20 in
+  about 1.1 s. 20 fresh Workers started, used and terminated: 20 of 20 in about 1.3 s. So a fixed size of 16 MiB
+  survives 20 create/destroy cycles (`RESEARCH.md` open question 3).
+- Loop in the Worker on the iPhone (**Verified**, the user's device): 121 frames in 2.01 s, 239 steps, sim time
+  1.992 s, at most 3 steps in a frame, no time dropped; 0 steps while paused and 0 on the first frame after
+  resume.
+- Start-up on the iPhone: wasm download 0.44 to 0.46 s; module and files on the main thread 0.40 to 0.47 s.
+- Before the user's run, the same page passed in headless Chromium 157, served under `/FDM/`
+  (`tests/page.chromium.mjs`, `results/page-chromium.txt`), also from the live address, with the fallback path
+  and `?build=` behaving as designed. **Supported** (Chromium is not Safari).
+- Source `web/`, build script `scripts/build-page.mjs`, built page `test-page/`. `main` holds a copy of
+  `test-page/` and `.github/workflows/pages.yml`, which uploads that folder as it is. The live address served
+  the new build about 30 s after the push. **Verified** (the deployed site).
+- Not tested on the device:
+  - The fallback after a failed `-fwasm-exceptions` start. Safari 27.2 starts that build, so the fallback did not
+    run. It works in Chromium with the marker set by hand. Whether it helps on a real Safari 26.0 is **Reasoned**
+    (the test: that Safari version).
+  - A real "page hidden" event: none happened during the run (the page reports 0). The pause and resume logic is
+    tested with messages only. **Reasoned** for a real app switch (the test: switch apps during section 5).
+  - The page installed as a home-screen app, and Low Power Mode (60 Hz frames or lower).
+
+**10. Finish: done.** Tag `jsbsim-baseline-v1` on the last commit of this branch (its hash is in `PLAN.md` on
+`main`). `prompts/02-yasim-baseline.md` written; `PLAN.md`, `prompts/README.md`, `RESEARCH.md` (corrections) and
+`CLAUDE.md` (lessons) updated on `main`.
+
+### Not done, and what would settle it
+- Stack depth of use (1 MiB is given): fill the stack with a pattern and read the high-water mark.
+- `-flto` (`RESEARCH.md` open question 4) and Emscripten 7: build and time on the page.
+- Why the native answer key is not byte-identical between build folders (the WebAssembly builds are).
+- The suite was last run in full (`scripts/run-all-tests.sh`) on the committed binaries before two small
+  TypeScript changes (`ts/bench.ts` gained `runCycles`; `ts/worker-handler.ts` uses it). After them, the loop and
+  Worker tests, the typecheck and the page run in Chromium were run again and pass; the other tests do not use
+  those lines. A full re-run was not done after them.
 
 **Comparator self-test:** 17 tests on synthetic traces pass (`tests/compare-selftest.test.ts`), written and run
 before any native-against-wasm comparison; the Class N test was added with the Class N line. **Supported.**
