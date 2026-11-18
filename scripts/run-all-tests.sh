@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Runs every test against the binaries in dist-wasm/ and build/native. Raw output goes to results/.
+# Runs every test against the binaries in dist-wasm/ and build/native. Each test writes its result file to
+# results/; the full console logs go to build/test-logs/ (not committed).
 # Run scripts/build.sh first. Exit code 0 only if everything passed.
 #   scripts/run-all-tests.sh            everything
 #   scripts/run-all-tests.sh quick      without the script sweep and the build self-test (slow)
@@ -7,12 +8,12 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 MODE="${1:-all}"
-mkdir -p results build/tmp/out
+mkdir -p results build/tmp/out build/test-logs
 failed=()
 run() { # name, command...
   local name="$1"; shift
   echo "== $name"
-  if "$@" > "results/$name.log.txt" 2>&1; then echo "   ok"; else echo "   FAILED (see results/$name.log.txt)"; failed+=("$name"); fi
+  if "$@" > "build/test-logs/$name.log" 2>&1; then echo "   ok"; else echo "   FAILED (see build/test-logs/$name.log)"; failed+=("$name"); fi
 }
 # The binaries under test are the ones build-info.json describes.
 run binaries-match-build-info node scripts/check-binaries.mjs
@@ -33,4 +34,9 @@ else
 fi
 run typecheck npx tsc --noEmit
 echo
-if [ "${#failed[@]}" -eq 0 ]; then echo "ALL PASSED"; else echo "FAILED: ${failed[*]}"; exit 1; fi
+kept="$(grep -c '^  sweep ' results/parity.txt || true)"
+if [ "${#failed[@]}" -eq 0 ]; then
+  echo "NO NEW FAILURE. Frozen lines kept as failed in the parity sweep: $kept (listed in results/parity.txt and REPORT.md part 3)."
+else
+  echo "FAILED: ${failed[*]}"; exit 1
+fi

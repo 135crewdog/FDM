@@ -89,9 +89,10 @@ SCRIPT SWEEP: the other 59 upstream scripts, each at its own dt with the upstrea
     FAIL: 3
     table: results/parity-sweep.md; per-column tables of every failure: results/parity-detail.txt
 
-FAILED LINES (5):
+FAILED LINES kept on record (5; see REPORT.md part 3):
   sweep c3104.xml weh Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
   sweep c3104.xml jseh Class S: FAIL rows 51; worst moments/n-total-lbsft: |d| 6.96e-3 at row 13, allowed 9.41e-6, first over at row 13
   sweep c3105.xml weh Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
   sweep c3105.xml jseh Class S: FAIL rows 121; worst moments/n-total-lbsft: |d| 6.78e-3 at row 31, allowed 1.08e-5, first over at row 31
   sweep mk82_script.xml: native FAILED at step 2242, weh FAILED at step 2308, jseh FAILED at step 2308
+No other line failed.

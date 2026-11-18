@@ -378,9 +378,21 @@ test("parity: WebAssembly against native", async () => {
     report.line();
   }
 
-  report.line(failures.length ? `FAILED LINES (${failures.length}):` : "No line failed.");
-  for (const f of failures) report.line(`  ${f}`);
+  // Frozen lines that failed and are kept as failed (REPORT.md part 3, second stop; user decision 2026-11-18).
+  // Each entry matches one script and one line. They are still printed as FAILED; the test's exit code is for
+  // anything that is not on this list.
+  const KEPT_AS_FAILED = [
+    /^sweep c3104\.xml (weh|jseh) Class S: FAIL /,
+    /^sweep c3105\.xml (weh|jseh) Class S: FAIL /,
+    /^sweep mk82_script\.xml: native FAILED at step \d+, weh FAILED at step \d+, jseh FAILED at step \d+$/,
+  ];
+  const kept = failures.filter((f) => KEPT_AS_FAILED.some((re) => re.test(f)));
+  const fresh = failures.filter((f) => !KEPT_AS_FAILED.some((re) => re.test(f)));
+  report.line(kept.length ? `FAILED LINES kept on record (${kept.length}; see REPORT.md part 3):` : "No kept failed line appeared in this run.");
+  for (const f of kept) report.line(`  ${f}`);
+  report.line(fresh.length ? `NEW FAILED LINES (${fresh.length}):` : "No other line failed.");
+  for (const f of fresh) report.line(`  ${f}`);
   report.save();
   detail.lines.length && detail.save();
-  assert.deepEqual(failures, []);
+  assert.deepEqual(fresh, []);
 });

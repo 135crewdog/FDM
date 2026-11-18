@@ -1,0 +1,111 @@
+External forces: c172x_ext20 (upstream c172x + 20 body-frame forces), airborne start (reset01), 3600 steps at 1/120 s
+  inputs: 140 values per step (20 forces x location xyz, direction xyz, magnitude), a different value every step
+  check that inputs act in the step they are written for: row k+1 external force total minus the sum of the step-k table, largest 0.00e+0 lb (peak total 1976.0 lb)
+  effect on the flight after 30 s (native, with forces minus without): altitude 1328.43 ft, bank -54.69 deg; end state altitude 3641.0 ft, airspeed 88.5 kt
+  ground contact during the run: no; turbulence rows: 0
+  weh, forces written from TypeScript, vs native, Class A, whole run: pass rows 3601; worst position/h-agl-ft: |d| 9.78e-9 at row 1965, allowed 1.00e-6
+      column | judged | max |d| | row | peak |native| | allowed | result
+      position/ecef-x-ft | yes | 4.37e-11 | 3040 | 1.61e+3 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 0 | 0 | 1.85e+7 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.86e-9 | 0 | 9.82e+6 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 3.73e-9 | 5 | 4.34e+3 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 9.78e-9 | 1965 | 4.34e+3 | 1.00e-6 | pass
+      velocities/u-fps | yes | 8.61e-12 | 2661 | 2.12e+2 | 2.12e-7 | pass
+      velocities/v-fps | yes | 1.36e-11 | 3068 | 5.08e+1 | 5.08e-8 | pass
+      velocities/w-fps | yes | 9.09e-12 | 3122 | 3.09e+1 | 3.09e-8 | pass
+      velocities/vtrue-kts | yes | 5.09e-12 | 2661 | 1.26e+2 | 1.26e-7 | pass
+      velocities/p-rad_sec | yes | 1.45e-13 | 3443 | 1.07e+0 | 1.07e-9 | pass
+      velocities/q-rad_sec | yes | 2.85e-13 | 3173 | 6.66e-1 | 6.66e-10 | pass
+      velocities/r-rad_sec | yes | 1.17e-13 | 3208 | 6.25e-1 | 6.25e-10 | pass
+      attitude/phi-rad | yes | 2.82e-13 | 1273 | 3.14e+0 | 3.14e-9 | pass
+      attitude/theta-rad | yes | 1.06e-13 | 3166 | 1.42e+0 | 1.42e-9 | pass
+      attitude/psi-rad | yes | 1.91e-13 | 1271 | 5.29e+0 | 5.29e-9 | pass
+      forces/fbx-total-lbs | yes | 3.87e-10 | 2982 | 1.03e+3 | 1.03e-6 | pass
+      forces/fby-total-lbs | yes | 1.17e-10 | 3442 | 4.28e+2 | 4.28e-7 | pass
+      forces/fbz-total-lbs | yes | 1.50e-9 | 3155 | 7.43e+3 | 7.43e-6 | pass
+      moments/l-total-lbsft | yes | 8.49e-10 | 3125 | 7.63e+3 | 7.63e-6 | pass
+      moments/m-total-lbsft | yes | 8.92e-10 | 3235 | 3.28e+3 | 3.28e-6 | pass
+      moments/n-total-lbsft | yes | 7.34e-10 | 3427 | 3.55e+3 | 3.55e-6 | pass
+      aero/alpha-rad | info | 2.42e-13 | 2905 | 7.85e-1 | - | -
+      aero/beta-rad | info | 2.35e-13 | 3066 | 6.75e-1 | - | -
+      forces/fbx-external-lbs | yes | 0 | 0 | 1.73e+2 | 1.73e-7 | pass
+      forces/fby-external-lbs | yes | 0 | 0 | 1.14e+2 | 1.14e-7 | pass
+      forces/fbz-external-lbs | yes | 0 | 0 | 1.98e+3 | 1.98e-6 | pass
+      moments/l-external-lbsft | yes | 0 | 0 | 8.55e+3 | 8.55e-6 | pass
+      moments/m-external-lbsft | yes | 0 | 0 | 3.83e+2 | 3.83e-7 | pass
+      moments/n-external-lbsft | yes | 0 | 0 | 1.50e+3 | 1.50e-6 | pass
+      atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
+  weh: TypeScript-driven = C++ runner bit for bit; run twice identical
+  jseh, forces written from TypeScript, vs native, Class A, whole run: pass rows 3601; worst position/h-agl-ft: |d| 9.78e-9 at row 1965, allowed 1.00e-6
+      column | judged | max |d| | row | peak |native| | allowed | result
+      position/ecef-x-ft | yes | 4.37e-11 | 3040 | 1.61e+3 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 0 | 0 | 1.85e+7 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.86e-9 | 0 | 9.82e+6 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 3.73e-9 | 5 | 4.34e+3 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 9.78e-9 | 1965 | 4.34e+3 | 1.00e-6 | pass
+      velocities/u-fps | yes | 8.61e-12 | 2661 | 2.12e+2 | 2.12e-7 | pass
+      velocities/v-fps | yes | 1.36e-11 | 3068 | 5.08e+1 | 5.08e-8 | pass
+      velocities/w-fps | yes | 9.09e-12 | 3122 | 3.09e+1 | 3.09e-8 | pass
+      velocities/vtrue-kts | yes | 5.09e-12 | 2661 | 1.26e+2 | 1.26e-7 | pass
+      velocities/p-rad_sec | yes | 1.45e-13 | 3443 | 1.07e+0 | 1.07e-9 | pass
+      velocities/q-rad_sec | yes | 2.85e-13 | 3173 | 6.66e-1 | 6.66e-10 | pass
+      velocities/r-rad_sec | yes | 1.17e-13 | 3208 | 6.25e-1 | 6.25e-10 | pass
+      attitude/phi-rad | yes | 2.82e-13 | 1273 | 3.14e+0 | 3.14e-9 | pass
+      attitude/theta-rad | yes | 1.06e-13 | 3166 | 1.42e+0 | 1.42e-9 | pass
+      attitude/psi-rad | yes | 1.91e-13 | 1271 | 5.29e+0 | 5.29e-9 | pass
+      forces/fbx-total-lbs | yes | 3.87e-10 | 2982 | 1.03e+3 | 1.03e-6 | pass
+      forces/fby-total-lbs | yes | 1.17e-10 | 3442 | 4.28e+2 | 4.28e-7 | pass
+      forces/fbz-total-lbs | yes | 1.50e-9 | 3155 | 7.43e+3 | 7.43e-6 | pass
+      moments/l-total-lbsft | yes | 8.49e-10 | 3125 | 7.63e+3 | 7.63e-6 | pass
+      moments/m-total-lbsft | yes | 8.92e-10 | 3235 | 3.28e+3 | 3.28e-6 | pass
+      moments/n-total-lbsft | yes | 7.34e-10 | 3427 | 3.55e+3 | 3.55e-6 | pass
+      aero/alpha-rad | info | 2.42e-13 | 2905 | 7.85e-1 | - | -
+      aero/beta-rad | info | 2.35e-13 | 3066 | 6.75e-1 | - | -
+      forces/fbx-external-lbs | yes | 0 | 0 | 1.73e+2 | 1.73e-7 | pass
+      forces/fby-external-lbs | yes | 0 | 0 | 1.14e+2 | 1.14e-7 | pass
+      forces/fbz-external-lbs | yes | 0 | 0 | 1.98e+3 | 1.98e-6 | pass
+      moments/l-external-lbsft | yes | 0 | 0 | 8.55e+3 | 8.55e-6 | pass
+      moments/m-external-lbsft | yes | 0 | 0 | 3.83e+2 | 3.83e-7 | pass
+      moments/n-external-lbsft | yes | 0 | 0 | 1.50e+3 | 1.50e-6 | pass
+      atmosphere/turbulence/milspec/severity | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-north-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-east-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/turb-down-fps | info | 0 | 0 | 0 | - | -
+      atmosphere/p-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      atmosphere/q-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      atmosphere/r-turb-rad_sec | info | 0 | 0 | 0 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
+  jseh: TypeScript-driven = C++ runner bit for bit; run twice identical
+  -fwasm-exceptions vs -fexceptions: identical; native run twice: identical
+
+Cost in Node on this machine (information only): microseconds per step, median of 5 fresh instances x 3000 steps after 300 warm-up steps,
+one call into WebAssembly per step, 16 outputs read back per step; c172x airborne
+  weh, dt 1/120: no forces (upstream c172x): 19.29 (runs 20.5 18.9 19.3 19.6 14.4); 20 forces, 20 values written: 15.25 (runs 15.5 15.5 15.3 15.1 15.1); 20 forces, 140 values written: 17.12 (runs 16.6 21.5 17.1 17.1 17.1)
+      cost of 20 forces through the bulk path: +-4.04 us/step with 20 values, +-2.17 us/step with 140 values
+  weh, dt 1/1000: no forces (upstream c172x): 14.05 (runs 14.9 14.2 13.9 14.0 14.0); 20 forces, 20 values written: 18.69 (runs 14.8 18.4 18.8 19.2 18.7); 20 forces, 140 values written: 20.09 (runs 20.8 20.1 19.7 22.0 19.5)
+      cost of 20 forces through the bulk path: +4.64 us/step with 20 values, +6.04 us/step with 140 values
+  jseh, dt 1/120: no forces (upstream c172x): 27.88 (runs 28.7 29.1 27.9 27.1 27.3); 20 forces, 20 values written: 27.90 (runs 27.9 27.7 27.7 30.0 29.7); 20 forces, 140 values written: 35.58 (runs 38.9 34.2 33.8 35.6 43.6)
+      cost of 20 forces through the bulk path: +0.03 us/step with 20 values, +7.70 us/step with 140 values
+  jseh, dt 1/1000: no forces (upstream c172x): 28.21 (runs 29.1 30.5 27.6 28.2 28.2); 20 forces, 20 values written: 29.43 (runs 29.4 28.9 29.2 30.9 29.6); 20 forces, 140 values written: 33.80 (runs 34.2 34.7 33.8 32.3 26.4)
+      cost of 20 forces through the bulk path: +1.22 us/step with 20 values, +5.59 us/step with 140 values
+
+No line failed.
