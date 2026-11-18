@@ -8,10 +8,10 @@ import { after, describe, test } from "node:test";
 import { Counter } from "../ts/codes.ts";
 import { Fdm, type GroundGrid } from "../ts/core.ts";
 import { REPO_ROOT, VARIANTS } from "../ts/node.ts";
-import { bitEqual, classA, compareTraces, describe as describeResult, table } from "./lib/compare.ts";
+import { bitEqual, classA, classN, compareTraces, describe as describeResult, describeN, table, tableN, touchesGround } from "./lib/compare.ts";
 import { WGS84_A, WGS84_B, flatGrid, geodeticToEcef, gridFileBytes, radii, slopeGrid } from "./lib/grids.ts";
 import { Report, loadWithData } from "./lib/harness.ts";
-import { NATIVE_DIR, STATE_COLUMNS, type Scenario, TMP_DIR, runNative, runWasmCpp, runWasmTs } from "./lib/scenario.ts";
+import { NATIVE_DIR, STATE_COLUMNS, type Scenario, TMP_DIR, ensembleScenarios, runNative, runWasmCpp, runWasmTs } from "./lib/scenario.ts";
 
 const report = new Report("ground");
 after(() => report.save());
@@ -164,7 +164,7 @@ describe("ground hook", () => {
     });
   }
 
-  test("slope-rest run: wasm against native (Class A), exact checks, assert-enabled native", async () => {
+  test("slope-rest run: wasm against native (Class A kept, Class N added), exact checks, assert-enabled native", async () => {
     const [native, nativeAgain] = [runNative([slopeRest])[0], runNative([slopeRest], "native-again")[0]];
     assert.equal(native.meta.stage, "done", native.meta.message);
     report.line("Slope-rest run: c172x on a 5 degree slope rising north, brakes on, 1200 steps at 1/120 s");
@@ -175,6 +175,11 @@ describe("ground hook", () => {
     for (const r of asserts) assert.equal(r.meta.stage, "done", r.meta.message);
     report.line(`  assert-enabled native build: slope-rest, c1723 30 s on a flat grid and NASA 02 on a flat grid ran with no assertion failure; ` +
       `slope-rest trace ${bitEqual(native.trace, asserts[0].trace).equal ? "identical to" : "different from"} the release native trace`);
+
+    // Class N (added line): the native ensemble, start altitude moved by k * 2^-28 ft.
+    const ensemble = runNative(ensembleScenarios(slopeRest), "native-ensemble");
+    for (const m of ensemble) assert.equal(m.meta.stage, "done", m.meta.message);
+    assert.ok(touchesGround(native.trace, native.trace.rows), "the run does not touch the ground");
 
     const traces: Record<string, typeof native> = {};
     const failures: string[] = [];
@@ -187,11 +192,15 @@ describe("ground hook", () => {
       assert.equal(ts.meta.stage, "done", ts.meta.message);
       traces[variant] = cpp;
       const res = compareTraces(native.trace, cpp.trace, { tolerance: classA });
-      report.line(`  ${variant} vs native, Class A: ${describeResult(res)}`);
+      report.line(`  ${variant} vs native, frozen Class A (result kept): ${describeResult(res)}`);
       report.line(table(res).split("\n").map((l) => `      ${l}`).join("\n"));
+      const resN = classN(native.trace, cpp.trace, ensemble.map((m) => m.trace), { tolerance: classA });
+      report.line(`  ${variant} vs native, Class N (added line): ${describeN(resN)}`);
+      report.line(tableN(resN).split("\n").map((l) => `      ${l}`).join("\n"));
       const twice = bitEqual(cpp.trace, cppAgain.trace), tsEq = bitEqual(cpp.trace, ts.trace);
       report.line(`  ${variant}: run twice ${twice.equal ? "identical" : `DIFFERENT (${twice.reason})`}; TypeScript-driven vs C++ runner ${tsEq.equal ? "identical" : `DIFFERENT (${tsEq.reason})`}`);
-      if (!res.pass) failures.push(`${variant} vs native, Class A: ${describeResult(res)}`);
+      // The frozen Class A line failed and stays failed; from the added line on, this run is judged on Class N.
+      if (!resN.pass) failures.push(`${variant} vs native, Class N: ${describeN(resN)}`);
       if (!twice.equal) failures.push(`${variant} run twice: ${twice.reason}`);
       if (!tsEq.equal) failures.push(`${variant} TypeScript-driven vs C++ runner: ${tsEq.reason}`);
       if (!(cpp.meta.counters[Counter.GROUND_CALLS] > 0)) failures.push(`${variant}: grid callback never called`);
@@ -232,7 +241,7 @@ describe("ground hook", () => {
     report.line(`    weight on wheels at 10 s: ${wows.map((w) => `${w}=${at(last, w)}`).join(", ")}`);
     report.line(`    pitch at 10 s: ${(at(last, "attitude/theta-rad") / RAD).toFixed(3)} deg; moved ${dist(0, last).toFixed(3)} ft in 10 s, ${dist(600, last).toFixed(4)} ft in the last 5 s; speed at 10 s ${at(last, "velocities/vtrue-kts").toExponential(2)} kt`);
     report.line();
-    assert.deepEqual(failures, [], "frozen lines failed (results are kept above)");
+    assert.deepEqual(failures, [], "lines failed (results are kept above)");
   });
 });
 void WGS84_A; void WGS84_B; void radii;

@@ -23,7 +23,7 @@ Slope grids vs an independent calculation (tests/native/ground_oracle.cpp), 20 p
 Slope-rest run: c172x on a 5 degree slope rising north, brakes on, 1200 steps at 1/120 s
   native run twice: identical
   assert-enabled native build: slope-rest, c1723 30 s on a flat grid and NASA 02 on a flat grid ran with no assertion failure; slope-rest trace identical to the release native trace
-  weh vs native, Class A: FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
+  weh vs native, frozen Class A (result kept): FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
       column | judged | max |d| | row | peak |native| | allowed | result
       position/ecef-x-ft | yes | 9.55e-9 | 79 | 1.64e+6 | 1.00e-6 | pass
       position/ecef-y-ft | yes | 3.73e-9 | 105 | 1.81e+7 | 1.00e-6 | pass
@@ -55,8 +55,40 @@ Slope-rest run: c172x on a 5 degree slope rising north, brakes on, 1200 steps at
       contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
       contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
       
+  weh vs native, Class N (added line): pass rows 1201, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 8.43e-5, allowed 2.07e-4 (frozen 9.51e-8, 3 x spread 2.07e-4), ratio 0.407
+      column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+      position/ecef-x-ft | yes | 9.55e-9 | 1.00e-6 | 6.05e-9 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 3.73e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.30e-8 | 1.00e-6 | 2.98e-8 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 7.45e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 1.37e-8 | 1.00e-6 | 2.30e-8 | 1.00e-6 | pass
+      velocities/u-fps | yes | 5.08e-8 | 1.00e-9 | 6.93e-8 | 2.08e-7 | pass
+      velocities/v-fps | yes | 2.02e-8 | 1.00e-9 | 2.45e-8 | 7.35e-8 | pass
+      velocities/w-fps | yes | 6.45e-8 | 1.00e-9 | 1.03e-7 | 3.09e-7 | pass
+      velocities/vtrue-kts | yes | 2.41e-8 | 1.00e-9 | 6.33e-8 | 1.90e-7 | pass
+      velocities/p-rad_sec | yes | 4.78e-9 | 2.99e-11 | 5.58e-9 | 1.67e-8 | pass
+      velocities/q-rad_sec | yes | 1.18e-8 | 1.68e-10 | 1.75e-8 | 5.26e-8 | pass
+      velocities/r-rad_sec | yes | 1.58e-10 | 2.58e-12 | 2.42e-10 | 7.25e-10 | pass
+      attitude/phi-rad | yes | 6.03e-10 | 8.71e-12 | 6.81e-10 | 2.04e-9 | pass
+      attitude/theta-rad | yes | 2.57e-9 | 1.25e-10 | 5.31e-9 | 1.59e-8 | pass
+      attitude/psi-rad | yes | 1.75e-11 | 6.28e-9 | 4.10e-11 | 6.28e-9 | pass
+      forces/fbx-total-lbs | yes | 4.34e-5 | 4.90e-7 | 7.49e-5 | 2.25e-4 | pass
+      forces/fby-total-lbs | yes | 4.95e-5 | 1.50e-7 | 4.78e-5 | 1.43e-4 | pass
+      forces/fbz-total-lbs | yes | 1.28e-4 | 2.69e-6 | 1.67e-4 | 5.00e-4 | pass
+      moments/l-total-lbsft | yes | 2.88e-4 | 7.92e-7 | 2.97e-4 | 8.92e-4 | pass
+      moments/m-total-lbsft | yes | 2.01e-4 | 2.31e-6 | 3.41e-4 | 1.02e-3 | pass
+      moments/n-total-lbsft | yes | 8.43e-5 | 9.51e-8 | 6.90e-5 | 2.07e-4 | pass
+      aero/alpha-rad | info | 3.26e-5 | - | 2.74e-5 | - | -
+      aero/beta-rad | info | 8.32e-6 | - | 1.27e-5 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
   weh: run twice identical; TypeScript-driven vs C++ runner identical
-  jseh vs native, Class A: FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
+  jseh vs native, frozen Class A (result kept): FAIL rows 1201; worst moments/n-total-lbsft: |d| 8.43e-5 at row 19, allowed 9.51e-8, first over at row 0
       column | judged | max |d| | row | peak |native| | allowed | result
       position/ecef-x-ft | yes | 9.55e-9 | 79 | 1.64e+6 | 1.00e-6 | pass
       position/ecef-y-ft | yes | 3.73e-9 | 105 | 1.81e+7 | 1.00e-6 | pass
@@ -84,6 +116,38 @@ Slope-rest run: c172x on a 5 degree slope rising north, brakes on, 1200 steps at
       gear/unit[0]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
       gear/unit[1]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
       gear/unit[2]/WOW | yes | 0 | 0 | 1.00e+0 | 0 | pass
+      contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      
+  jseh vs native, Class N (added line): pass rows 1201, 8 members with effect; closest to its limit: moments/n-total-lbsft: |d| 8.43e-5, allowed 2.07e-4 (frozen 9.51e-8, 3 x spread 2.07e-4), ratio 0.407
+      column | judged | max |d| wasm-native | frozen allowance F | ensemble spread S | allowed max(F, 3S) | result
+      position/ecef-x-ft | yes | 9.55e-9 | 1.00e-6 | 6.05e-9 | 1.00e-6 | pass
+      position/ecef-y-ft | yes | 3.73e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+      position/ecef-z-ft | yes | 1.30e-8 | 1.00e-6 | 2.98e-8 | 1.00e-6 | pass
+      position/h-sl-ft | yes | 7.45e-9 | 1.00e-6 | 1.49e-8 | 1.00e-6 | pass
+      position/h-agl-ft | yes | 1.37e-8 | 1.00e-6 | 2.30e-8 | 1.00e-6 | pass
+      velocities/u-fps | yes | 5.08e-8 | 1.00e-9 | 6.93e-8 | 2.08e-7 | pass
+      velocities/v-fps | yes | 2.02e-8 | 1.00e-9 | 2.45e-8 | 7.35e-8 | pass
+      velocities/w-fps | yes | 6.45e-8 | 1.00e-9 | 1.03e-7 | 3.09e-7 | pass
+      velocities/vtrue-kts | yes | 2.41e-8 | 1.00e-9 | 6.33e-8 | 1.90e-7 | pass
+      velocities/p-rad_sec | yes | 4.78e-9 | 2.99e-11 | 5.58e-9 | 1.67e-8 | pass
+      velocities/q-rad_sec | yes | 1.18e-8 | 1.68e-10 | 1.75e-8 | 5.26e-8 | pass
+      velocities/r-rad_sec | yes | 1.58e-10 | 2.58e-12 | 2.42e-10 | 7.25e-10 | pass
+      attitude/phi-rad | yes | 6.03e-10 | 8.71e-12 | 6.81e-10 | 2.04e-9 | pass
+      attitude/theta-rad | yes | 2.57e-9 | 1.25e-10 | 5.31e-9 | 1.59e-8 | pass
+      attitude/psi-rad | yes | 1.75e-11 | 6.28e-9 | 4.10e-11 | 6.28e-9 | pass
+      forces/fbx-total-lbs | yes | 4.34e-5 | 4.90e-7 | 7.49e-5 | 2.25e-4 | pass
+      forces/fby-total-lbs | yes | 4.95e-5 | 1.50e-7 | 4.78e-5 | 1.43e-4 | pass
+      forces/fbz-total-lbs | yes | 1.28e-4 | 2.69e-6 | 1.67e-4 | 5.00e-4 | pass
+      moments/l-total-lbsft | yes | 2.88e-4 | 7.92e-7 | 2.97e-4 | 8.92e-4 | pass
+      moments/m-total-lbsft | yes | 2.01e-4 | 2.31e-6 | 3.41e-4 | 1.02e-3 | pass
+      moments/n-total-lbsft | yes | 8.43e-5 | 9.51e-8 | 6.90e-5 | 2.07e-4 | pass
+      aero/alpha-rad | info | 3.26e-5 | - | 2.74e-5 | - | -
+      aero/beta-rad | info | 8.32e-6 | - | 1.27e-5 | - | -
+      gear/unit[0]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[1]/WOW | yes | 0 | 0 | 0 | 0 | pass
+      gear/unit[2]/WOW | yes | 0 | 0 | 0 | 0 | pass
       contact/unit[3]/WOW | yes | 0 | 0 | 0 | 0 | pass
       contact/unit[4]/WOW | yes | 0 | 0 | 0 | 0 | pass
       contact/unit[5]/WOW | yes | 0 | 0 | 0 | 0 | pass

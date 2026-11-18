@@ -246,3 +246,25 @@ export function turbulenceRows(t: Trace): number {
   for (let r = 0; r < t.rows; r++) if (idx.some((i) => t.data[r * n + i] !== 0)) bad++;
   return bad;
 }
+
+// --- native ensemble (Class B and Class N) -----------------------------------------------------------------
+
+/** One unit in the last place of an Earth-radius-sized coordinate, in feet. */
+export const POSITION_QUANTUM_FT = 2 ** -28;
+export const ENSEMBLE_K = [1, -1, 2, -2, 3, -3, 4, -4];
+
+/** The 8 perturbed copies of a scenario: start altitude moved by k * 2^-28 ft before RunIC. */
+export function ensembleScenarios(sc: Scenario, steps?: number): Scenario[] {
+  return ENSEMBLE_K.map((k) => ({
+    ...sc,
+    name: `${sc.name}-ens${k > 0 ? "p" : "m"}${Math.abs(k)}`,
+    adds: [...(sc.adds ?? []), ["ic/h-sl-ft", k * POSITION_QUANTUM_FT] as [string, number]],
+    ...(steps !== undefined ? { steps, duration: undefined } : {}),
+  }));
+}
+
+/** The first `rows` rows of a trace. */
+export function headTrace(t: Trace, rows: number): Trace {
+  const r = Math.min(rows, t.rows);
+  return { columns: t.columns, rows: r, data: t.data.subarray(0, r * t.columns.length) };
+}
