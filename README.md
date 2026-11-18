@@ -32,6 +32,7 @@ Sessions 01–05 (14–16 Nov 2026):
 The restart keeps the lessons. It does not carry over the patches.
 Start with `REPORT-02.md` and `REPORT-05.md` on the archive branch.
 
-The GitHub Pages test page still shows attempt 1's last deployment until a new one replaces it.
+The GitHub Pages test page (`https://135crewdog.github.io/FDM/`) is the JSBSim baseline's device test since
+2026-11-18. It is published from `test-page/` on `main`.
 
 See `PLAN.md` for the roadmap and `prompts/` for the next session.
