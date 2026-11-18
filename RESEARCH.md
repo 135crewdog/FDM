@@ -9,6 +9,30 @@ user's decisions are in `CLAUDE.md`; `PLAN.md` and `prompts/README.md` point her
 **Labels.** **Verified:** upstream source or docs. **Supported:** our own attempt-1 tests (reports on branch
 `archive/attempt-1`). **Reasoned:** inference; the test that would settle it is named.
 
+## Corrections from session 01 (2026-11-18)
+
+Found while doing the work; details in `REPORT.md` on `baseline/jsbsim`. The original lines below are left as
+written.
+
+- **PR #1504 is in v1.3.3.** It is commit `4e695159`, first shipped in v1.3.2. The line "merged after v1.3.3"
+  in section 1 is wrong. **Verified** [upstream git history].
+- **Upstream ships only NASA check case 02.** Cases 01 and 03 exist on `baseline/jsbsim` as test fixtures written
+  from NASA's model files and checked against NASA's published results. **Verified** [upstream tree; NASA data].
+- **`scripts/` holds 63 files, 58 of them scripts** (2 `.kml`, 3 helper `.xml`). **Verified** [the data].
+- **An input acts in the step it is written for.** External force totals show a value written before `Run()` in
+  that same step; the *motion* shows it one step later, as section 1 says. **Supported** [session 01 forces test].
+- **`<latitude>` in an initial-condition file is geocentric** unless it says otherwise. At 30° that is 0.17° (about
+  10 nm) away from the geodetic latitude. **Supported** [session 01, the misplaced slope grid].
+- **Script `<property>` and `<event>` elements only work inside `<run>`.** **Verified** [`FGScript.cpp`].
+- **A property that was never written has no type** (`external_reactions/<name>/magnitude` is one). It still
+  reads 0 and can be written. **Supported** [session 01].
+- **WebAssembly and native differ in the last digit from row 0** (start position by one or two units in the last
+  place), and a gear spring turns that into about 1e-5 to 1e-4 lb. **Supported** [session 01].
+- **The c310 autopilot and the mk82 bomb amplify a last-digit difference in native itself** (heading on the
+  0 / 2π seam; a pitch-rate blow-up). **Supported** [session 01, native-only experiments].
+- Not checked: whether `emcmake` would have given `-O2` for a Release build. The build sets `-O3` itself and
+  checks every file's command line.
+
 JSBSim references are to **v1.3.3** (tag commit `66f7faf`, released 2026-10-16) unless stated.
 
 ---
