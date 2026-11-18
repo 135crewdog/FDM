@@ -5,17 +5,17 @@ Update this file at the end of every session: mark what is done, link the report
 ## Done
 
 - **Session 00 (research), 2026-11-18:** `RESEARCH.md` on `main`. User decisions recorded in `CLAUDE.md`.
-- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim` at `fd88fd4`, report `REPORT.md` on
+- **Session 01 (JSBSim baseline), 2026-11-18:** branch `baseline/jsbsim` at `e478825`, report `REPORT.md` on
   that branch. The tag `jsbsim-baseline-v1` is to be created by the user (below).
 
 ## Stage 1: JSBSim baseline (`baseline/jsbsim`)
 
-**Status:** done. The baseline is commit `fd88fd4f8bd3956c7dab2483a5317ada0897169f`, the last commit of
+**Status:** done. The baseline is commit `e47882503ab765d575a38b5bcd59fd41da76b1ae`, the last commit of
 `baseline/jsbsim`.
 
 **The tag still has to be created by the user.** The session's git proxy refused the tag push (HTTP 403,
 2026-11-18). On GitHub: Releases → "Draft a new release" → "Choose a tag" → type `jsbsim-baseline-v1` → "Create
-new tag on publish" → Target: branch `baseline/jsbsim` (check that its last commit is `fd88fd4`) → publish.
+new tag on publish" → Target: branch `baseline/jsbsim` (check that its last commit is `e478825`) → publish.
 Later work starts from that tag, not from the moving branch. Do not add commits to `baseline/jsbsim` before the
 tag exists.
 

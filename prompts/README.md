@@ -14,7 +14,7 @@ The repository is the project's memory. A chat is only where one piece of work h
 | Chat name | Prompt | Branch | Report |
 |---|---|---|---|
 | FDM2 00 Work: JSBSim research and baseline prompt (done) | (pasted in chat) | `main` | `RESEARCH.md` |
-| FDM2 01 Work: JSBSim baseline (done; commit `fd88fd4`, tag `jsbsim-baseline-v1` to be created by the user, see `PLAN.md`) | `01-jsbsim-baseline.md` | `baseline/jsbsim` | `REPORT.md` on that branch |
+| FDM2 01 Work: JSBSim baseline (done; commit `e478825`, tag `jsbsim-baseline-v1` to be created by the user, see `PLAN.md`) | `01-jsbsim-baseline.md` | `baseline/jsbsim` | `REPORT.md` on that branch |
 | **FDM2 02 Work: YASim baseline** (next) | `02-yasim-baseline.md` | `baseline/yasim` | `REPORT.md` on that branch |
 
 Prompt 01 was rewritten on 2026-11-18 after the research session (00). Its old "ask me first" questions are
